@@ -158,12 +158,16 @@ func (s *Storage) SaveWorker(resWorker storage.WorkersResult) error {
 func (s *Storage) SaveOrder(result storage.DemResult) (int, error) {
 	const op = "storage.mysql.sql.saveOrder"
 	stmt := `INSERT INTO dem_test_golang_rezult_glyhar (order_num, name, count,  nast_napil, napil, napil_krishek, napil_impost,
-	soedinitel, promej_sborka, impost_sverlo, impost_frezer,impost_sborka, opres_nastr, opresovka, ystan_yplotn, zashivka, profil)
-	VALUES (?, ?, ?, ?, ?,?,?,?,?,?,?,?,?,?,?,?,?)`
+	soedinitel, promej_sborka, impost_sverlo, impost_frezer,impost_sborka, opres_nastr, opresovka, ystan_yplotn, zashivka, profil,
+	napil_stoiki_do3m, napil_stoiki_bol3m, napil_rigel_do1m, napil_rigel_bol1m, sverl_rigel_zamok, ystan_zamkov, napil_shtapik, ypakovka,
+    frezer_rigel, obrabot_ram, hands_sborka, frezer_nastr, shtiftovka, ystanovka_zapoln)
+	VALUES (?, ?, ?, ?, ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
 
 	exec, err := s.db.Exec(stmt, result.OrderNum, result.Name, result.Count, result.PodgotovOboryd, result.NapilKontr, result.NapilKrishek,
 		result.NapilImpost, result.Soedinitel, result.PromejSborka, result.ImpostSverlovka, result.ImpostFrezerovka, result.ImpostSborka,
-		result.OpresNastr, result.Opresovka, result.YstanYplotnitel, result.Zashivka, result.Profil)
+		result.OpresNastr, result.Opresovka, result.YstanYplotnitel, result.Zashivka, result.Profil, result.NapilStoikiDo3m, result.NapilStoikiBol3m,
+		result.NapilRigelDo1m, result.NapilRigelBol1m, result.SverlRigelZamok, result.YstanZamkov, result.NapilShtapik, result.Ypakovka, result.FrezerRigel,
+		result.ObrabotRam, result.HandsSborka, result.FrezerNastr, result.Shtiftovka, result.YstanovkaZapoln)
 	if err != nil {
 		return 0, fmt.Errorf("%s: %w", op, err)
 	}

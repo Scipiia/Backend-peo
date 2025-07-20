@@ -28,6 +28,7 @@ type SendMessages interface {
 //
 //}
 
+// TODO данные для занесения работяг в базу
 func RequesWorkers(log *slog.Logger, workers SendMessages) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const op = "handler.postorder.send.RequestWorkers"
@@ -49,7 +50,7 @@ func RequesWorkers(log *slog.Logger, workers SendMessages) http.HandlerFunc {
 			return
 		}
 
-		fmt.Printf("ФФФФФФФФФФФФФФФФФФ: %s\n", req)
+		//fmt.Printf("ФФФФФФФФФФФФФФФФФФ: %s\n", req)
 
 		for _, item := range req {
 			item.AssignedAt = time.Now() // Если дата не пришла, установите текущую
@@ -70,6 +71,7 @@ func RequesWorkers(log *slog.Logger, workers SendMessages) http.HandlerFunc {
 	}
 }
 
+// TODO получаем данные для занесения в таблицу глухарей
 func New(log *slog.Logger, message SendMessages) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const op = "handler.message.send.New"
@@ -80,8 +82,6 @@ func New(log *slog.Logger, message SendMessages) http.HandlerFunc {
 		)
 
 		var req storage.DemResult
-
-		fmt.Println("EEEEEEEEEEWWWW", req)
 
 		err := render.DecodeJSON(r.Body, &req)
 		if errors.Is(err, io.EOF) {
@@ -95,13 +95,13 @@ func New(log *slog.Logger, message SendMessages) http.HandlerFunc {
 		}
 
 		// Выводим полученные данные в консоль (для отладки)
-		fmt.Printf("Order Number: %s\n", req.OrderNum)
-		fmt.Printf("Count: %d\n", req.Count)
-		fmt.Printf("Name: %s\n", req.Name)
-		fmt.Printf("NapilOBORRTERF: %s\n", req.PodgotovOboryd)
-		fmt.Printf("Napil: %s\n", req.NapilImpost)
-		fmt.Printf("CountNapil: %s\n", req)
-		//fmt.Printf("Form Data: %+v\n", req.FormData)
+		//fmt.Printf("Order Number: %s\n", req.OrderNum)
+		//fmt.Printf("Count: %d\n", req.Count)
+		//fmt.Printf("Name: %s\n", req.Name)
+		//fmt.Printf("NapilOBORRTERF: %s\n", req.PodgotovOboryd)
+		//fmt.Printf("Napil: %s\n", req.NapilImpost)
+		//fmt.Printf("CountNapil: %s\n", req)
+		fmt.Printf("Form Data: %+v\n", req)
 
 		saveOrder, err := message.SaveOrder(req)
 		if err != nil {
@@ -114,7 +114,7 @@ func New(log *slog.Logger, message SendMessages) http.HandlerFunc {
 
 		render.JSON(w, r, Response{
 			Status: strconv.Itoa(http.StatusOK),
-			Error:  "",
+			Error:  "sdfsdf",
 			ID:     saveOrder,
 		})
 	}

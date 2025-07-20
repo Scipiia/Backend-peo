@@ -56,10 +56,10 @@ type FieldPeo struct {
 	RelatedFields []string `json:"related_fields"`
 }
 
-type Materials struct {
-	Impost   string `json:"impost"`
-	Shtapick string `json:"shtapick"`
-}
+//type Materials struct {
+//	Impost   string `json:"impost"`
+//	Shtapick string `json:"shtapick"`
+//}
 
 type Workers struct {
 	ID         int    `json:"id"`
@@ -98,4 +98,18 @@ type DemResult struct {
 	YstanYplotnitel  float64 `json:"ystan_yplotnitel"`
 	Zashivka         float64 `json:"zashivka"`
 	Profil           string  `json:"profil"`
+	NapilStoikiDo3m  float64 `json:"napil_stoiki_do3m"`
+	NapilStoikiBol3m float64 `json:"napil_stoiki_bol3m"`
+	NapilRigelDo1m   float64 `json:"napil_rigel_do1m"`
+	NapilRigelBol1m  float64 `json:"napil_rigel_bol1m"`
+	SverlRigelZamok  float64 `json:"sverl_rigel_zamok"`
+	YstanZamkov      float64 `json:"ystan_zamkov"`
+	NapilShtapik     float64 `json:"napil_shtapik"`
+	Ypakovka         float64 `json:"ypakovka"`
+	FrezerRigel      float64 `json:"frezer_rigel"`
+	ObrabotRam       float64 `json:"obrabot_ram"`
+	HandsSborka      float64 `json:"hands_sborka"`
+	FrezerNastr      float64 `json:"frezer_nastr"`
+	Shtiftovka       float64 `json:"shtiftovka"`
+	YstanovkaZapoln  float64 `json:"ystanovka_zapoln"`
 }

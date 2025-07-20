@@ -1,0 +1,151 @@
+[
+  {
+    "name": "napil_stoiki_do3m",
+    "type": "number",
+    "count": 1,
+    "label": "Напиловка стойки до 3м",
+    "value": 0.027,
+    "minutes": 1.6,
+    "required": true
+  },
+  {
+    "name": "napil_stoiki_bol3m",
+    "type": "number",
+    "count": 1,
+    "label": "Напиловка стойки свыше 3м",
+    "value": 0.030,
+    "minutes": 1.8,
+    "required": true
+  },
+  {
+    "name": "napil_rigel_do1m",
+    "type": "number",
+    "count": 1,
+    "label": "Напиловка ригеля до 1м",
+    "value": 0.019,
+    "minutes": 1.15,
+    "required": true
+  },
+  {
+    "name": "napil_rigel_bol1m",
+    "type": "number",
+    "count": 1,
+    "label": "Напиловка ригеля свыше 1м",
+    "value": 0.023,
+    "minutes": 1.35,
+    "required": true
+  },
+  {
+    "name": "sverl_rigel_zamok",
+    "type": "number",
+    "count": 1,
+    "label": "Сверловка ригелей под замок (с 2х сторон) и фрезеровка",
+    "value": 0.049,
+    "minutes": 2.92,
+    "required": true
+  },
+  {
+    "name": "ystan_zamkov",
+    "type": "number",
+    "count": 1,
+    "label": "Установка замков",
+    "value": 0.017,
+    "minutes": 1,
+    "required": true
+  },
+  {
+    "name": "ystanovka_yplotn",
+    "type": "number",
+    "count": 1,
+    "label": "Установка уплотнителей",
+    "value": 0.125,
+    "minutes": 7.5,
+    "required": true
+  },
+  {
+    "name": "napil_shtapik",
+    "type": "number",
+    "count": 1,
+    "label": "Напиловка штапика",
+    "value": 0.013,
+    "minutes": 0.8,
+    "required": true
+  },
+  {
+    "name": "ypakovka",
+    "type": "number",
+    "count": 1,
+    "label": "Упаковка",
+    "value": 0.167,
+    "minutes": 10,
+    "required": true
+  }
+]
+,
+
+
+[
+  {
+    "name": "nastr_napil",
+    "type": "number",
+    "label": "Настройка оборудования для напиловки",
+    "value": 0.05,
+    "minutes": 3,
+    "required": true
+  },
+  {
+    "name": "napil_kontyr",
+    "type": "number",
+    "count": 1,
+    "label": "Напиловка контура",
+    "value": 0.067,
+    "minutes": 4,
+    "required": true
+  },
+  {
+    "name": "promej_sborka",
+    "type": "number",
+    "count": 1,
+    "label": "Промежуточная сборка",
+    "value": 0.1,
+    "minutes": 6,
+    "required": true
+  },
+  {
+    "name": "opressovka_nastr",
+    "type": "number",
+    "count": 1,
+    "label": "Опресовка(настройка)",
+    "value": 0.075,
+    "minutes": 4.5,
+    "required": true
+  },
+  {
+    "name": "opressovka",
+    "type": "number",
+    "count": 1,
+    "label": "Опресовка",
+    "value": 0.047,
+    "minutes": 2.8,
+    "required": true
+  },
+  {
+    "name": "ystanovka_yplotn",
+    "type": "number",
+    "count": 2,
+    "label": "Установка уплотнителей, штифтовка",
+    "value": 0.183,
+    "minutes": 11,
+    "required": true
+  },
+  {
+    "name": "zashivka",
+    "type": "number",
+    "count": 2,
+    "label": "Зашивка",
+    "value": 0.3,
+    "minutes": 18,
+    "required": true
+  }
+]
+

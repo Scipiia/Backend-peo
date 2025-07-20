@@ -1,0 +1,100 @@
+[
+  {
+    "name": "nastr_napil",
+    "type": "number",
+    "label": "Настройка оборудования для напиловки",
+    "value": 0.050,
+    "minutes": 3,
+    "required": true
+  },
+  {
+    "name": "napil_kontyr",
+    "type": "number",
+    "count": 1,
+    "label": "Напиловка контура",
+    "value": 0.71,
+    "minutes": 4.3,
+    "required": true
+  },
+  {
+    "name": "napil_imposta",
+    "type": "number",
+    "count": 0,
+    "label": "Напиловка импоста",
+    "value": 0,
+    "minutes": 0,
+    "required": true
+  },
+  {
+    "name": "sverl_rigel_zamok",
+    "type": "number",
+    "count": 1,
+    "label": "Разметка и сверление отверстий",
+    "value": 0.68,
+    "minutes": 4.07,
+    "required": true
+  },
+  {
+    "name": "promej_sborka",
+    "type": "number",
+    "count": 1,
+    "label": "Промежуточная сборка",
+    "value": 0.044,
+    "minutes": 2.65,
+    "required": true
+  },
+  {
+    "name": "impost_sverlo",
+    "type": "number",
+    "count": 0,
+    "label": "Импост(сверловка)",
+    "value": 0,
+    "minutes": 0,
+    "required": true
+  },
+  {
+    "name": "impost_frezer",
+    "type": "number",
+    "count": 0,
+    "label": "Импост(фрезеровка)",
+    "value": 0,
+    "minutes": 0,
+    "required": true
+  },
+  {
+    "name": "impost_sborka",
+    "type": "number",
+    "count": 0,
+    "label": "Импост(сборка)",
+    "value": 0,
+    "minutes": 0,
+    "required": true
+  },
+  {
+    "name": "shtiftovka",
+    "type": "number",
+    "count": 1,
+    "label": "Штифтовка",
+    "value": 0.122,
+    "minutes": 7.3,
+    "required": true
+  },
+  {
+    "name": "ystanovka_yplotn",
+    "type": "number",
+    "count": 1,
+    "label": "Установка уплотнителей",
+    "value": 0.133,
+    "minutes": 8,
+    "required": true
+  },
+  {
+    "name": "ystanovka_zapoln",
+    "type": "number",
+    "count": 1,
+    "label": "Установка заполнения",
+    "value": 0.150,
+    "minutes": 9,
+    "required": true
+  }
+]
