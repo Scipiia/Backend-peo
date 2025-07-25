@@ -35,6 +35,7 @@ type OrderDetails interface {
 	GetOrderDetails(id int) (*storage.ResultOrderDetails, error)
 	GetForm(id int) (*storage.FormPeo, error)
 	GetWorkers() ([]*storage.Workers, error)
+	GetGlyhari(id int) (*storage.OrderData, error)
 }
 
 // Общая функция для получения данных о заказе
@@ -175,6 +176,40 @@ func GetWorkers(log *slog.Logger, worker OrderDetails) http.HandlerFunc {
 		// Формируем ответ
 		render.JSON(w, r, ResponseWorkers{
 			Workers: workers,
+		})
+	}
+}
+
+type ResponseNormData struct {
+	OrderNormData *storage.OrderData
+}
+
+func GetNormOrders(log *slog.Logger, normData OrderDetails) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		idStr := chi.URLParam(r, "id")
+		if idStr == "" {
+			log.Error("Missing order ID in query parameters")
+			http.Error(w, "Missing order ID", http.StatusBadRequest)
+			return
+		}
+
+		id, err := strconv.Atoi(idStr)
+		if err != nil {
+			http.Error(w, "Invalid order ID", http.StatusBadRequest)
+			log.Error("Invalid order ID", slog.String("error", err.Error()))
+			return
+		}
+
+		glyhari, err := normData.GetGlyhari(id)
+		if err != nil {
+			log.Info("Не удалось вытащить нормированный наряд из базы данных", err)
+			render.JSON(w, r, Response{Error: "da bleeeat"})
+			return
+		}
+		log.Info("GGGGLYHARI", glyhari)
+
+		render.JSON(w, r, ResponseNormData{
+			OrderNormData: glyhari,
 		})
 	}
 }

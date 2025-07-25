@@ -78,7 +78,7 @@ type WorkersResult struct {
 	AssignedAt    time.Time `json:"assigned_at"`
 }
 
-// 17
+// 32 операции для глухарей
 type DemResult struct {
 	ID               int     `json:"id"`
 	OrderNum         string  `json:"order_num"`
@@ -112,4 +112,19 @@ type DemResult struct {
 	FrezerNastr      float64 `json:"frezer_nastr"`
 	Shtiftovka       float64 `json:"shtiftovka"`
 	YstanovkaZapoln  float64 `json:"ystanovka_zapoln"`
+}
+
+type Operation struct {
+	ID    string  `json:"id"`
+	Name  string  `json:"name"`
+	Value float64 `json:"value"`
+}
+
+type OrderData struct {
+	ID         int         `json:"id"`
+	OrderNum   string      `json:"order_num"`
+	Name       string      `json:"name"`
+	Count      int         `json:"count"`
+	Profil     string      `json:"profil,omitempty"`
+	Operations []Operation `json:"operations"`
 }

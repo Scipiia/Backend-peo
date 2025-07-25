@@ -17,6 +17,7 @@ type Response struct {
 	Status string `json:"status"`
 	Error  string `json:"error"`
 	ID     int    `json:"id"`
+	Data   map[string]interface{}
 }
 
 type SendMessages interface {
@@ -72,7 +73,7 @@ func RequesWorkers(log *slog.Logger, workers SendMessages) http.HandlerFunc {
 }
 
 // TODO получаем данные для занесения в таблицу глухарей
-func New(log *slog.Logger, message SendMessages) http.HandlerFunc {
+func SaveNormOrder(log *slog.Logger, message SendMessages) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const op = "handler.message.send.New"
 
@@ -114,8 +115,12 @@ func New(log *slog.Logger, message SendMessages) http.HandlerFunc {
 
 		render.JSON(w, r, Response{
 			Status: strconv.Itoa(http.StatusOK),
-			Error:  "sdfsdf",
+			Error:  "",
 			ID:     saveOrder,
+			Data: map[string]interface{}{
+				"order_num": req.OrderNum,
+				"ID":        saveOrder,
+			},
 		})
 	}
 }

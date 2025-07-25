@@ -44,15 +44,15 @@ func routes(cfg config.Config, log *slog.Logger, storage *mysql.Storage) *chi.Mu
 	// Middleware для получения данных о заказе
 	// Маршруты для Гловяка где он внесет все данные по заказу
 	orderDetailsMiddleware := getorder.OrderDetailsMiddleware(log, storage)
-	//TODO JSON get
+	// TODO JSON get
 	router.With(orderDetailsMiddleware).Get("/api/orders/order/{id}", getorder.New(log))
 	//TODO Генерация Excel-файла
 	router.With(orderDetailsMiddleware).Get("/api/orders/order/generate-excel/{id}", getorder.GenerateExcel(log))
-	//TODO получение формы для изделия
+	// TODO получение формы для изделия
 	router.Get("/api/orders/order/product/form", getorder.GetFormByID(log, storage))
 
 	//TODO отправка формы после нормирования Гловяком с занесением в бд для изделия
-	router.Post("/api/orders/order/product", postorder.New(log, storage))
+	router.Post("/api/orders/order/product", postorder.SaveNormOrder(log, storage))
 
 	//TODO получение работяг
 	// будущие маршруты для мастеров в которых будут назначать работников
@@ -60,6 +60,9 @@ func routes(cfg config.Config, log *slog.Logger, storage *mysql.Storage) *chi.Mu
 	router.Get("/api/orders/order/product/workers", getorder.GetWorkers(log, storage))
 	//TODO добавление работяг с работой в базу
 	router.Post("/api/orders/order/assignments", postorder.RequesWorkers(log, storage))
+
+	//TODO получение нормированных деталей заказа
+	router.Get("/api/master/orders/order/{id}", getorder.GetNormOrders(log, storage))
 
 	//TODO AUTH
 	router.Post("/api/login", auth.Auth(log))
