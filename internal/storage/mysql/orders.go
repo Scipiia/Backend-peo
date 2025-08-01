@@ -62,7 +62,7 @@ func (s *Storage) GetOrdersMonth(year int, month int) ([]*storage.Order, error) 
 	return orders, nil
 }
 
-func (s *Storage) GetReadyOrders() ([]*storage.DemResult, error) {
+func (s *Storage) GetReadyOrders() ([]*storage.DemResultGlyhari, error) {
 	const op = "storage.order-details.sql"
 
 	stmt := `
@@ -80,12 +80,12 @@ func (s *Storage) GetReadyOrders() ([]*storage.DemResult, error) {
 	defer rows.Close()
 
 	// Собираем результаты
-	var res []*storage.DemResult
+	var res []*storage.DemResultGlyhari
 
 	for rows.Next() {
-		result := &storage.DemResult{}
+		result := &storage.DemResultGlyhari{}
 
-		err := rows.Scan(&result.ID, &result.OrderNum, &result.Name, &result.Count, &result.PodgotovOboryd, &result.NapilKontr, &result.NapilKrishek,
+		err := rows.Scan(&result.ID, &result.OrderNum, &result.Name, &result.Count, &result.NapilKontr, &result.NapilKontr, &result.NapilKrishek,
 			&result.NapilImpost, &result.Soedinitel, &result.PromejSborka, &result.ImpostSverlovka, &result.ImpostFrezerovka,
 			&result.ImpostSborka, &result.OpresNastr, &result.Opresovka, &result.YstanYplotnitel, &result.Zashivka, &result.Profil)
 		if err != nil {

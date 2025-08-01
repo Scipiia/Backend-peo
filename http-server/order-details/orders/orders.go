@@ -20,7 +20,7 @@ type Response struct {
 
 type GetOrders interface {
 	GetOrdersMonth(year int, month int) ([]*storage.Order, error)
-	GetReadyOrders() ([]*storage.DemResult, error)
+	GetReadyOrders() ([]*storage.DemResultGlyhari, error)
 }
 
 func New(log *slog.Logger, getOrders GetOrders) http.HandlerFunc {
@@ -138,9 +138,9 @@ func OrdersMonthMiddleware(log *slog.Logger, orders GetOrders) func(http.Handler
 }
 
 type ResponseNormOrders struct {
-	NormOrders []*storage.DemResult `json:"norm_orders"`
-	Error      string               `json:"error"`
-	Status     string               `json:"status"`
+	NormOrders []*storage.DemResultGlyhari `json:"norm_orders"`
+	Error      string                      `json:"error"`
+	Status     string                      `json:"status"`
 }
 
 func ResultOrdersNorm(log *slog.Logger, norm GetOrders) http.HandlerFunc {

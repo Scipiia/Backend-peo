@@ -36,6 +36,7 @@ type OrderDetails interface {
 	GetForm(id int) (*storage.FormPeo, error)
 	GetWorkers() ([]*storage.Workers, error)
 	GetGlyhari(id int) (*storage.OrderData, error)
+	GetWindows(id int) (*storage.OrderData, error)
 }
 
 // Общая функция для получения данных о заказе
@@ -193,6 +194,13 @@ func GetNormOrders(log *slog.Logger, normData OrderDetails) http.HandlerFunc {
 			return
 		}
 
+		productType := r.URL.Query().Get("type")
+		if productType == "" {
+			log.Error("Missing 'type' parameter")
+			render.JSON(w, r, Response{Error: "Missing 'type' parameter"})
+			return
+		}
+
 		id, err := strconv.Atoi(idStr)
 		if err != nil {
 			http.Error(w, "Invalid order ID", http.StatusBadRequest)
@@ -200,17 +208,39 @@ func GetNormOrders(log *slog.Logger, normData OrderDetails) http.HandlerFunc {
 			return
 		}
 
-		glyhari, err := normData.GetGlyhari(id)
-		if err != nil {
-			log.Info("Не удалось вытащить нормированный наряд из базы данных", err)
-			render.JSON(w, r, Response{Error: "da bleeeat"})
+		fmt.Println("TTTTTTYYYYYPE", productType)
+		fmt.Println("TTTTTTYYYYYPE111111", id)
+
+		var result *storage.OrderData
+		var Fetherr error
+
+		switch productType {
+		case "glyhar":
+			result, Fetherr = normData.GetGlyhari(id)
+		case "window":
+			//TODO ljltkfnm nen
+			result, Fetherr = normData.GetWindows(id)
+		}
+
+		//glyhari, err := normData.GetGlyhari(id)
+		//if err != nil {
+		//	log.Info("Не удалось вытащить нормированный наряд из базы данных", err)
+		//	render.JSON(w, r, Response{Error: "da bleeeat"})
+		//	return
+		//}
+		//log.Info("GGGGLYHARI", glyhari)
+		log.Info("RRRRRRRRRRRRRRRREEEE", result)
+
+		if Fetherr != nil {
+			log.Error("Product not found", slog.Int("id", id), slog.String("type", productType), Fetherr)
+			render.JSON(w, r, Response{Error: "Product not found"})
 			return
 		}
-		log.Info("GGGGLYHARI", glyhari)
 
-		render.JSON(w, r, ResponseNormData{
-			OrderNormData: glyhari,
-		})
+		//render.JSON(w, r, ResponseNormData{
+		//	OrderNormData: result,
+		//})
+		render.JSON(w, r, result)
 	}
 }
 
