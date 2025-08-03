@@ -54,6 +54,7 @@ func routes(cfg config.Config, log *slog.Logger, storage *mysql.Storage) *chi.Mu
 	// TODO отправка формы после нормирования Гловяком с занесением в бд для изделия
 	router.Post("/api/orders/order/product/gl", postorder.SaveNormOrderGlyhari(log, storage))
 	router.Post("/api/orders/order/product/window", postorder.SaveNormOrderWindow(log, storage))
+	router.Post("/api/orders/order/product/door", postorder.SaveNormOrderDoor(log, storage))
 
 	//TODO получение работяг
 	// будущие маршруты для мастеров в которых будут назначать работников

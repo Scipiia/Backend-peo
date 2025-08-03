@@ -24,6 +24,7 @@ type SendMessages interface {
 	SaveGlyhari(result storage.DemResultGlyhari) (int, error)
 	SaveWorker(resWorker storage.WorkersResult) error
 	SaveWindows(result storage.DemResultWindow) (int, error)
+	SaveDoor(result storage.DemResultDoor) (int, error)
 }
 
 //type RequestWorkers struct {
@@ -147,6 +148,54 @@ func SaveNormOrderWindow(log *slog.Logger, message SendMessages) http.HandlerFun
 		saveOrder, err := message.SaveWindows(req)
 		if err != nil {
 			log.Info("Ошибка реквеста сообщения при вставке в базу данных сука блять уебище тупорылое окна ебаные", err)
+			render.JSON(w, r, Response{Error: "da bleeeat"})
+			return
+		}
+
+		//fmt.Printf("Form Data: %+v\n", req)
+		//fmt.Printf("Form Data: %+v\n", req.FormId)
+
+		log.Info("message added", slog.Int("id", saveOrder))
+
+		render.JSON(w, r, Response{
+			Status: strconv.Itoa(http.StatusOK),
+			Error:  "",
+			ID:     saveOrder,
+			Data: map[string]interface{}{
+				"order_num": req.OrderNum,
+				"ID":        saveOrder,
+			},
+		})
+	}
+}
+
+// TODO получаем данные для занесения в таблицу дверей
+func SaveNormOrderDoor(log *slog.Logger, message SendMessages) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		const op = "handler.message.SaveNormOrderWindow"
+
+		log := log.With(
+			slog.String("op", op),
+			slog.String("request_id", middleware.GetReqID(r.Context())),
+		)
+
+		var req storage.DemResultDoor
+
+		err := render.DecodeJSON(r.Body, &req)
+		if errors.Is(err, io.EOF) {
+			log.Error("Ошибка реквеста")
+			render.JSON(w, r, Response{
+				Status: "Error",
+				Error:  "Empty request",
+			})
+			return
+		}
+		fmt.Printf("Form Data: %+v\n", req)
+
+		log.Info("YYYYYYYY !!!!!!!!!!!!11111", req)
+		saveOrder, err := message.SaveDoor(req)
+		if err != nil {
+			log.Info("Ошибка реквеста сообщения при вставке в базу данных сука блять уебище тупорылое DOOR ебаные", err)
 			render.JSON(w, r, Response{Error: "da bleeeat"})
 			return
 		}

@@ -330,6 +330,167 @@ func (s *Storage) GetWindows(id int) (*storage.OrderData, error) {
 	return utils.MapToOrderDataWindow(&result), nil
 }
 
+func (s *Storage) SaveDoor(result storage.DemResultDoor) (int, error) {
+	const op = "storage.mysql.sql.SaveDoor"
+
+	// Шаг 1: Получить или создать заказ по order_num
+	orderID, err := s.getOrCreateOrder(result.OrderNum)
+	if err != nil {
+		return 0, fmt.Errorf("%s: failed to get/create order: %w", op, err)
+	}
+
+	result.OrderId = orderID
+
+	// Подготовка SQL-запроса для таблицы dem_test_golang_result_door
+	stmt := `INSERT INTO dem_test_golang_result_door (
+        order_num, name, count, profil, napil_ram_stv, petli_obr, zamok_obr, shping_obr_stv, shping_obr_ram, ystan_zakld,sverl_otv_shtift, frezer_stoek_rigel, sborka_ram, 
+		shitf_ram, opres_stv, sbor_stv, shift_stv, nanes_klei, ystan_ypl_ram, ystan_ypl_stv, yst_zamok_nakl, yst_shping_otv, sbor_petli_ram, sbor_yst_porog, naveshiv,
+        zashiv, opres_ram, sbor_petli_stv, nastr_stanok, nastr_pbx, meh_obrab_pzr, rabota_pbx, frezer_nastr, frezer_porog_sborka, frezer_yst_shtyp, opres_nastr, 
+        opres, podg_derj_shetki, yst_porog_ypl_dr, naveshiv_stv, yst_zapoln, impost_napil, impost_frezer, impost_sverlo, impost_yst, impost_shtift, ypl_falc, napil_nalich, 
+        napil_ram, napil_stv, kontr_sbork, sverl_ram, sverl_zink, zashit_pl, sbor_ram, napil_yst_krish_stv, napil_yst_krish_ram, sbor_petli, yst_ptli_ram_stv, rezka_plast, brysok, 
+        izg_pritv, obr_pritv, yst_pritv, obrabotka_all, ystan_pln_petli, yst_fetr, rezina, frezer_shping, gl, fortochka, ypak, order_id, total_time
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
+              ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+
+	// Выполнение запроса с передачей всех значений
+	res, err := s.db.Exec(stmt,
+		result.OrderNum, result.Name, result.Count, result.Profil, result.NapilRamStv,
+		result.PetliObr, result.ZamokObr, result.ShpingObrStv, result.ShpingObrRam, result.YstanZakld, result.SverlOtvShtift, result.FrezerStoekRigel, result.SborkaRam,
+		result.ShitfRam, result.OpresStv, result.SborStv, result.ShiftStv, result.NanesKlei, result.YstanYplRam, result.YstanYplStv, result.YstZamokNakl, result.YstShpingOtv,
+		result.SborPetliRam, result.SborYstPorog, result.Naveshiv, result.Zashiv, result.OpresRam, result.SborPetliStv, result.NastrStanok, result.NastrPbx,
+		result.MehObrabPzr, result.RabotaPbx, result.FrezerNastr, result.FrezerPorogSborka, result.FrezerYstShtyp, result.OpresNastr, result.Opres, result.PodgDerjShetki,
+		result.YstPorogYplDr, result.NaveshivStv, result.YstZapoln, result.ImpostNapil, result.ImpostFrezer, result.ImpostSverlo, result.ImpostYst, result.ImpostShtift,
+		result.YplFalc, result.NapilNalich, result.NapilRam, result.NapilStv, result.KontrSbork, result.SverlRam, result.SverlZink, result.ZashitPl, result.SborRam,
+		result.NapilYstKrishStv, result.NapilYstKrishRam, result.SborPetli, result.YstPtliRamStv, result.RezkaPlast, result.Brysok, result.IzgPritv, result.ObrPritv,
+		result.YstPritv, result.ObrabotkaAll, result.YstanPlnPetli, result.YstFetr, result.Rezina, result.FrezerShping, result.Gl, result.Fortochka,
+		result.Upak, result.OrderId, result.TotalTime,
+	)
+
+	if err != nil {
+		return 0, fmt.Errorf("%s: failed to insert record into dem_test_golang_result_door: %w", op, err)
+	}
+
+	insertID, err := res.LastInsertId()
+	if err != nil {
+		return 0, fmt.Errorf("%s: failed to get last insert id: %w", op, err)
+	}
+
+	return int(insertID), nil
+}
+
+func (s *Storage) GetDoor(id int) (*storage.OrderData, error) {
+	const op = "storage.mysql.sql.GetDoor"
+
+	stmt := `SELECT 
+        id, order_num, name, count, profil,
+        napil_ram_stv, petli_obr, zamok_obr, shping_obr_stv, shping_obr_ram,
+        ystan_zakld, sverl_otv_shtift, frezer_stoek_rigel, sborka_ram, shitf_ram,
+        opres_stv, sbor_stv, shift_stv, nanes_klei, ystan_ypl_ram,
+        ystan_ypl_stv, yst_zamok_nakl, yst_shping_otv, sbor_petli_ram, sbor_yst_porog,
+        naveshiv, zashiv, opres_ram, sbor_petli_stv, nastr_stanok,
+        nastr_pbx, meh_obrab_pzr, rabota_pbx, frezer_nastr, frezer_porog_sborka,
+        frezer_yst_shtyp, opres_nastr, opres, podg_derj_shetki, yst_porog_ypl_dr,
+        naveshiv_stv, yst_zapoln, impost_napil, impost_frezer, impost_sverlo,
+        impost_yst, impost_shtift, ypl_falc, napil_nalich, napil_ram,
+        napil_stv, kontr_sbork, sverl_ram, sverl_zink, zashit_pl,
+        sbor_ram, napil_yst_krish_stv, napil_yst_krish_ram, sbor_petli, yst_ptli_ram_stv,
+        rezka_plast, brysok, izg_pritv, obr_pritv, yst_pritv,
+        obrabotka_all, ystan_pln_petli, yst_fetr, rezina, frezer_shping,
+        gl, fortochka, ypak, order_id, total_time
+    FROM dem_test_golang_result_door 
+    WHERE id = ?`
+
+	var result storage.DemResultDoor
+
+	err := s.db.QueryRow(stmt, id).Scan(
+		&result.ID,
+		&result.OrderNum,
+		&result.Name,
+		&result.Count,
+		&result.Profil,
+		&result.NapilRamStv,
+		&result.PetliObr,
+		&result.ZamokObr,
+		&result.ShpingObrStv,
+		&result.ShpingObrRam,
+		&result.YstanZakld,
+		&result.SverlOtvShtift,
+		&result.FrezerStoekRigel,
+		&result.SborkaRam,
+		&result.ShitfRam,
+		&result.OpresStv,
+		&result.SborStv,
+		&result.ShiftStv,
+		&result.NanesKlei,
+		&result.YstanYplRam,
+		&result.YstanYplStv,
+		&result.YstZamokNakl,
+		&result.YstShpingOtv,
+		&result.SborPetliRam,
+		&result.SborYstPorog,
+		&result.Naveshiv,
+		&result.Zashiv,
+		&result.OpresRam,
+		&result.SborPetliStv,
+		&result.NastrStanok,
+		&result.NastrPbx,
+		&result.MehObrabPzr,
+		&result.RabotaPbx,
+		&result.FrezerNastr,
+		&result.FrezerPorogSborka,
+		&result.FrezerYstShtyp,
+		&result.OpresNastr,
+		&result.Opres,
+		&result.PodgDerjShetki,
+		&result.YstPorogYplDr,
+		&result.NaveshivStv,
+		&result.YstZapoln,
+		&result.ImpostNapil,
+		&result.ImpostFrezer,
+		&result.ImpostSverlo,
+		&result.ImpostYst,
+		&result.ImpostShtift,
+		&result.YplFalc,
+		&result.NapilNalich,
+		&result.NapilRam,
+		&result.NapilStv,
+		&result.KontrSbork,
+		&result.SverlRam,
+		&result.SverlZink,
+		&result.ZashitPl,
+		&result.SborRam,
+		&result.NapilYstKrishStv,
+		&result.NapilYstKrishRam,
+		&result.SborPetli,
+		&result.YstPtliRamStv,
+		&result.RezkaPlast,
+		&result.Brysok,
+		&result.IzgPritv,
+		&result.ObrPritv,
+		&result.YstPritv,
+		&result.ObrabotkaAll,
+		&result.YstanPlnPetli,
+		&result.YstFetr,
+		&result.Rezina,
+		&result.FrezerShping,
+		&result.Gl,
+		&result.Fortochka,
+		&result.Upak, // в БД: ypak → в Go: Upak (json:"ypak")
+		&result.OrderId,
+		&result.TotalTime,
+	)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, fmt.Errorf("%s: no data found for id: %d", op, id)
+		}
+		return nil, fmt.Errorf("%s: failed to scan row: %w", op, err)
+	}
+
+	// Маппинг в OrderData (через утилиту)
+	return utils.MapToOrderDataDoor(&result), nil
+}
+
 func (s *Storage) getOrCreateOrder(orderNum string) (int, error) {
 	var orderID int
 

@@ -391,3 +391,222 @@ func MapToOrderDataWindow(result *storage.DemResultWindow) *storage.OrderData {
 		Profil:     result.Profil,
 	}
 }
+
+func MapToOrderDataDoor(result *storage.DemResultDoor) *storage.OrderData {
+	operations := make([]storage.Operation, 0)
+
+	// Добавляем только те, где значение > 0
+	if result.NapilRamStv > 0 {
+		operations = append(operations, storage.Operation{"napil_ram_stv", "Напиловка рамы и створки", result.NapilRamStv})
+	}
+	if result.PetliObr > 0 {
+		operations = append(operations, storage.Operation{"petli_obr", "Обработка под петли", result.PetliObr})
+	}
+	if result.ZamokObr > 0 {
+		operations = append(operations, storage.Operation{"zamok_obr", "Обработка под замок; ручку", result.ZamokObr})
+	}
+	if result.ShpingObrStv > 0 {
+		operations = append(operations, storage.Operation{"shping_obr_stv", "Обработка створки под шпингалет; ответку", result.ShpingObrStv})
+	}
+	if result.ShpingObrRam > 0 {
+		operations = append(operations, storage.Operation{"shping_obr_ram", "Обработка рамы под шпингалет", result.ShpingObrRam})
+	}
+	if result.YstanZakld > 0 {
+		operations = append(operations, storage.Operation{"ystan_zakld", "Установка закладных в раму; створку", result.YstanZakld})
+	}
+	if result.SverlOtvShtift > 0 {
+		operations = append(operations, storage.Operation{"sverl_otv_shtift", "Сверловка отверстий под штифты на створке и раме", result.SverlOtvShtift})
+	}
+	if result.FrezerStoekRigel > 0 {
+		operations = append(operations, storage.Operation{"frezer_stoek_rigel", "Фрезеровка стойки, ригелей ленивой створки", result.FrezerStoekRigel})
+	}
+	if result.SborkaRam > 0 {
+		operations = append(operations, storage.Operation{"sborka_ram", "Сборка рамы", result.SborkaRam})
+	}
+	if result.ShitfRam > 0 {
+		operations = append(operations, storage.Operation{"shitf_ram", "Штифтовка рамы", result.ShitfRam})
+	}
+	if result.OpresStv > 0 {
+		operations = append(operations, storage.Operation{"opres_stv", "Опрессовка створок", result.OpresStv})
+	}
+	if result.SborStv > 0 {
+		operations = append(operations, storage.Operation{"sbor_stv", "Сборка створок", result.SborStv})
+	}
+	if result.ShiftStv > 0 {
+		operations = append(operations, storage.Operation{"shift_stv", "Штифтовка створок", result.ShiftStv})
+	}
+	if result.NanesKlei > 0 {
+		operations = append(operations, storage.Operation{"nanes_klei", "Нанесение клея", result.NanesKlei})
+	}
+	if result.YstanYplRam > 0 {
+		operations = append(operations, storage.Operation{"ystan_ypl_ram", "Установка уплотнителей рам", result.YstanYplRam})
+	}
+	if result.YstanYplStv > 0 {
+		operations = append(operations, storage.Operation{"ystan_ypl_stv", "Установка уплотнителей створки", result.YstanYplStv})
+	}
+	if result.YstZamokNakl > 0 {
+		operations = append(operations, storage.Operation{"yst_zamok_nakl", "Установка замка; накладок; примыкающего профиля", result.YstZamokNakl})
+	}
+	if result.YstShpingOtv > 0 {
+		operations = append(operations, storage.Operation{"yst_shping_otv", "Установка шпингалета; ответки; примыкающего профиля", result.YstShpingOtv})
+	}
+	if result.SborPetliRam > 0 {
+		operations = append(operations, storage.Operation{"sbor_petli_ram", "Сборка петель рама", result.SborPetliRam})
+	}
+	if result.SborYstPorog > 0 {
+		operations = append(operations, storage.Operation{"sbor_yst_porog", "Сборка и установка порога", result.SborYstPorog})
+	}
+	if result.Naveshiv > 0 {
+		operations = append(operations, storage.Operation{"naveshiv", "Навешивание", result.Naveshiv})
+	}
+	if result.Zashiv > 0 {
+		operations = append(operations, storage.Operation{"zashiv", "Зашивка", result.Zashiv})
+	}
+	if result.OpresRam > 0 {
+		operations = append(operations, storage.Operation{"opres_ram", "Опрессовка рам", result.OpresRam})
+	}
+	if result.SborPetliStv > 0 {
+		operations = append(operations, storage.Operation{"sbor_petli_stv", "Сборка петель створки", result.SborPetliStv})
+	}
+	if result.NastrStanok > 0 {
+		operations = append(operations, storage.Operation{"nastr_stanok", "Настройка станка для напиловки", result.NastrStanok})
+	}
+	if result.MehObrabPzr > 0 {
+		operations = append(operations, storage.Operation{"meh_obrab_pzr", "ПЗР", result.MehObrabPzr})
+	}
+	if result.RabotaPbx > 0 {
+		operations = append(operations, storage.Operation{"rabota_pbx", "Работа станка РВХ", result.RabotaPbx})
+	}
+	if result.FrezerNastr > 0 {
+		operations = append(operations, storage.Operation{"frezer_nastr", "Фрезеровка (Настройка)", result.FrezerNastr})
+	}
+	if result.FrezerPorogSborka > 0 {
+		operations = append(operations, storage.Operation{"frezer_porog_sborka", "Фрезеровка (порогов),промежуточная сборка", result.FrezerPorogSborka})
+	}
+	if result.FrezerYstShtyp > 0 {
+		operations = append(operations, storage.Operation{"frezer_yst_shtyp", " Фрезеровка и установка штульпов", result.FrezerYstShtyp})
+	}
+	if result.OpresNastr > 0 {
+		operations = append(operations, storage.Operation{"opres_nastr", "Опрессовка (настройка)", result.OpresNastr})
+	}
+	if result.Opres > 0 {
+		operations = append(operations, storage.Operation{"opres", "Опрессовка", result.Opres})
+	}
+	if result.PodgDerjShetki > 0 {
+		operations = append(operations, storage.Operation{"podg_derj_shetki", "Подготовка держателя щетки", result.PodgDerjShetki})
+	}
+	if result.YstPorogYplDr > 0 {
+		operations = append(operations, storage.Operation{"yst_porog_ypl_dr", "Установка порогов, уплотнителей, держателя, щетки, штифтовка, удаление излишков герметика после застывания", result.YstPorogYplDr})
+	}
+	if result.NaveshivStv > 0 {
+		operations = append(operations, storage.Operation{"naveshiv_stv", "Навешивание створки, установка отв. Планок", result.NaveshivStv})
+	}
+	if result.YstZapoln > 0 {
+		operations = append(operations, storage.Operation{"nastr_for_opres", "Установка заполнения", result.YstZapoln})
+	}
+	if result.ImpostNapil > 0 {
+		operations = append(operations, storage.Operation{"impost_napil", "Доп. импост (напиловка)", result.ImpostNapil})
+	}
+	if result.ImpostFrezer > 0 {
+		operations = append(operations, storage.Operation{"impost_frezer", "Доп. импост (Фрезеровка)", result.ImpostFrezer})
+	}
+	if result.ImpostSverlo > 0 {
+		operations = append(operations, storage.Operation{"impost_sverlo", "Доп. импост (Сверловка)", result.ImpostSverlo})
+	}
+	if result.ImpostYst > 0 {
+		operations = append(operations, storage.Operation{"impost_yst", "Доп. импост (установка)", result.ImpostYst})
+	}
+	if result.ImpostShtift > 0 {
+		operations = append(operations, storage.Operation{"impost_shtift", "Доп. импост (штифтовка)", result.ImpostShtift})
+	}
+	if result.YplFalc > 0 {
+		operations = append(operations, storage.Operation{"ypl_falc", "Уплотнитель фальца", result.YplFalc})
+	}
+	if result.NapilNalich > 0 {
+		operations = append(operations, storage.Operation{"napil_nalich", "Напиловка наличника", result.NapilNalich})
+	}
+	if result.NapilRam > 0 {
+		operations = append(operations, storage.Operation{"napil_ram", "Напиловка рамы", result.NapilRam})
+	}
+	if result.NapilStv > 0 {
+		operations = append(operations, storage.Operation{"napil_stv", "Напиловка створки", result.NapilStv})
+	}
+	if result.KontrSbork > 0 {
+		operations = append(operations, storage.Operation{"kontr_sbork", "Контрольная сборка и разборка стоек", result.KontrSbork})
+	}
+	if result.SverlRam > 0 {
+		operations = append(operations, storage.Operation{"sverl_ram", "Сверловка рамы для монтажа; соед", result.SverlRam})
+	}
+	if result.SverlZink > 0 {
+		operations = append(operations, storage.Operation{"sverl_zink", "Сверловка, зинковка и установка клёпок", result.SverlZink})
+	}
+	if result.ZashitPl > 0 {
+		operations = append(operations, storage.Operation{"zashit_pl", "Наклейка защитной плёнки", result.ZashitPl})
+	}
+	if result.SborRam > 0 {
+		operations = append(operations, storage.Operation{"sbor_ram", "Сборка рамы", result.SborRam})
+	}
+	if result.NapilYstKrishStv > 0 {
+		operations = append(operations, storage.Operation{"napil_yst_krish_stv", "Напиловка и установка крышек на ств", result.NapilYstKrishStv})
+	}
+	if result.NapilYstKrishRam > 0 {
+		operations = append(operations, storage.Operation{"napil_yst_krish_ram", "Напиловка и установка крышек на рам", result.NapilYstKrishRam})
+	}
+	if result.SborPetli > 0 {
+		operations = append(operations, storage.Operation{"sbor_petli", "Сборка петель", result.SborPetli})
+	}
+	if result.YstPtliRamStv > 0 {
+		operations = append(operations, storage.Operation{"yst_ptli_ram_stv", "Установка петель на раму и створку", result.YstPtliRamStv})
+	}
+	if result.RezkaPlast > 0 {
+		operations = append(operations, storage.Operation{"rezka_plast", "Нарезать расклинивающий пластик", result.RezkaPlast})
+	}
+	if result.Brysok > 0 {
+		operations = append(operations, storage.Operation{"brysok", "Прикрепить брусок (фальшпорог)", result.Brysok})
+	}
+	if result.IzgPritv > 0 {
+		operations = append(operations, storage.Operation{"izg_pritv", "Изготовление притвора и настройка", result.IzgPritv})
+	}
+	if result.ObrPritv > 0 {
+		operations = append(operations, storage.Operation{"obr_pritv", "Обработка притвора под замок и ответку", result.ObrPritv})
+	}
+	if result.YstPritv > 0 {
+		operations = append(operations, storage.Operation{"yst_pritv", "Установка притвора", result.YstPritv})
+	}
+	if result.ObrabotkaAll > 0 {
+		operations = append(operations, storage.Operation{"obrabotka_all", "Обработка (замок; ручка; ответка; шпингалет)", result.ObrabotkaAll})
+	}
+	if result.YstanPlnPetli > 0 {
+		operations = append(operations, storage.Operation{"ystan_pln_petli", "Установка пластин под петли", result.YstanPlnPetli})
+	}
+	if result.YstFetr > 0 {
+		operations = append(operations, storage.Operation{"yst_fetr", "Установка фетра", result.YstFetr})
+	}
+	if result.Rezina > 0 {
+		operations = append(operations, storage.Operation{"rezina", "Обрезинивание", result.Rezina})
+	}
+	if result.FrezerShping > 0 {
+		operations = append(operations, storage.Operation{"frezer_shping", "Фрезеровка под шпингалет", result.FrezerShping})
+	}
+	if result.Gl > 0 {
+		operations = append(operations, storage.Operation{"gl", "Глухое окно", result.Gl})
+	}
+	if result.Fortochka > 0 {
+		operations = append(operations, storage.Operation{"fortochka", "Форточка", result.Fortochka})
+	}
+	if result.Upak > 0 {
+		operations = append(operations, storage.Operation{"ypak", "Упаковка", result.Upak})
+	}
+	if result.TotalTime > 0 {
+		operations = append(operations, storage.Operation{"total_time", "Итого", result.TotalTime})
+	}
+
+	return &storage.OrderData{
+		ID:         result.ID,
+		OrderNum:   result.OrderNum,
+		Name:       result.Name,
+		Count:      result.Count,
+		Operations: operations,
+		Profil:     result.Profil,
+	}
+}

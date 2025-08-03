@@ -56,11 +56,6 @@ type FieldPeo struct {
 	RelatedFields []string `json:"related_fields"`
 }
 
-//type Materials struct {
-//	Impost   string `json:"impost"`
-//	Shtapick string `json:"shtapick"`
-//}
-
 type Workers struct {
 	ID         int    `json:"id"`
 	LastName   string `json:"last_name"`
@@ -230,4 +225,82 @@ type DemResultWindow struct {
 	RaspFurn            float64 `json:"rasp_furn"`
 	OrderId             int     `json:"order_id"`
 	TotalTime           float64 `json:"total_time"`
+}
+
+type DemResultDoor struct {
+	ID                int     `json:"id"`
+	OrderNum          string  `json:"order_num"`
+	Name              string  `json:"name"`
+	Count             int     `json:"count"`
+	Profil            string  `json:"profil"`
+	NapilRamStv       float64 `json:"napil_ram_stv"`
+	PetliObr          float64 `json:"petli_obr"`
+	ZamokObr          float64 `json:"zamok_obr"`
+	ShpingObrStv      float64 `json:"shping_obr_stv"`
+	ShpingObrRam      float64 `json:"shping_obr_ram"`
+	YstanZakld        float64 `json:"ystan_zakld"`
+	SverlOtvShtift    float64 `json:"sverl_otv_shtift"`
+	FrezerStoekRigel  float64 `json:"frezer_stoek_rigel"`
+	SborkaRam         float64 `json:"sborka_ram"`
+	ShitfRam          float64 `json:"shitf_ram"`
+	OpresStv          float64 `json:"opres_stv"`
+	SborStv           float64 `json:"sbor_stv"`
+	ShiftStv          float64 `json:"shift_stv"`
+	NanesKlei         float64 `json:"nanes_klei"`
+	YstanYplRam       float64 `json:"ystan_ypl_ram"`
+	YstanYplStv       float64 `json:"ystan_ypl_stv"`
+	YstZamokNakl      float64 `json:"yst_zamok_nakl"`
+	YstShpingOtv      float64 `json:"yst_shping_otv"`
+	SborPetliRam      float64 `json:"sbor_petli_ram"`
+	SborYstPorog      float64 `json:"sbor_yst_porog"`
+	Naveshiv          float64 `json:"naveshiv"`
+	Zashiv            float64 `json:"zashiv"`
+	OpresRam          float64 `json:"opres_ram"`
+	SborPetliStv      float64 `json:"sbor_petli_stv"`
+	NastrStanok       float64 `json:"nastr_stanok"`
+	NastrPbx          float64 `json:"nastr_pbx"`
+	MehObrabPzr       float64 `json:"meh_obrab_pzr"`
+	RabotaPbx         float64 `json:"rabota_pbx"`
+	FrezerNastr       float64 `json:"frezer_nastr"`
+	FrezerPorogSborka float64 `json:"frezer_porog_sborka"`
+	FrezerYstShtyp    float64 `json:"frezer_yst_shtyp"`
+	OpresNastr        float64 `json:"opres_nastr"`
+	Opres             float64 `json:"opres"`
+	PodgDerjShetki    float64 `json:"podg_derj_shetki"`
+	YstPorogYplDr     float64 `json:"yst_porog_ypl_dr"`
+	NaveshivStv       float64 `json:"naveshiv_stv"`
+	YstZapoln         float64 `json:"yst_zapoln"`
+	ImpostNapil       float64 `json:"impost_napil"`
+	ImpostFrezer      float64 `json:"impost_frezer"`
+	ImpostSverlo      float64 `json:"impost_sverlo"`
+	ImpostYst         float64 `json:"impost_yst"`
+	ImpostShtift      float64 `json:"impost_shtift"`
+	YplFalc           float64 `json:"ypl_falc"`
+	NapilNalich       float64 `json:"napil_nalich"`
+	NapilRam          float64 `json:"napil_ram"`
+	NapilStv          float64 `json:"napil_stv"`
+	KontrSbork        float64 `json:"kontr_sbork"`
+	SverlRam          float64 `json:"sverl_ram"`
+	SverlZink         float64 `json:"sverl_zink"`
+	ZashitPl          float64 `json:"zashit_pl"`
+	SborRam           float64 `json:"sbor_ram"`
+	NapilYstKrishStv  float64 `json:"napil_yst_krish_stv"`
+	NapilYstKrishRam  float64 `json:"napil_yst_krish_ram"`
+	SborPetli         float64 `json:"sbor_petli"`
+	YstPtliRamStv     float64 `json:"yst_ptli_ram_stv"`
+	RezkaPlast        float64 `json:"rezka_plast"`
+	Brysok            float64 `json:"brysok"`
+	IzgPritv          float64 `json:"izg_pritv"`
+	ObrPritv          float64 `json:"obr_pritv"`
+	YstPritv          float64 `json:"yst_pritv"`
+	ObrabotkaAll      float64 `json:"obrabotka_all"`
+	YstanPlnPetli     float64 `json:"ystan_pln_petli"`
+	YstFetr           float64 `json:"yst_fetr"`
+	Rezina            float64 `json:"rezina"`
+	FrezerShping      float64 `json:"frezer_shping"`
+	Gl                float64 `json:"gl"`
+	Fortochka         float64 `json:"fortochka"`
+	Upak              float64 `json:"ypak"`
+	OrderId           int     `json:"order_id"`
+	TotalTime         float64 `json:"total_time"`
 }

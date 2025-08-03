@@ -37,6 +37,7 @@ type OrderDetails interface {
 	GetWorkers() ([]*storage.Workers, error)
 	GetGlyhari(id int) (*storage.OrderData, error)
 	GetWindows(id int) (*storage.OrderData, error)
+	GetDoor(id int) (*storage.OrderData, error)
 }
 
 // Общая функция для получения данных о заказе
@@ -220,6 +221,8 @@ func GetNormOrders(log *slog.Logger, normData OrderDetails) http.HandlerFunc {
 		case "window":
 			//TODO ljltkfnm nen
 			result, Fetherr = normData.GetWindows(id)
+		case "door":
+			result, Fetherr = normData.GetDoor(id)
 		}
 
 		//glyhari, err := normData.GetGlyhari(id)
