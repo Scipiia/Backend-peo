@@ -304,3 +304,178 @@ type DemResultDoor struct {
 	OrderId           int     `json:"order_id"`
 	TotalTime         float64 `json:"total_time"`
 }
+
+type DemResultVitraj struct {
+	ID                 int     `json:"id" gorm:"column:id;primaryKey;autoIncrement"`
+	OrderNum           string  `json:"order_num" gorm:"column:order_num"`
+	Name               string  `json:"name" gorm:"column:name"`
+	Count              int     `json:"count" gorm:"column:count"`
+	Profil             string  `json:"profil" gorm:"column:profil"`
+	PodgotOboryd       float64 `json:"podgot_oboryd" gorm:"column:podgot_oboryd"`
+	NapilStkDo3m       float64 `json:"napil_stk_do3m" gorm:"column:napil_stk_do3m"`
+	NapilStkBol3m      float64 `json:"napil_stk_bol3m" gorm:"column:napil_stk_bol3m"`
+	NapilStkBol5m      float64 `json:"napil_stk_bol5m" gorm:"column:napil_stk_bol5m"`
+	PZR                float64 `json:"pzr" gorm:"column:pzr"`
+	NastrPbx           float64 `json:"nastr_pbx" gorm:"column:nastr_pbx"`
+	DrenajOtv          float64 `json:"drenaj_otv" gorm:"column:drenaj_otv"`
+	ZashelkObr         float64 `json:"zashelk_obr" gorm:"column:zashelk_obr"`
+	PrisetPrObr        float64 `json:"priset_pr_obr" gorm:"column:priset_pr_obr"`
+	YplYst             float64 `json:"ypl_yst" gorm:"column:ypl_yst"`
+	FetrYst            float64 `json:"fetr_yst" gorm:"column:fetr_yst"`
+	StekloYst          float64 `json:"steklo_yst" gorm:"column:steklo_yst"`
+	RazmetOtv          float64 `json:"razmet_otv" gorm:"column:razmet_otv"`
+	SverloOtv          float64 `json:"sverlo_otv" gorm:"column:sverlo_otv"`
+	NakladYst          float64 `json:"naklad_yst" gorm:"column:naklad_yst"`
+	Panel              float64 `json:"panel" gorm:"column:panel"`
+	Naprav             float64 `json:"naprav" gorm:"column:naprav"`
+	Ydlin              float64 `json:"ydlin" gorm:"column:ydlin"`
+	Upak               float64 `json:"upak" gorm:"column:upak"`
+	NapilRigelDo1m     float64 `json:"napil_rigel_do1m" gorm:"column:napil_rigel_do1m"`
+	NapilRigelBol1m    float64 `json:"napil_rigel_bol1m" gorm:"column:napil_rigel_bol1m"`
+	NakldNapil         float64 `json:"nakld_napil" gorm:"column:nakld_napil"`
+	NapilKriskhSt      float64 `json:"napil_krish_st" gorm:"column:napil_krish_st"`
+	NapilKriskhRg      float64 `json:"napil_krish_rg" gorm:"column:napil_krish_rg"`
+	KomplKriskh        float64 `json:"kompl_krish" gorm:"column:kompl_krish"`
+	NapilAdapt         float64 `json:"napil_adapt" gorm:"column:napil_adapt"`
+	FrezerRigel        float64 `json:"frezer_rigel" gorm:"column:frezer_rigel"`
+	FukelYst           float64 `json:"fukel_yst" gorm:"column:fukel_yst"`
+	StoikiPbx          float64 `json:"stoiki_pbx" gorm:"column:stoiki_pbx"`
+	ZamokYst           float64 `json:"zamok_yst" gorm:"column:zamok_yst"`
+	ZamokYstBolt       float64 `json:"zamok_yst_bolt" gorm:"column:zamok_yst_bolt"`
+	RigelSverloZamok   float64 `json:"rigel_sverlo_zamok" gorm:"column:rigel_sverlo_zamok"`
+	NakladSverlo       float64 `json:"naklad_sverlo" gorm:"column:naklad_sverlo"`
+	YplYstRigel        float64 `json:"ypl_yst_rigel" gorm:"column:ypl_yst_rigel"`
+	YplYstNakld        float64 `json:"ypl_yst_nakld" gorm:"column:ypl_yst_nakld"`
+	YplYstStoik        float64 `json:"ypl_yst_stoik" gorm:"column:ypl_yst_stoik"`
+	AdaptYstStoik      float64 `json:"adapt_yst_stoik" gorm:"column:adapt_yst_stoik"`
+	AdaptYstRigel      float64 `json:"adapt_yst_rigel" gorm:"column:adapt_yst_rigel"`
+	TermovstYstStoiki  float64 `json:"termovst_yst_stoiki" gorm:"column:termovst_yst_stoiki"`
+	TermovstYstRigel   float64 `json:"termovst_yst_rigel" gorm:"column:termovst_yst_rigel"`
+	SborNog            float64 `json:"sbor_nog" gorm:"column:sbor_nog"`
+	Birki              float64 `json:"birki" gorm:"column:birki"`
+	UpakStoik          float64 `json:"upak_stoik" gorm:"column:upak_stoik"`
+	UpakPet            float64 `json:"upak_pet" gorm:"column:upak_pet"`
+	UpakRigel          float64 `json:"upak_rigel" gorm:"column:upak_rigel"`
+	UpakRigel2m        float64 `json:"upak_rigel_2m" gorm:"column:upak_rigel_2m"`
+	UpakKriskh         float64 `json:"upak_krish" gorm:"column:upak_krish"`
+	UpakNakld          float64 `json:"upak_nakld" gorm:"column:upak_nakld"`
+	UpakYplNog         float64 `json:"upak_ypl_nog" gorm:"column:upak_ypl_nog"`
+	UpakKronsht        float64 `json:"upak_kronsht" gorm:"column:upak_kronsht"`
+	VinosGotovIzd      float64 `json:"vinos_gotov_izd" gorm:"column:vinos_gotov_izd"`
+	YstStikZakld       float64 `json:"yst_stik_zakld" gorm:"column:yst_stik_zakld"`
+	ObnYsovDo4m        float64 `json:"obn_ysov_do4m" gorm:"column:obn_ysov_do4m"`
+	ObnYsovBol4m       float64 `json:"obn_ysov_bol4m" gorm:"column:obn_ysov_bol4m"`
+	OtmRezin           float64 `json:"otm_rezin" gorm:"column:otm_rezin"`
+	ObnNastr           float64 `json:"obn_nastr" gorm:"column:obn_nastr"`
+	TrybaProf          float64 `json:"tryba_prof" gorm:"column:tryba_prof"`
+	KomplShtapik       float64 `json:"kompl_shtapik" gorm:"column:kompl_shtapik"`
+	OtvVO              float64 `json:"otv_vo" gorm:"column:otv_vo"`
+	NastrStanokRigel   float64 `json:"nastr_stanok_rigel" gorm:"column:nastr_stanok_rigel"`
+	FrezerStoikiPr     float64 `json:"frezer_stoiki_pr" gorm:"column:frezer_stoiki_pr"`
+	NastrStanokStoiki1 float64 `json:"nastr_stanok_stoiki_1" gorm:"column:nastr_stanok_stoiki_1"`
+	FrezerStoikiYgl    float64 `json:"frezer_stoiki_ygl" gorm:"column:frezer_stoiki_ygl"`
+	NastrStanokStoiki2 float64 `json:"nastr_stanok_stoiki_2" gorm:"column:nastr_stanok_stoiki_2"`
+	ZashitPl           float64 `json:"zashit_pl" gorm:"column:zashit_pl"`
+	YstPritv           float64 `json:"yst_pritv" gorm:"column:yst_pritv"`
+	YstKapel           float64 `json:"yst_kapel" gorm:"column:yst_kapel"`
+	SborSekci          float64 `json:"sbor_sekci" gorm:"column:sbor_sekci"`
+	GermetYpl          float64 `json:"germet_ypl" gorm:"column:germet_ypl"`
+	UpakSoed           float64 `json:"upak_soed" gorm:"column:upak_soed"`
+	UpakShtapik        float64 `json:"upak_shtapik" gorm:"column:upak_shtapik"`
+	UpakSekcii         float64 `json:"upak_sekcii" gorm:"column:upak_sekcii"`
+	Obrezanie          float64 `json:"obrezanie" gorm:"column:obrezanie"`
+	VinosSekcii        float64 `json:"vinos_sekcii" gorm:"column:vinos_sekcii"`
+	YgolKorob          float64 `json:"ygol_korob" gorm:"column:ygol_korob"`
+	PbxVO              float64 `json:"pbx_vo" gorm:"column:pbx_vo"`
+	ClearVO            float64 `json:"clear_vo" gorm:"column:clear_vo"`
+	YstKomptrSt        float64 `json:"yst_komptr_st" gorm:"column:yst_komptr_st"`
+	YstKomptrRg        float64 `json:"yst_komptr_rg" gorm:"column:yst_komptr_rg"`
+	UpakYgl            float64 `json:"upak_ygl" gorm:"column:upak_ygl"`
+	NapilYgl           float64 `json:"napil_ygl" gorm:"column:napil_ygl"`
+	NarezTermovst      float64 `json:"narez_termovst" gorm:"column:narez_termovst"`
+	NarezKompensr      float64 `json:"narez_kompensr" gorm:"column:narez_kompensr"`
+	UpakTermovst       float64 `json:"upak_termovst" gorm:"column:upak_termovst"`
+	RigelSverloZamok3m float64 `json:"rigel_sverlo_zamok_3m" gorm:"column:rigel_sverlo_zamok_3m"`
+	RigelNsverloZamok  float64 `json:"rigel_nsverlo_zamok" gorm:"column:rigel_nsverlo_zamok"`
+	ObjYsovTermvst     float64 `json:"obj_ysov_termvst" gorm:"column:obj_ysov_termvst"`
+	YstKPS             float64 `json:"yst_kps" gorm:"column:yst_kps"`
+	NapilStkBol6m      float64 `json:"napil_stk_bol6m" gorm:"column:napil_stk_bol6m"`
+	NapilShtapik       float64 `json:"napil_shtapik" gorm:"column:napil_shtapik"`
+	RezProfil          float64 `json:"rez_profil" gorm:"column:rez_profil"`
+	RezSekcii          float64 `json:"rez_sekcii" gorm:"column:rez_sekcii"`
+	PartSbSeck         float64 `json:"part_sb_seck" gorm:"column:part_sb_seck"`
+	PartSbMarkSeck     float64 `json:"part_sb_mark_seck" gorm:"column:part_sb_mark_seck"`
+	PartSbStoek        float64 `json:"part_sb_stoek" gorm:"column:part_sb_stoek"`
+	YstFormr           float64 `json:"yst_formr" gorm:"column:yst_formr"`
+	OrderID            int     `json:"order_id" gorm:"column:order_id"`
+	TotalTime          float64 `json:"total_time" gorm:"column:total_time"`
+}
+
+type DemResultLoggia struct {
+	ID                int     `json:"id" gorm:"column:id;primaryKey"`
+	OrderNum          string  `json:"order_num" gorm:"column:order_num"`
+	Name              string  `json:"name" gorm:"column:name"`
+	Count             int     `json:"count" gorm:"column:count"`
+	Profil            string  `json:"profil" gorm:"column:profil"`
+	PodgotOboryd      float64 `json:"podgot_oboryd" gorm:"column:podgot_oboryd"`
+	NapilStkDo3m      float64 `json:"napil_stk_do3m" gorm:"column:napil_stk_do3m"`
+	NapilRigelDo1m    float64 `json:"napil_rigel_do1m" gorm:"column:napil_rigel_do1m"`
+	NapilRigelBol1m   float64 `json:"napil_rigel_bol1m" gorm:"column:napil_rigel_bol1m"`
+	NapilShtapik      float64 `json:"napil_shtapik" gorm:"column:napil_shtapik"`
+	KomplShtapik      float64 `json:"kompl_shtapik" gorm:"column:kompl_shtapik"`
+	NapilAdaptTr      float64 `json:"napil_adapt_tr" gorm:"column:napil_adapt_tr"`
+	RigelFrezer       float64 `json:"rigel_frezer" gorm:"column:rigel_frezer"`
+	FrezerRigelZamok  float64 `json:"frezer_rigel_zamok" gorm:"column:frezer_rigel_zamok"`
+	ZamokYst          float64 `json:"zamok_yst" gorm:"column:zamok_yst"`
+	RezPgmSt          float64 `json:"rez_pgm_st" gorm:"column:rez_pgm_st"`
+	RezPgmRg          float64 `json:"rez_pgm_rg" gorm:"column:rez_pgm_rg"`
+	FrezVo            float64 `json:"frez_vo" gorm:"column:frez_vo"`
+	PartSbSekci       float64 `json:"part_sb_sekci" gorm:"column:part_sb_sekci"`
+	YstPritv          float64 `json:"yst_pritv" gorm:"column:yst_pritv"`
+	YstFormir         float64 `json:"yst_formir" gorm:"column:yst_formir"`
+	Birki             float64 `json:"birki" gorm:"column:birki"`
+	UpakRam           float64 `json:"upak_ram" gorm:"column:upak_ram"`
+	UpakStoik         float64 `json:"upak_stoik" gorm:"column:upak_stoik"`
+	UpakRigel         float64 `json:"upak_rigel" gorm:"column:upak_rigel"`
+	UpakRigel2m       float64 `json:"upak_rigel_2m" gorm:"column:upak_rigel_2m"`
+	UpakShtapik       float64 `json:"upak_shtapik" gorm:"column:upak_shtapik"`
+	UpakAdaptTr       float64 `json:"upak_adapt_tr" gorm:"column:upak_adapt_tr"`
+	UpakYplNog        float64 `json:"upak_ypl_nog" gorm:"column:upak_ypl_nog"`
+	VinosGotovIzd     float64 `json:"vinos_gotov_izd" gorm:"column:vinos_gotov_izd"`
+	NapilPrVirav      float64 `json:"napil_pr_virav" gorm:"column:napil_pr_virav"`
+	NapilRam          float64 `json:"napil_ram" gorm:"column:napil_ram"`
+	NapilStv          float64 `json:"napil_stv" gorm:"column:napil_stv"`
+	NapilPritv        float64 `json:"napil_pritv" gorm:"column:napil_pritv"`
+	NapilSoed         float64 `json:"napil_soed" gorm:"column:napil_soed"`
+	FrezRam           float64 `json:"frez_ram" gorm:"column:frez_ram"`
+	FrezStv           float64 `json:"frez_stv" gorm:"column:frez_stv"`
+	FrezPritv         float64 `json:"frez_pritv" gorm:"column:frez_pritv"`
+	ClearSverlStv     float64 `json:"clear_sverl_stv" gorm:"column:clear_sverl_stv"`
+	ClearSverlYsilStv float64 `json:"clear_sverl_ysil_stv" gorm:"column:clear_sverl_ysil_stv"`
+	Kraska            float64 `json:"kraska" gorm:"column:kraska"`
+	YstRolik          float64 `json:"yst_rolik" gorm:"column:yst_rolik"`
+	YstZashel         float64 `json:"yst_zashel" gorm:"column:yst_zashel"`
+	Rezina            float64 `json:"rezina" gorm:"column:rezina"`
+	SborStv           float64 `json:"sbor_stv" gorm:"column:sbor_stv"`
+	SborPritv         float64 `json:"sbor_pritv" gorm:"column:sbor_pritv"`
+	PodgKompl         float64 `json:"podg_kompl" gorm:"column:podg_kompl"`
+	ShtampStStv       float64 `json:"shtamp_st_stv" gorm:"column:shtamp_st_stv"`
+	PodgRezin         float64 `json:"podg_rezin" gorm:"column:podg_rezin"`
+	SborYpl           float64 `json:"sbor_ypl" gorm:"column:sbor_ypl"`
+	YstZaklep         float64 `json:"yst_zaklep" gorm:"column:yst_zaklep"`
+	OrderID           int     `json:"order_id" gorm:"column:order_id"`
+	TotalTime         float64 `json:"total_time" gorm:"column:total_time"`
+}
+
+type ProductItem struct {
+	Type      string    `json:"type"` // "loggia", "vitraj", и т.д.
+	OrderNum  string    `json:"order_num"`
+	Name      string    `json:"name"`
+	Count     int       `json:"count"`
+	Profil    string    `json:"profil"`
+	TotalTime float64   `json:"total_time"`
+	OrderID   int64     `json:"order_id"`
+	ResultID  int       `json:"result_id"` // ID в таблице результата (например, loggia.id)
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at,omitempty"`
+}

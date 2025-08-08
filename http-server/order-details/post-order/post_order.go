@@ -25,6 +25,8 @@ type SendMessages interface {
 	SaveWorker(resWorker storage.WorkersResult) error
 	SaveWindows(result storage.DemResultWindow) (int, error)
 	SaveDoor(result storage.DemResultDoor) (int, error)
+	SaveVitrag(result storage.DemResultVitraj) (int, error)
+	SaveLoggia(result storage.DemResultLoggia) (int, error)
 }
 
 //type RequestWorkers struct {
@@ -202,6 +204,94 @@ func SaveNormOrderDoor(log *slog.Logger, message SendMessages) http.HandlerFunc 
 
 		//fmt.Printf("Form Data: %+v\n", req)
 		//fmt.Printf("Form Data: %+v\n", req.FormId)
+
+		log.Info("message added", slog.Int("id", saveOrder))
+
+		render.JSON(w, r, Response{
+			Status: strconv.Itoa(http.StatusOK),
+			Error:  "",
+			ID:     saveOrder,
+			Data: map[string]interface{}{
+				"order_num": req.OrderNum,
+				"ID":        saveOrder,
+			},
+		})
+	}
+}
+
+func SaveNormOrderVitraj(log *slog.Logger, message SendMessages) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		const op = "handler.message.SaveNormOrderVitraj"
+
+		log := log.With(
+			slog.String("op", op),
+			slog.String("request_id", middleware.GetReqID(r.Context())),
+		)
+
+		var req storage.DemResultVitraj
+
+		err := render.DecodeJSON(r.Body, &req)
+		if errors.Is(err, io.EOF) {
+			log.Error("Ошибка реквеста")
+			render.JSON(w, r, Response{
+				Status: "Error",
+				Error:  "Empty request",
+			})
+			return
+		}
+		fmt.Printf("Form Data: %+v\n", req)
+
+		log.Info("YYYYYYYY !!!!!!!!!!!!11111", req)
+		saveOrder, err := message.SaveVitrag(req)
+		if err != nil {
+			log.Info("Ошибка реквеста сообщения при вставке в базу данных сука блять уебище тупорылое DOOR ебаные", err)
+			render.JSON(w, r, Response{Error: "da bleeeat"})
+			return
+		}
+
+		log.Info("message added", slog.Int("id", saveOrder))
+
+		render.JSON(w, r, Response{
+			Status: strconv.Itoa(http.StatusOK),
+			Error:  "",
+			ID:     saveOrder,
+			Data: map[string]interface{}{
+				"order_num": req.OrderNum,
+				"ID":        saveOrder,
+			},
+		})
+	}
+}
+
+func SaveNormOrderLoggia(log *slog.Logger, message SendMessages) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		const op = "handler.message.SaveNormOrderLoggia"
+
+		log := log.With(
+			slog.String("op", op),
+			slog.String("request_id", middleware.GetReqID(r.Context())),
+		)
+
+		var req storage.DemResultLoggia
+
+		err := render.DecodeJSON(r.Body, &req)
+		if errors.Is(err, io.EOF) {
+			log.Error("Ошибка реквеста")
+			render.JSON(w, r, Response{
+				Status: "Error",
+				Error:  "Empty request",
+			})
+			return
+		}
+		fmt.Printf("Form Data: %+v\n", req)
+
+		log.Info("YYYYYYYY !!!!!!!!!!!!11111", req)
+		saveOrder, err := message.SaveLoggia(req)
+		if err != nil {
+			log.Info("Ошибка реквеста сообщения при вставке в базу данных сука блять уебище тупорылое DOOR ебаные", err)
+			render.JSON(w, r, Response{Error: "da bleeeat"})
+			return
+		}
 
 		log.Info("message added", slog.Int("id", saveOrder))
 

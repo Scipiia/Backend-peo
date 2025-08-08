@@ -36,6 +36,15 @@
     "required": true
   },
   {
+    "name": "tryba_prof",
+    "type": "number",
+    "count": 1,
+    "label": "Труба профильная",
+    "value": 0.025,
+    "minutes": 1.2,
+    "required": true
+  },
+  {
     "name": "sverl_rigel_zamok",
     "type": "number",
     "count": 1,

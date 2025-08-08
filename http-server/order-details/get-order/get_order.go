@@ -38,6 +38,8 @@ type OrderDetails interface {
 	GetGlyhari(id int) (*storage.OrderData, error)
 	GetWindows(id int) (*storage.OrderData, error)
 	GetDoor(id int) (*storage.OrderData, error)
+	GetVitraj(id int) (*storage.OrderData, error)
+	GetLoggia(id int) (*storage.OrderData, error)
 }
 
 // Общая функция для получения данных о заказе
@@ -219,10 +221,13 @@ func GetNormOrders(log *slog.Logger, normData OrderDetails) http.HandlerFunc {
 		case "glyhar":
 			result, Fetherr = normData.GetGlyhari(id)
 		case "window":
-			//TODO ljltkfnm nen
 			result, Fetherr = normData.GetWindows(id)
 		case "door":
 			result, Fetherr = normData.GetDoor(id)
+		case "vitraj":
+			result, Fetherr = normData.GetVitraj(id)
+		case "loggia":
+			result, Fetherr = normData.GetLoggia(id)
 		}
 
 		//glyhari, err := normData.GetGlyhari(id)

@@ -55,6 +55,11 @@ func routes(cfg config.Config, log *slog.Logger, storage *mysql.Storage) *chi.Mu
 	router.Post("/api/orders/order/product/gl", postorder.SaveNormOrderGlyhari(log, storage))
 	router.Post("/api/orders/order/product/window", postorder.SaveNormOrderWindow(log, storage))
 	router.Post("/api/orders/order/product/door", postorder.SaveNormOrderDoor(log, storage))
+	router.Post("/api/orders/order/product/vitraj", postorder.SaveNormOrderVitraj(log, storage))
+	router.Post("/api/orders/order/product/loggia", postorder.SaveNormOrderLoggia(log, storage))
+
+	//TODO получение нормированных деталей заказа для печати
+	router.Get("/api/orders/order/print/{id}", getorder.GetNormOrders(log, storage))
 
 	//TODO получение работяг
 	// будущие маршруты для мастеров в которых будут назначать работников
@@ -63,8 +68,8 @@ func routes(cfg config.Config, log *slog.Logger, storage *mysql.Storage) *chi.Mu
 	//TODO добавление работяг с работой в базу
 	router.Post("/api/orders/order/assignments", postorder.RequesWorkers(log, storage))
 
-	//TODO получение нормированных деталей заказа
-	router.Get("/api/master/orders/order/{id}", getorder.GetNormOrders(log, storage))
+	//TODO вытягивание всех нормированных нарядов Гловяком
+	router.Get("/api/norm/orders", getorder.GetAllNormOrders(log, storage))
 
 	//TODO AUTH
 	router.Post("/api/login", auth.Auth(log))

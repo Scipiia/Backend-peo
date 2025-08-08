@@ -1,6 +1,9 @@
 package utils
 
-import "vue-golang/internal/storage"
+import (
+	"reflect"
+	"vue-golang/internal/storage"
+)
 
 func MapToOrderDataGlyhari(result *storage.DemResultGlyhari) *storage.OrderData {
 	operations := make([]storage.Operation, 0)
@@ -608,5 +611,241 @@ func MapToOrderDataDoor(result *storage.DemResultDoor) *storage.OrderData {
 		Count:      result.Count,
 		Operations: operations,
 		Profil:     result.Profil,
+	}
+}
+
+func MapToOrderDataVitraj(result *storage.DemResultVitraj) *storage.OrderData {
+	operations := make([]storage.Operation, 0)
+
+	// Словарь "поле -> человекочитаемое название"
+	operationNames := map[string]string{
+		"PodgotOboryd":        "Подготовка оборудования",
+		"NapilStkDo3m":        "Напиловка стойки до 3м",
+		"NapilStkBol3m":       "Напиловка стойки свыше 3м",
+		"NapilStkBol5m":       "Напиловка стойки свыше 5м",
+		"PZR":                 "ПЗР для PBX",
+		"NastrPbx":            "Настройка PBX",
+		"DrenajOtv":           "Выполнить дренажные отверстия (работа станка)",
+		"ZashelkObr":          "Обработка под защёлки (работа станка)",
+		"PrisetPrObr":         "Выполнить обработку пристеночного профиля",
+		"YplYst":              "Установить уплотнитель (по кол-ву панелей)",
+		"FetrYst":             "Установить фетр (см. комплектац. щёточный уплотнитель) пгм",
+		"StekloYst":           "Установка стеклопакета",
+		"RazmetOtv":           "Разметка отверстий",
+		"SverloOtv":           "Просверлить отверстия для роликов и накладок (по 2 на ролик. По 2 ролика на панель)",
+		"NakladYst":           "Установка накладок",
+		"Panel":               "Упаковать панели",
+		"Naprav":              "Упаковать направляющие",
+		"Ydlin":               "Упаковать удлинители",
+		"Upak":                "Упаковка",
+		"NapilRigelDo1m":      "Напиливание ригеля до 1м",
+		"NapilRigelBol1m":     "Напиливание ригеля более 1м",
+		"NakldNapil":          "Напиливание накладок",
+		"NapilKriskhSt":       "Напиливание крышки стойки",
+		"NapilKriskhRg":       "Напиливание крышки ригеля",
+		"KomplKriskh":         "Комплектация крышек",
+		"NapilAdapt":          "Напиливание адаптеров",
+		"FrezerRigel":         "Фрезеровка ригеля",
+		"FukelYst":            "Установка фукелей",
+		"StoikiPbx":           "PBX стойки",
+		"ZamokYst":            "Установка замка",
+		"ZamokYstBolt":        "Установка замка под болты",
+		"RigelSverloZamok":    "Сверление ригеля под замок",
+		"NakladSverlo":        "Сверление накладок",
+		"YplYstRigel":         "Уплотнение на ригель",
+		"YplYstNakld":         "Уплотнение на накладку",
+		"YplYstStoik":         "Уплотнение на стойки",
+		"AdaptYstStoik":       "Установка адаптеров на стойки",
+		"AdaptYstRigel":       "Установка адаптеров на ригель",
+		"TermovstYstStoiki":   "Установка термовставок на стойки",
+		"TermovstYstRigel":    "Установка термовставок на ригель",
+		"SborNog":             "Сборка ножек",
+		"Birki":               "Печать бирок по местам",
+		"UpakStoik":           "Упаковка стоек",
+		"UpakPet":             "Упаковка петель",
+		"UpakRigel":           "Упаковка ригелей",
+		"UpakRigel2m":         "Упаковка ригелей >2м",
+		"UpakKriskh":          "Упаковка крышек",
+		"UpakNakld":           "Упаковка накладок",
+		"UpakYplNog":          "Упаковка уплотнителей и ножек",
+		"UpakKronsht":         "Упаковка кронштейнов",
+		"VinosGotovIzd":       "Вынос готового изделия",
+		"YstStikZakld":        "Установка стыковочной закладной",
+		"ObnYsovDo4m":         "Обнижение усов до 4м",
+		"ObnYsovBol4m":        "Обнижение усов более 4м",
+		"OtmRezin":            "Отматывание резины в отгруз",
+		"ObnNastr":            "Настройка оборудования для обнижения",
+		"TrybaProf":           "Труба профильная",
+		"KomplShtapik":        "Комплектация штапиков",
+		"OtvVO":               "Штамповка отверстий под водоотлив",
+		"NastrStanokRigel":    "Настройка станка для ригеля",
+		"FrezerStoikiPr":      "Фрезеровка стоек (прям)",
+		"NastrStanokStoiki1":  "Настройка станка для стоек",
+		"FrezerStoikiYgl":     "Фрезеровка углов стоек",
+		"NastrStanokStoiki2":  "Настройка станка для стоек №2",
+		"ZashitPl":            "Установка защитных плёнок",
+		"YstPritv":            "Установка притвора",
+		"YstKapel":            "Установка капельников",
+		"SborSekci":           "Сборка секций",
+		"GermetYpl":           "Герметизация и уст. уплотнения",
+		"UpakSoed":            "Упаковка соединителей",
+		"UpakShtapik":         "Упаковка штапиков",
+		"UpakSekcii":          "Упаковка секций",
+		"Obrezanie":           "Обрезание",
+		"VinosSekcii":         "Вынос секций",
+		"YgolKorob":           "Уголок и коробка",
+		"PbxVO":               "PBX В/О",
+		"ClearVO":             "Зачистка В/О",
+		"YstKomptrSt":         "Установка компенсатора,пгм стойки",
+		"YstKomptrRg":         "Установка компенсатора,пгм ригель",
+		"UpakYgl":             "Упаковка углов",
+		"NapilYgl":            "Напиловка уголка",
+		"NarezTermovst":       "Нарезка термовставок",
+		"NarezKompensr":       "Нарезка компенсаторов",
+		"UpakTermovst":        "Упаковка термовставок",
+		"RigelSverloZamok3m":  "Сверление ригеля под замок выше 3м",
+		"RigelNsverloZamok3m": "Сверление нестандарт ригеля под замок",
+		"ObjYsovTermvst":      "Обжим усов для термовставки",
+		"YstKPS":              "Установка КПС",
+		"NapilStkBol6m":       "Напиловка стойки свыше 6м",
+		"NapilShtapik":        "Напиливание штапика",
+		"RezProfil":           "Резина пгм в профиль",
+		"RezSekcii":           "Резина пгм в секцию",
+		"PartSbSeck":          "Частичная сборка секций",
+		"PartSbMarkSeck":      "Частичная сборка маркировка секции",
+		"PartSbStoek":         "Частичная сборка стойки",
+		"YstFormr":            "Установка формирователя",
+		"TotalTime":           "Итого",
+	}
+
+	// Используем рефлексию для итерации по всем float64 полям
+	v := reflect.ValueOf(result).Elem()
+	t := v.Type()
+
+	for i := 0; i < v.NumField(); i++ {
+		field := v.Field(i)
+		fieldName := t.Field(i).Name
+
+		// Пропускаем не float64 поля
+		if field.Kind() != reflect.Float64 {
+			continue
+		}
+
+		value := field.Float()
+		// Добавляем операцию только если значение > 0
+		if value > 0 {
+			// Получаем человекочитаемое имя из словаря
+			displayName, exists := operationNames[fieldName]
+			if !exists {
+				displayName = fieldName // fallback
+			}
+			operations = append(operations, storage.Operation{
+				ID:    fieldName,
+				Name:  displayName,
+				Value: value,
+			})
+		}
+	}
+
+	return &storage.OrderData{
+		ID:         result.ID,
+		OrderNum:   result.OrderNum,
+		Name:       result.Name,
+		Count:      result.Count,
+		Operations: operations,
+		Profil:     result.Profil,
+	}
+}
+
+func MapToOrderDataLoggia(result *storage.DemResultLoggia) *storage.OrderData {
+	operations := make([]storage.Operation, 0)
+
+	// Словарь: поле Go -> человекочитаемое название операции
+	operationNames := map[string]string{
+		"PodgotOboryd":      "Подготовка оборудования",
+		"NapilStkDo3m":      "Напиловка стойки до 3м",
+		"NapilRigelDo1m":    "Напиливание ригеля до 1м",
+		"NapilRigelBol1m":   "Напиливание ригеля более 1м",
+		"NapilShtapik":      "Напиливание штапика",
+		"KomplShtapik":      "Комплектация штапика по местам",
+		"NapilAdaptTr":      "Напиливание адаптеров и труб",
+		"RigelFrezer":       "Фрезеровка ригеля",
+		"FrezerRigelZamok":  "Фрезеровка ригеля под замок",
+		"ZamokYst":          "Установка замка",
+		"RezPgmSt":          "Резина пгм в профиль стойки",
+		"RezPgmRg":          "Резина пгм в профиль ригель",
+		"FrezVo":            "Фрезеровка водоотливных отверстий (2шт) + настрой",
+		"PartSbSekci":       "Частичная сборка секций",
+		"YstPritv":          "Установка притвора",
+		"YstFormir":         "Установка формирователя",
+		"Birki":             "Печать бирок по местам",
+		"UpakRam":           "Упаковка рам",
+		"UpakStoik":         "Упаковка стоек",
+		"UpakRigel":         "Упаковка ригелей",
+		"UpakRigel2m":       "Упаковка ригелей выше 2м",
+		"UpakShtapik":       "Упаковка штапиков",
+		"UpakAdaptTr":       "Упаковка адаптеров и труб",
+		"UpakYplNog":        "Упаковка уплотнителей и ножек",
+		"VinosGotovIzd":     "Вынос готового изделия",
+		"NapilPrVirav":      "Напиловка профиль выравнивающий",
+		"NapilRam":          "Напиливание рамы",
+		"NapilStv":          "Напиливание створки",
+		"NapilPritv":        "Напиливание притвора",
+		"NapilSoed":         "Напиливание соединителей",
+		"FrezRam":           "Фрезеровка рамы",
+		"FrezStv":           "Фрезеровка створки",
+		"FrezPritv":         "Фрезеровка притвора",
+		"ClearSverlStv":     "Зачистить после фрез. Сверлить отв. По шаблону",
+		"ClearSverlYsilStv": "Зачистить после фрез. Сверлить отв. По шаблону. Усиленная стойка",
+		"Kraska":            "Подкраска торцов",
+		"YstRolik":          "Установка роликов, фетра (риг), удаление пленки",
+		"YstZashel":         "Установка защёлок, фетра",
+		"Rezina":            "Обрезинивание",
+		"SborStv":           "Сборка створки",
+		"SborPritv":         "Сборка притвора",
+		"PodgKompl":         "Подготовка комплектующих",
+		"ShtampStStv":       "Штамповка стоек створки",
+		"PodgRezin":         "Подготовка резины",
+		"SborYpl":           "Сборка уплотнителей",
+		"YstZaklep":         "Установка заклёпок",
+		"TotalTime":         "Итого",
+	}
+
+	// Используем рефлексию для доступа к полям структуры
+	v := reflect.ValueOf(result).Elem()
+	t := v.Type()
+
+	for i := 0; i < v.NumField(); i++ {
+		field := v.Field(i)
+		fieldName := t.Field(i).Name
+
+		// Обрабатываем только float64 поля
+		if field.Kind() != reflect.Float64 {
+			continue
+		}
+
+		value := field.Float()
+
+		// Добавляем только если значение > 0
+		if value > 0 {
+			displayName, exists := operationNames[fieldName]
+			if !exists {
+				displayName = fieldName // fallback, если нет в словаре
+			}
+			operations = append(operations, storage.Operation{
+				ID:    fieldName,
+				Name:  displayName,
+				Value: value,
+			})
+		}
+	}
+
+	return &storage.OrderData{
+		ID:         result.ID,
+		OrderNum:   result.OrderNum,
+		Name:       result.Name,
+		Count:      result.Count,
+		Profil:     result.Profil,
+		Operations: operations,
 	}
 }
