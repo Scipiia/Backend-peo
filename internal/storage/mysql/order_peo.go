@@ -168,8 +168,8 @@ func (s *Storage) SaveGlyhari(result storage.DemResultGlyhari) (int, error) {
 	// Шаг 2: Подставить orderID в результат
 	result.OrderId = orderID
 
-	stmt := `INSERT INTO dem_test_golang_result_glyhar (order_num, name, count,  nast_napil, napil, napil_krishek, napil_impost,
-	soedinitel, promej_sborka, impost_sverlo, impost_frezer,impost_sborka, opres_nastr, opresovka, ystan_yplotn, zashivka, profil,
+	stmt := `INSERT INTO dem_test_golang_result_glyhar (order_num, name, count,  nast_napil, napil_kontyr, napil_krishek, napil_impost,
+	soedinitel, promej_sborka, impost_sverlo, impost_frezer,impost_sborka, opres_nastr, opresovka, ystanovka_yplotn, zashivka, profil,
 	napil_stoiki_do3m, napil_stoiki_bol3m, napil_rigel_do1m, napil_rigel_bol1m, sverl_rigel_zamok, ystan_zamkov, napil_shtapik, ypakovka,
     frezer_rigel, obrabot_ram, hands_sborka, frezer_nastr, shtiftovka, ystanovka_zapoln, napil_donnik, adapter_napil, adapter_ystan, ystan_yplotn_falc, order_id, total_time)
 	VALUES (?, ?, ?, ?, ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?, ?,?,?,?,?,?)`
@@ -195,8 +195,8 @@ func (s *Storage) SaveGlyhari(result storage.DemResultGlyhari) (int, error) {
 func (s *Storage) GetGlyhari(id int) (*storage.OrderData, error) {
 	const op = "storage.mysql.sql.GetGlyhari"
 
-	stmt := `SELECT id, order_num, name, count,  nast_napil, napil, napil_krishek, napil_impost,
-		soedinitel, promej_sborka, impost_sverlo, impost_frezer,impost_sborka, opres_nastr, opresovka, ystan_yplotn, zashivka, profil,
+	stmt := `SELECT id, order_num, name, count,  nast_napil, napil_kontyr, napil_krishek, napil_impost,
+		soedinitel, promej_sborka, impost_sverlo, impost_frezer,impost_sborka, opres_nastr, opresovka, ystanovka_yplotn, zashivka, profil,
 		napil_stoiki_do3m, napil_stoiki_bol3m, napil_rigel_do1m, napil_rigel_bol1m, sverl_rigel_zamok, ystan_zamkov, napil_shtapik, ypakovka,
     	frezer_rigel, obrabot_ram, hands_sborka, frezer_nastr, shtiftovka, ystanovka_zapoln, napil_donnik, adapter_napil, adapter_ystan, ystan_yplotn_falc, order_id, total_time
 		FROM dem_test_golang_result_glyhar WHERE id = ?`

@@ -7,9 +7,11 @@ import (
 	"log/slog"
 	"net/http"
 	"vue-golang/http-server/auth"
+	getform "vue-golang/http-server/get-form"
 	getorder "vue-golang/http-server/order-details/get-order"
 	"vue-golang/http-server/order-details/orders"
 	"vue-golang/http-server/order-details/post-order"
+	updatenormorder "vue-golang/http-server/order-details/update-norm-order"
 	"vue-golang/internal/config"
 	"vue-golang/internal/storage/mysql"
 )
@@ -61,6 +63,14 @@ func routes(cfg config.Config, log *slog.Logger, storage *mysql.Storage) *chi.Mu
 	//TODO получение нормированных деталей заказа для печати
 	router.Get("/api/orders/order/print/{id}", getorder.GetNormOrders(log, storage))
 
+	//TODO редактирование нормированных нарядов
+	router.Get("/api/norm/orders/order/edit/{id}", getorder.GetNormOrders(log, storage))
+
+	//TODO отправка и внесение изменении обновления нарядов
+	router.Put("/api/norm/orders/order/edit/{id}", updatenormorder.UpdateNormOrder(log, storage))
+	//TODO генерация excel для всех нормированных нарядов с фильтром
+	router.Get("/api/norm/orders/excel", getorder.ExportNormOrders(log, storage))
+
 	//TODO получение работяг
 	// будущие маршруты для мастеров в которых будут назначать работников
 	router.Get("/api/master/orders", orders.ResultOrdersNorm(log, storage))
@@ -85,6 +95,10 @@ func routes(cfg config.Config, log *slog.Logger, storage *mysql.Storage) *chi.Mu
 			w.Write([]byte("Admin access granted"))
 		})
 	})
+
+	//TODO новая логика с распределением операции YYYYYYYYYYYYYYYYY
+	router.Get("/template", getform.GetTemplateByCode(log, storage))
+	router.Get("/all_templates", getform.GetAllTemplates(log, storage))
 
 	return router
 }

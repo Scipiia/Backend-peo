@@ -13,7 +13,7 @@ func MapToOrderDataGlyhari(result *storage.DemResultGlyhari) *storage.OrderData 
 		operations = append(operations, storage.Operation{"nast_napil", "Настройка оборудования для напиловки", result.NastrNapil})
 	}
 	if result.NapilKontr > 0 {
-		operations = append(operations, storage.Operation{"napil_kontr", "Напиловка контура", result.NapilKontr})
+		operations = append(operations, storage.Operation{"napil_kontyr", "Напиловка контура", result.NapilKontr})
 	}
 	if result.NapilKrishek > 0 {
 		operations = append(operations, storage.Operation{"napil_krishek", "Напиловка крышек", result.NapilKrishek})
@@ -28,10 +28,10 @@ func MapToOrderDataGlyhari(result *storage.DemResultGlyhari) *storage.OrderData 
 		operations = append(operations, storage.Operation{"promej_sborka", "Промежуточная сборка", result.PromejSborka})
 	}
 	if result.ImpostSverlovka > 0 {
-		operations = append(operations, storage.Operation{"impost_sverlovka", "Импост (сверловка)", result.ImpostSverlovka})
+		operations = append(operations, storage.Operation{"impost_sverlo", "Импост (сверловка)", result.ImpostSverlovka})
 	}
 	if result.ImpostFrezerovka > 0 {
-		operations = append(operations, storage.Operation{"impost_frezerovka", "Импост (фрезеровка)", result.ImpostFrezerovka})
+		operations = append(operations, storage.Operation{"impost_frezer", "Импост (фрезеровка)", result.ImpostFrezerovka})
 	}
 	if result.ImpostSborka > 0 {
 		operations = append(operations, storage.Operation{"impost_sborka", "Импост (сборка)", result.ImpostSborka})
@@ -43,7 +43,7 @@ func MapToOrderDataGlyhari(result *storage.DemResultGlyhari) *storage.OrderData 
 		operations = append(operations, storage.Operation{"opresovka", "Опресовка", result.Opresovka})
 	}
 	if result.YstanYplotnitel > 0 {
-		operations = append(operations, storage.Operation{"ystan_yplotnitel", "Установка уплотнителей, штифтовка", result.YstanYplotnitel})
+		operations = append(operations, storage.Operation{"ystanovka_yplotn", "Установка уплотнителей, штифтовка", result.YstanYplotnitel})
 	}
 	if result.Zashivka > 0 {
 		operations = append(operations, storage.Operation{"zashivka", "Зашивка", result.Zashivka})

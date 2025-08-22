@@ -12,11 +12,11 @@ type Order struct {
 }
 
 type OrderDemPrice struct {
-	Position     int    `json:"position"`
-	Creator      string `json:"creator"`
-	NamePosition string `json:"name_position"`
-	Count        int    `json:"count"`
-	Image        string `json:"image"`
+	Position     int      `json:"position"`
+	Creator      string   `json:"creator"`
+	NamePosition string   `json:"name_position"`
+	Count        *float64 `json:"count"`
+	Image        *string  `json:"image"`
 }
 
 type ImportJSON struct {
@@ -80,17 +80,17 @@ type DemResultGlyhari struct {
 	Name             string  `json:"name"`
 	Count            int     `json:"count"`
 	NastrNapil       float64 `json:"nast_napil"`
-	NapilKontr       float64 `json:"napil_kontr"`
+	NapilKontr       float64 `json:"napil_kontyr"`
 	NapilKrishek     float64 `json:"napil_krishek"`
 	NapilImpost      float64 `json:"napil_impost"`
 	Soedinitel       float64 `json:"soedinitel"`
 	PromejSborka     float64 `json:"promej_sborka"`
-	ImpostSverlovka  float64 `json:"impost_sverlovka"`
-	ImpostFrezerovka float64 `json:"impost_frezerovka"`
+	ImpostSverlovka  float64 `json:"impost_sverlo"`
+	ImpostFrezerovka float64 `json:"impost_frezer"`
 	ImpostSborka     float64 `json:"impost_sborka"`
 	OpresNastr       float64 `json:"opres_nastr"`
 	Opresovka        float64 `json:"opresovka"`
-	YstanYplotnitel  float64 `json:"ystan_yplotnitel"`
+	YstanYplotnitel  float64 `json:"ystanovka_yplotn"`
 	Zashivka         float64 `json:"zashivka"`
 	Profil           string  `json:"profil"`
 	NapilStoikiDo3m  float64 `json:"napil_stoiki_do3m"`
@@ -478,4 +478,24 @@ type ProductItem struct {
 	ResultID  int       `json:"result_id"` // ID в таблице результата (например, loggia.id)
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
+}
+
+type OperationValue struct {
+	ID    string  `json:"id"`    // соответствует имени поля в БД: "nast_napil", "napil" и т.д.
+	Value float64 `json:"value"` // новое значение времени (в минутах)
+}
+
+//type UpdateGlyhariRequest struct {
+//	OrderNum   string             `json:"order_num"`
+//	Operations map[string]float64 `json:"operations"` // например: {"nast_napil": 0.08}
+//}
+
+type AdditionalOperation struct {
+	ID        int64     `json:"id"`
+	OrderID   int64     `json:"order_id"`
+	Operation string    `json:"operation"`
+	Duration  float64   `json:"duration"`
+	Comment   *string   `json:"comment,omitempty"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
