@@ -9,7 +9,7 @@ import (
 )
 
 func (s *Storage) GetOrdersMonth(year int, month int) ([]*storage.Order, error) {
-	const op = "storage.order-details.sql"
+	const op = "storage.order-norm-details.sql"
 
 	// Определяем начало и конец месяца
 	startOfMonth := time.Date(year, time.Month(month), 1, 0, 0, 0, 0, time.UTC)
@@ -63,7 +63,7 @@ func (s *Storage) GetOrdersMonth(year int, month int) ([]*storage.Order, error) 
 }
 
 func (s *Storage) GetReadyOrders() ([]*storage.DemResultGlyhari, error) {
-	const op = "storage.order-details.sql"
+	const op = "storage.order-norm-details.sql"
 
 	stmt := `
     SELECT 

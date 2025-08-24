@@ -26,7 +26,7 @@ type ImportJSON struct {
 }
 
 type ResultOrderDetails struct {
-	Order         *Order           `json:"order"`
+	Order         *Order           `json:"order-norm"`
 	OrderDemPrice []*OrderDemPrice `json:"order_dem_price"`
 }
 

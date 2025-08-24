@@ -89,7 +89,7 @@ func getOrdersMonth(log *slog.Logger, orders GetOrders, year, month int) ([]*sto
 	ordersMonth, err := orders.GetOrdersMonth(year, month)
 	if err != nil {
 		log.Info("Order not found", slog.Int("year:", year), slog.Int("month", month), slog.String("error", err.Error()))
-		return nil, fmt.Errorf("order not found: %w", err)
+		return nil, fmt.Errorf("order-norm not found: %w", err)
 	}
 
 	return ordersMonth, nil

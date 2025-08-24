@@ -10,7 +10,7 @@ import (
 )
 
 func (s *Storage) GetOrderDetails(id int) (*storage.ResultOrderDetails, error) {
-	const op = "storage.order-details.sql"
+	const op = "storage.order-norm-details.sql"
 
 	tx, err := s.db.Begin()
 	if err != nil {
@@ -23,7 +23,7 @@ func (s *Storage) GetOrderDetails(id int) (*storage.ResultOrderDetails, error) {
 
 	stmtDemOrders := "SELECT id, order_num, creator, customer, dop_info, ms_note FROM dem_ready WHERE id = ?"
 
-	//order := &storage.Order{}
+	//order-norm := &storage.Order{}
 	var msNote sql.NullString // Используем NullString для обработки NULL
 	details.Order = &storage.Order{}
 	err = tx.QueryRow(stmtDemOrders, id).Scan(&details.Order.ID, &details.Order.OrderNum, &details.Order.Creator, &details.Order.Customer, &details.Order.DopInfo, &msNote)
@@ -162,7 +162,7 @@ func (s *Storage) SaveGlyhari(result storage.DemResultGlyhari) (int, error) {
 	// Шаг 1: Получить или создать заказ по order_num
 	orderID, err := s.getOrCreateOrder(result.OrderNum)
 	if err != nil {
-		return 0, fmt.Errorf("%s: failed to get/create order: %w", op, err)
+		return 0, fmt.Errorf("%s: failed to get/create order-norm: %w", op, err)
 	}
 
 	// Шаг 2: Подставить orderID в результат
@@ -226,7 +226,7 @@ func (s *Storage) SaveWindows(result storage.DemResultWindow) (int, error) {
 	// Шаг 1: Получить или создать заказ по order_num
 	orderID, err := s.getOrCreateOrder(result.OrderNum)
 	if err != nil {
-		return 0, fmt.Errorf("%s: failed to get/create order: %w", op, err)
+		return 0, fmt.Errorf("%s: failed to get/create order-norm: %w", op, err)
 	}
 
 	// Шаг 2: Подставить orderID в результат
@@ -336,7 +336,7 @@ func (s *Storage) SaveDoor(result storage.DemResultDoor) (int, error) {
 	// Шаг 1: Получить или создать заказ по order_num
 	orderID, err := s.getOrCreateOrder(result.OrderNum)
 	if err != nil {
-		return 0, fmt.Errorf("%s: failed to get/create order: %w", op, err)
+		return 0, fmt.Errorf("%s: failed to get/create order-norm: %w", op, err)
 	}
 
 	result.OrderId = orderID
@@ -431,7 +431,7 @@ func (s *Storage) SaveVitrag(result storage.DemResultVitraj) (int, error) {
 	// Шаг 1: Получить или создать заказ по order_num
 	orderID, err := s.getOrCreateOrder(result.OrderNum)
 	if err != nil {
-		return 0, fmt.Errorf("%s: failed to get/create order: %w", op, err)
+		return 0, fmt.Errorf("%s: failed to get/create order-norm: %w", op, err)
 	}
 
 	result.OrderID = orderID
@@ -536,7 +536,7 @@ func (s *Storage) SaveLoggia(result storage.DemResultLoggia) (int, error) {
 	// Шаг 1: Получить или создать заказ по order_num
 	orderID, err := s.getOrCreateOrder(result.OrderNum)
 	if err != nil {
-		return 0, fmt.Errorf("%s: failed to get/create order: %w", op, err)
+		return 0, fmt.Errorf("%s: failed to get/create order-norm: %w", op, err)
 	}
 
 	result.OrderID = orderID

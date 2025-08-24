@@ -5,13 +5,12 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/rs/cors"
 	"log/slog"
-	"net/http"
-	"vue-golang/http-server/auth"
 	getform "vue-golang/http-server/get-form"
 	getorder "vue-golang/http-server/order-details/get-order"
 	"vue-golang/http-server/order-details/orders"
 	"vue-golang/http-server/order-details/post-order"
 	updatenormorder "vue-golang/http-server/order-details/update-norm-order"
+	"vue-golang/http-server/order-norm/save"
 	"vue-golang/internal/config"
 	"vue-golang/internal/storage/mysql"
 )
@@ -46,59 +45,30 @@ func routes(cfg config.Config, log *slog.Logger, storage *mysql.Storage) *chi.Mu
 	// Middleware для получения данных о заказе
 	// Маршруты для Гловяка где он внесет все данные по заказу
 	orderDetailsMiddleware := getorder.OrderDetailsMiddleware(log, storage)
-	// TODO JSON get
+	// TODO JSON get ОЩИБКА ТУТ
 	router.With(orderDetailsMiddleware).Get("/api/orders/order/{id}", getorder.New(log))
-	//TODO Генерация Excel-файла
-	router.With(orderDetailsMiddleware).Get("/api/orders/order/generate-excel/{id}", getorder.GenerateExcel(log))
-	// TODO получение формы для изделия
-	router.Get("/api/orders/order/product/form", getorder.GetFormByID(log, storage))
 
 	// TODO отправка формы после нормирования Гловяком с занесением в бд для изделия
-	router.Post("/api/orders/order/product/gl", postorder.SaveNormOrderGlyhari(log, storage))
-	router.Post("/api/orders/order/product/window", postorder.SaveNormOrderWindow(log, storage))
-	router.Post("/api/orders/order/product/door", postorder.SaveNormOrderDoor(log, storage))
-	router.Post("/api/orders/order/product/vitraj", postorder.SaveNormOrderVitraj(log, storage))
-	router.Post("/api/orders/order/product/loggia", postorder.SaveNormOrderLoggia(log, storage))
-
-	//TODO получение нормированных деталей заказа для печати
-	router.Get("/api/orders/order/print/{id}", getorder.GetNormOrders(log, storage))
-
-	//TODO редактирование нормированных нарядов
-	router.Get("/api/norm/orders/order/edit/{id}", getorder.GetNormOrders(log, storage))
+	router.Post("/api/orders/order-norm/product/gl", postorder.SaveNormOrderGlyhari(log, storage))
+	router.Post("/api/orders/order-norm/product/window", postorder.SaveNormOrderWindow(log, storage))
+	router.Post("/api/orders/order-norm/product/door", postorder.SaveNormOrderDoor(log, storage))
+	router.Post("/api/orders/order-norm/product/vitraj", postorder.SaveNormOrderVitraj(log, storage))
+	router.Post("/api/orders/order-norm/product/loggia", postorder.SaveNormOrderLoggia(log, storage))
 
 	//TODO отправка и внесение изменении обновления нарядов
-	router.Put("/api/norm/orders/order/edit/{id}", updatenormorder.UpdateNormOrder(log, storage))
+	router.Put("/api/norm/orders/order-norm/edit/{id}", updatenormorder.UpdateNormOrder(log, storage))
 	//TODO генерация excel для всех нормированных нарядов с фильтром
 	router.Get("/api/norm/orders/excel", getorder.ExportNormOrders(log, storage))
-
-	//TODO получение работяг
-	// будущие маршруты для мастеров в которых будут назначать работников
-	router.Get("/api/master/orders", orders.ResultOrdersNorm(log, storage))
-	router.Get("/api/orders/order/product/workers", getorder.GetWorkers(log, storage))
-	//TODO добавление работяг с работой в базу
-	router.Post("/api/orders/order/assignments", postorder.RequesWorkers(log, storage))
 
 	//TODO вытягивание всех нормированных нарядов Гловяком
 	router.Get("/api/norm/orders", getorder.GetAllNormOrders(log, storage))
 
-	//TODO AUTH
-	router.Post("/api/login", auth.Auth(log))
-
-	router.Group(func(r chi.Router) {
-		r.Use(auth.AuthMiddleware(log))
-		r.Get("/admin", func(w http.ResponseWriter, r *http.Request) {
-			role := r.Context().Value("role").(string)
-			if role != "admin" {
-				http.Error(w, "Access denied", http.StatusForbidden)
-				return
-			}
-			w.Write([]byte("Admin access granted"))
-		})
-	})
-
 	//TODO новая логика с распределением операции YYYYYYYYYYYYYYYYY
 	router.Get("/template", getform.GetTemplateByCode(log, storage))
 	router.Get("/all_templates", getform.GetAllTemplates(log, storage))
+
+	//TODO сохранение нормированных нарядов
+	router.Post("/api/orders/order-norm/form", save.SaveNormOrderOperation(log, storage))
 
 	return router
 }

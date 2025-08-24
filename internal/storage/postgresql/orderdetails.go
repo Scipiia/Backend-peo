@@ -1,7 +1,7 @@
 package postgresql
 
 //func (s *Storage) GetOrderDetails(id int) (*storage.Order, error) {
-//	const op = "storage.order-details.sql"
+//	const op = "storage.order-norm-details.sql"
 //
 //	stmt := "SELECT id, name, width, height, param, manager FROM orders WHERE id = $1"
 //

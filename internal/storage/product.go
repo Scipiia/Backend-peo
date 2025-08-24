@@ -2,6 +2,7 @@ package storage
 
 import "time"
 
+// УДАЛИТЬ НЕ ПРИГОДИТСЯ
 // models/product.go
 type ProductInstance struct {
 	ID           int64                 `json:"id"`
