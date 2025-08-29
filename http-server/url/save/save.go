@@ -4,7 +4,6 @@ import (
 	"errors"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/render"
-	"github.com/go-playground/validator/v10"
 	"io"
 	"log/slog"
 	"net/http"
@@ -59,13 +58,13 @@ func New(log *slog.Logger, urlSaver URLSaver) http.HandlerFunc {
 
 		log.Info("request body decoded", slog.Any("request", req))
 
-		if err := validator.New().Struct(req); err != nil {
-			log.Error("invalid request", err)
-
-			render.JSON(w, r, Response{Error: "invalid request"})
-
-			return
-		}
+		//if err := validator.New().Struct(req); err != nil {
+		//	log.Error("invalid request", err)
+		//
+		//	render.JSON(w, r, Response{Error: "invalid request"})
+		//
+		//	return
+		//}
 
 		//alias := "kusokgovna"
 

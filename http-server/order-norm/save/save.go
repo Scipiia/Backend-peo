@@ -10,14 +10,14 @@ import (
 )
 
 type ResultNorm interface {
-	SaveNormOrder(result storage.OrderDetails) (int64, error)
+	SaveNormOrder(result storage.OrderNormDetails) (int64, error)
 	SaveNormOperation(OrderID int64, operations []storage.NormOperation) error
 }
 
 type Response struct {
-	OrderID int64 `json:"order_id"`
-	Status  string
-	Error   string
+	OrderID int64  `json:"order_id"`
+	Status  string `json:"status"`
+	Error   string `json:"error"`
 }
 
 func SaveNormOrderOperation(log *slog.Logger, res ResultNorm) http.HandlerFunc {
@@ -25,7 +25,7 @@ func SaveNormOrderOperation(log *slog.Logger, res ResultNorm) http.HandlerFunc {
 		const op = "handlers.normirovka.SaveNormOrderOperation"
 
 		//var req RequestNormData
-		var req storage.OrderDetails
+		var req storage.OrderNormDetails
 		err := json.NewDecoder(r.Body).Decode(&req)
 		if err != nil {
 			log.Error("Неверный JSON", slog.String("op", op), slog.String("error", err.Error()))

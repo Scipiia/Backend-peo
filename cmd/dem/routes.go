@@ -10,7 +10,11 @@ import (
 	"vue-golang/http-server/order-details/orders"
 	"vue-golang/http-server/order-details/post-order"
 	updatenormorder "vue-golang/http-server/order-details/update-norm-order"
+	"vue-golang/http-server/order-norm/get"
 	"vue-golang/http-server/order-norm/save"
+	"vue-golang/http-server/order-norm/update"
+	getWorkers "vue-golang/http-server/workers/get"
+	saveWorkers "vue-golang/http-server/workers/save"
 	"vue-golang/internal/config"
 	"vue-golang/internal/storage/mysql"
 )
@@ -69,6 +73,20 @@ func routes(cfg config.Config, log *slog.Logger, storage *mysql.Storage) *chi.Mu
 
 	//TODO сохранение нормированных нарядов
 	router.Post("/api/orders/order-norm/form", save.SaveNormOrderOperation(log, storage))
+
+	//TODO get получение нормированного наряда
+	router.Get("/api/orders/order/norm/{id}", get.GetNormOrder(log, storage))
+
+	//TODO get получение всех нормированных нарядов
+	router.Get("/api/orders/order/norm/all", get.GetNormOrders(log, storage))
+
+	//TODO update обновление нормированного наряда
+	router.Put("/api/orders/order/norm/update/{id}", update.UpdateNormOrderOperation(log, storage))
+
+	//TODO назначение сотрудников
+	router.Post("/api/workers", saveWorkers.SaveExecutorsHandler(log, storage))
+	//TODO получение всех сотрудников
+	router.Get("/api/workers/all", getWorkers.GetWorkers(log, storage))
 
 	return router
 }

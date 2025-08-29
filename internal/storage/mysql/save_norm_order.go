@@ -6,11 +6,11 @@ import (
 	"vue-golang/internal/storage"
 )
 
-func (s *Storage) SaveNormOrder(result storage.OrderDetails) (int64, error) {
+func (s *Storage) SaveNormOrder(result storage.OrderNormDetails) (int64, error) {
 	const op = "storage.mysql.sql.SaveNormOrder"
-	stmt := `INSERT INTO product_instances (order_num, template_code, name, count, total_time) VALUES (?, ?, ?, ?, ?)`
+	stmt := `INSERT INTO product_instances (order_num, template_code, name, count, total_time, type) VALUES (?, ?, ?, ?, ?, ?)`
 
-	exec, err := s.db.Exec(stmt, result.OrderNum, result.TemplateCode, result.Name, result.Count, result.TotalTime)
+	exec, err := s.db.Exec(stmt, result.OrderNum, result.TemplateCode, result.Name, result.Count, result.TotalTime, result.Type)
 	if err != nil {
 		if mysqlErr, ok := err.(*mysql.MySQLError); ok && mysqlErr.Number == 1452 {
 			return 0, fmt.Errorf("%s: Ошибка сохранения нормировки в базу='%s'", op, err)
@@ -43,7 +43,7 @@ func (s *Storage) SaveNormOperation(OrderID int64, operations []storage.NormOper
 	for _, op := range operations {
 		_, err := stmt.Exec(OrderID, op.Name, op.Label, op.Count, op.Value, op.Minutes)
 		if err != nil {
-			return err
+			return fmt.Errorf("%s: Ошибка сохранения нормировки в базу='%s'", op, err)
 		}
 	}
 

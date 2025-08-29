@@ -10,7 +10,7 @@ type ProductInstance struct {
 	TemplateCode string                `json:"template_code"`
 	Name         string                `json:"name"`
 	Count        int                   `json:"count"`
-	Notes        string                `json:"notes"`
+	TotalTime    float64               `json:"total_time"`
 	Operations   []OperationValueInput `json:"operations"`
 	CreatedAt    time.Time             `json:"created_at"`
 	UpdatedAt    time.Time             `json:"updated_at"`
