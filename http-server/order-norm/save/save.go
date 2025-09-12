@@ -33,31 +33,6 @@ func SaveNormOrderOperation(log *slog.Logger, res ResultNorm) http.HandlerFunc {
 			return
 		}
 
-		// --- 🔍 ПРОВЕРКА: операции со значением 0 ---
-		//var zeroOps []string
-		//for _, op := range req.Operations {
-		//	// Если value == 0, добавляем в список
-		//	if op.Value == 0 {
-		//		zeroOps = append(zeroOps, op.Name)
-		//	}
-		//}
-		//
-		//if len(zeroOps) > 0 {
-		//	log.Warn("Попытка сохранить операции со значением 0",
-		//		slog.String("op", op),
-		//		slog.Any("zero_ops", zeroOps),
-		//		slog.String("order_num", req.OrderNum),
-		//	)
-		//
-		//	// Ответ с понятной ошибкой
-		//	render.JSON(w, r, Response{
-		//		Error: "Обнаружены операции со значением 0: " + strings.Join(zeroOps, ", "),
-		//	})
-		//	return
-		//}
-		// --- ✅ Проверка пройдена ---
-
-		// Сохраняем в БД
 		orderID, err := res.SaveNormOrder(req)
 		if err != nil {
 			log.Info("Ошибка реквеста сообщения при вставке в базу заказа сука блять уебище тупорылое DOOR ебаные", err)

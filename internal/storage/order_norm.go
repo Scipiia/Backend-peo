@@ -1,0 +1,42 @@
+package storage
+
+import "time"
+
+type OrderNormDetails struct {
+	OrderNum        string          `json:"order_num"`
+	TemplateCode    string          `json:"template_code"`
+	Name            string          `json:"name"`
+	Count           float64         `json:"count"`
+	TotalTime       float64         `json:"total_time"`
+	Operations      []NormOperation `json:"operations"`
+	Type            string          `json:"type"`
+	PartType        string          `json:"part_type"`
+	ParentAssembly  string          `json:"parent_assembly"`
+	ParentProductID *int64          `json:"parent_product_id"`
+	Customer        string          `json:"customer"`
+	Position        int             `json:"position"`
+	Status          string          `json:"status"`
+}
+
+type NormOperation struct {
+	Name    string  `json:"operation_name"`
+	Label   string  `json:"operation_label"`
+	Count   float64 `json:"count"`
+	Value   float64 `json:"value"`
+	Minutes float64 `json:"minutes"`
+}
+
+type GetOrderDetails struct {
+	ID              int64           `json:"id"`
+	OrderNum        string          `json:"order_num"`
+	Name            string          `json:"name"`
+	Count           float64         `json:"count"`
+	TotalTime       float64         `json:"total_time"`
+	CreatedAT       time.Time       `json:"created_at"`
+	UpdatedAT       time.Time       `json:"updated_at"`
+	Operations      []NormOperation `json:"operations"`
+	Type            string          `json:"type"`
+	PartType        string          `json:"part_type"`
+	ParentAssembly  string          `json:"parent_assembly"`
+	ParentProductID *int64          `json:"parent_product_id"`
+}

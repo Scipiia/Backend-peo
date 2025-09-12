@@ -1,4 +1,4 @@
-package orders
+package get
 
 import (
 	"context"
@@ -12,7 +12,7 @@ import (
 	"vue-golang/internal/storage"
 )
 
-type Response struct {
+type ResponseOrders struct {
 	Orders []*storage.Order `json:"orders"`
 	Status string           `json:"status"`
 	Error  string           `json:"error"`
@@ -20,12 +20,11 @@ type Response struct {
 
 type GetOrders interface {
 	GetOrdersMonth(year int, month int) ([]*storage.Order, error)
-	GetReadyOrders() ([]*storage.DemResultGlyhari, error)
 }
 
-func New(log *slog.Logger, getOrders GetOrders) http.HandlerFunc {
+func GetOrdersFilter(log *slog.Logger, getOrders GetOrders) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const op = "handler.orders.orders.New"
+		const op = "handler.orders.orders.GetOrdersFilter"
 
 		log := log.With(
 			slog.String("op", op),
@@ -64,13 +63,13 @@ func New(log *slog.Logger, getOrders GetOrders) http.HandlerFunc {
 		orders, err := getOrders.GetOrdersMonth(year, month)
 		if err != nil {
 			log.Info("sql no rows", err)
-			render.JSON(w, r, Response{Error: "В базе не найден данный заказ"})
+			render.JSON(w, r, ResponseOrders{Error: "В базе не найден данный заказ"})
 			return
 		}
 
 		log.Info("SASAT", orders)
 
-		render.JSON(w, r, Response{
+		render.JSON(w, r, ResponseOrders{
 			Orders: orders,
 			Status: strconv.Itoa(http.StatusOK),
 		})
@@ -89,7 +88,7 @@ func getOrdersMonth(log *slog.Logger, orders GetOrders, year, month int) ([]*sto
 	ordersMonth, err := orders.GetOrdersMonth(year, month)
 	if err != nil {
 		log.Info("Order not found", slog.Int("year:", year), slog.Int("month", month), slog.String("error", err.Error()))
-		return nil, fmt.Errorf("order-norm not found: %w", err)
+		return nil, fmt.Errorf("order-dem-norm not found: %w", err)
 	}
 
 	return ordersMonth, nil
@@ -127,40 +126,13 @@ func OrdersMonthMiddleware(log *slog.Logger, orders GetOrders) func(http.Handler
 			ordersMonth, err := getOrdersMonth(log, orders, year, month)
 			if err != nil {
 				log.Info("sql no rows", err)
-				render.JSON(w, r, Response{Error: "В базе не найден данный заказ"})
+				render.JSON(w, r, ResponseOrders{Error: "В базе не найден данный заказ"})
 				return
 			}
 
 			ctx := context.WithValue(r.Context(), "ordersMonth", ordersMonth)
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})
-	}
-}
-
-type ResponseNormOrders struct {
-	NormOrders []*storage.DemResultGlyhari `json:"norm_orders"`
-	Error      string                      `json:"error"`
-	Status     string                      `json:"status"`
-}
-
-func ResultOrdersNorm(log *slog.Logger, norm GetOrders) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		const op = "handler.orders.ResultOrdersNorm"
-
-		readyOrder, err := norm.GetReadyOrders()
-		if err != nil {
-			log.Info("Не удалось вытащить нормированные наряды", err)
-			render.JSON(w, r, ResponseNormOrders{Error: "da bleeeat"})
-			return
-		}
-
-		log.Info("WORKERS", readyOrder)
-		// Формируем ответ
-		render.JSON(w, r, ResponseNormOrders{
-			NormOrders: readyOrder,
-			Status:     strconv.Itoa(http.StatusOK),
-		})
-
 	}
 }
 

@@ -13,22 +13,22 @@ import (
 
 // pkg/http-server/handlers/template/get.go
 
-type TemplateProvider interface {
-	GetTemplateByCode(code string) (*storage.Template, error)
-	GetAllTemplates() ([]*storage.Template, error)
+type FormsJSON interface {
+	GetFormByCode(code string) (*storage.Form, error)
+	GetAllForms() ([]*storage.Form, error)
 }
 
-type ResponseTemplate struct {
-	ID         int                  `json:"ID"`
-	Code       string               `json:"code"`
-	Name       string               `json:"name"`
-	Category   string               `json:"category"`
-	Operations []storage.Operation1 `json:"operations"`
+type ResponseForm struct {
+	ID         int                 `json:"ID"`
+	Code       string              `json:"code"`
+	Name       string              `json:"name"`
+	Category   string              `json:"category"`
+	Operations []storage.Operation `json:"operations"`
 }
 
-func GetTemplateByCode(log *slog.Logger, provider TemplateProvider) http.HandlerFunc {
+func GetFormByCode(log *slog.Logger, provider FormsJSON) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const op = "handlers.template.GetTemplateByCode"
+		const op = "handlers.template.GetFormByCode"
 
 		log.With(
 			slog.String("op", op),
@@ -46,11 +46,11 @@ func GetTemplateByCode(log *slog.Logger, provider TemplateProvider) http.Handler
 		log.With(slog.String("code", code)).Info("Fetching template")
 
 		// Получаем шаблон из хранилища
-		template, err := provider.GetTemplateByCode(code)
+		template, err := provider.GetFormByCode(code)
 		if err != nil {
 			if strings.Contains(err.Error(), "не найден") || errors.Is(err, sql.ErrNoRows) {
-				log.With(slog.String("op", op), slog.String("code", code)).Warn("Template not found")
-				http.Error(w, "Template not found", http.StatusNotFound)
+				log.With(slog.String("op", op), slog.String("code", code)).Warn("Form not found")
+				http.Error(w, "Form not found", http.StatusNotFound)
 				return
 			}
 
@@ -64,7 +64,7 @@ func GetTemplateByCode(log *slog.Logger, provider TemplateProvider) http.Handler
 		}
 
 		// Формируем ответ
-		response := ResponseTemplate{
+		response := ResponseForm{
 			ID:         template.ID,
 			Code:       template.Code,
 			Name:       template.Name,
@@ -72,34 +72,34 @@ func GetTemplateByCode(log *slog.Logger, provider TemplateProvider) http.Handler
 			Operations: template.Operations,
 		}
 
-		log.With(slog.String("code", code)).Info("Successfully fetched template")
+		log.With(slog.String("code", code)).Info("Successfully fetched form")
 
 		// Отправляем JSON
 		render.JSON(w, r, response)
 	}
 }
 
-type ResponseAllTemplates struct {
-	Template []*storage.Template
-	Error    string
+type ResponseAllForm struct {
+	Forms []*storage.Form
+	Error string
 }
 
-func GetAllTemplates(log *slog.Logger, provider TemplateProvider) http.HandlerFunc {
+func GetAllForms(log *slog.Logger, provider FormsJSON) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const op = "handlers.template.GetAllTemplates"
+		const op = "handlers.template.GetAllForms"
 
 		log.With(slog.String("op", op)).Info("Fetching all templates")
 
-		templates, err := provider.GetAllTemplates()
+		templates, err := provider.GetAllForms()
 		if err != nil {
 			log.With(slog.String("op", op), slog.String("error", err.Error())).Error("Failed to fetch templates")
 			http.Error(w, "Internal error", http.StatusInternalServerError)
 			return
 		}
 
-		response := ResponseAllTemplates{
-			Template: templates,
-			Error:    "",
+		response := ResponseAllForm{
+			Forms: templates,
+			Error: "",
 		}
 
 		render.JSON(w, r, response)

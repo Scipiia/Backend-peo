@@ -10,8 +10,8 @@ import (
 
 // storage/mysql/sql/templates.go
 
-func (s *Storage) GetTemplateByCode(code string) (*storage.Template, error) {
-	const op = "storage.mysql.sql.GetTemplateByCode"
+func (s *Storage) GetFormByCode(code string) (*storage.Form, error) {
+	const op = "storage.mysql.sql.GetFormByCode"
 
 	query := `
 		SELECT id, code, name, category, operations 
@@ -19,7 +19,7 @@ func (s *Storage) GetTemplateByCode(code string) (*storage.Template, error) {
 		WHERE code = ? AND is_active = TRUE
 	`
 
-	template := &storage.Template{}
+	template := &storage.Form{}
 
 	// Сканируем JSON как строку
 	var operationsJSON string
@@ -45,8 +45,8 @@ func (s *Storage) GetTemplateByCode(code string) (*storage.Template, error) {
 	return template, nil
 }
 
-func (s *Storage) GetAllTemplates() ([]*storage.Template, error) {
-	const op = "storage.mysql.sql.GetAllTemplates"
+func (s *Storage) GetAllForms() ([]*storage.Form, error) {
+	const op = "storage.mysql.sql.GetAllForms"
 
 	stmt := "SELECT id, code, name, category FROM templates WHERE is_active = TRUE"
 
@@ -56,11 +56,11 @@ func (s *Storage) GetAllTemplates() ([]*storage.Template, error) {
 	}
 	defer rows.Close()
 
-	var templates []*storage.Template
+	var templates []*storage.Form
 	//var operationsJSON string
 
 	for rows.Next() {
-		template := &storage.Template{}
+		template := &storage.Form{}
 
 		err := rows.Scan(&template.ID, &template.Code, &template.Name, &template.Category)
 		if err != nil {

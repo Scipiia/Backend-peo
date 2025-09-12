@@ -2,6 +2,7 @@ package save
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/go-chi/render"
 	"log/slog"
 	"net/http"
@@ -9,49 +10,71 @@ import (
 )
 
 type ResultWorkers interface {
-	SaveOperationExecutors(req storage.SaveExecutorsRequest) error
+	SaveOperationWorkers(req storage.SaveWorkers) error
 }
 
 // handlers/executor/save.go
-func SaveExecutorsHandler(log *slog.Logger, result ResultWorkers) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		const op = "handlers.executor.SaveExecutorsHandler"
+// handlers/executor/handlers.go
 
-		var req storage.SaveExecutorsRequest
+func SaveWorkersOperation(log *slog.Logger, result ResultWorkers) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		const op = "handlers.executor.SaveWorkersOperation"
+
+		var req storage.SaveWorkers
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 			log.Error("Invalid JSON", slog.String("op", op), slog.String("error", err.Error()))
-			http.Error(w, "Invalid request body", http.StatusBadRequest)
+			http.Error(w, "Bad request: invalid JSON", http.StatusBadRequest)
 			return
 		}
 
-		if req.ProductID == 0 {
-			http.Error(w, "product_id is required", http.StatusBadRequest)
+		// 🔹 Проверка: не пусто ли
+		if len(req.Assignments) == 0 {
+			log.Warn("Empty assignments list", slog.String("op", op))
+			http.Error(w, "No assignments provided", http.StatusBadRequest)
 			return
 		}
 
-		if len(req.Executors) == 0 {
-			http.Error(w, "executors list is empty", http.StatusBadRequest)
-			return
+		// 🔹 Проверка каждого элемента
+		for i, a := range req.Assignments {
+			if a.ProductID == 0 {
+				log.Error("Missing product_id", slog.Int("index", i), slog.Any("assignment", a))
+				http.Error(w, fmt.Sprintf("Assignment %d: product_id is required", i), http.StatusBadRequest)
+				return
+			}
+			if a.EmployeeID == 0 {
+				log.Error("Missing employee_id", slog.Int("index", i), slog.Any("assignment", a))
+				http.Error(w, fmt.Sprintf("Assignment %d: employee_id is required", i), http.StatusBadRequest)
+				return
+			}
+			if a.OperationName == "" {
+				log.Error("Missing operation_name", slog.Int("index", i), slog.Any("assignment", a))
+				http.Error(w, fmt.Sprintf("Assignment %d: operation_name is required", i), http.StatusBadRequest)
+				return
+			}
 		}
 
-		log.Info("Назначение исполнителей",
-			slog.Int64("product_id", req.ProductID),
-			slog.Int("executors_count", len(req.Executors)),
+		log.Info("Received assignments",
+			slog.Int("total", len(req.Assignments)),
+			slog.Any("sample", req.Assignments[0]),
 		)
 
-		err := result.SaveOperationExecutors(req)
+		// 🔹 Передаём в storage
+		err := result.SaveOperationWorkers(req)
 		if err != nil {
-			log.Error("Ошибка сохранения исполнителей", slog.String("op", op), slog.String("error", err.Error()))
-			http.Error(w, "Internal error", http.StatusInternalServerError)
+			log.Error("Failed to save assignments", slog.String("op", op), slog.String("error", err.Error()))
+			http.Error(w, "Internal server error", http.StatusInternalServerError)
 			return
 		}
 
-		log.Info("Исполнители сохранены", slog.Int64("product_id", req.ProductID))
+		log.Info("Assignments saved successfully",
+			slog.Int("saved_count", len(req.Assignments)),
+		)
 
+		// 🔹 Ответ
 		render.JSON(w, r, map[string]interface{}{
-			"status":     "success",
-			"product_id": req.ProductID,
-			"assigned":   len(req.Executors),
+			"status":  "success",
+			"saved":   len(req.Assignments),
+			"details": req.Assignments, // опционально — для отладки
 		})
 	}
 }

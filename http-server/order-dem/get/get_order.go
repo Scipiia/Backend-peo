@@ -1,4 +1,4 @@
-package getorder
+package get
 
 import (
 	"context"
@@ -15,7 +15,7 @@ type Request struct {
 	ID int `json:"id"`
 }
 
-type Response struct {
+type ResponseOrder struct {
 	ID       int    `json:"id"`
 	OrderNum string `json:"order_num"`
 	Creator  int    `json:"creator"`
@@ -32,18 +32,11 @@ type Response struct {
 
 type OrderDetails interface {
 	GetOrderDetails(id int) (*storage.ResultOrderDetails, error)
-	GetForm(id int) (*storage.FormPeo, error)
-	GetWorkers() ([]*storage.Workers, error)
-	GetGlyhari(id int) (*storage.OrderData, error)
-	GetWindows(id int) (*storage.OrderData, error)
-	GetDoor(id int) (*storage.OrderData, error)
-	GetVitraj(id int) (*storage.OrderData, error)
-	GetLoggia(id int) (*storage.OrderData, error)
 }
 
 // Общая функция для получения данных о заказе
 func getOrderDetails(log *slog.Logger, order OrderDetails, id int) (*storage.ResultOrderDetails, error) {
-	const op = "handler.get-order-norm-details"
+	const op = "handler.get-norm-details"
 
 	log = log.With(
 		slog.String("op", op),
@@ -52,8 +45,10 @@ func getOrderDetails(log *slog.Logger, order OrderDetails, id int) (*storage.Res
 	details, err := order.GetOrderDetails(id)
 	if err != nil {
 		log.Info("Order not found", slog.Int("id", id), slog.String("error", err.Error()))
-		return nil, fmt.Errorf("order-norm not found: %w", err)
+		return nil, fmt.Errorf("order-dem not found: %w", err)
 	}
+
+	log.Info("PIIIIIIZDA", details)
 
 	return details, nil
 }
@@ -65,15 +60,15 @@ func OrderDetailsMiddleware(log *slog.Logger, order OrderDetails) func(http.Hand
 			//idStr := r.URL.Query().Get("id")
 			idStr := chi.URLParam(r, "id")
 			if idStr == "" {
-				log.Error("Missing order-norm ID in query parameters")
-				http.Error(w, "Missing order-norm ID", http.StatusBadRequest)
+				log.Error("Missing order-dem-norm ID in query parameters")
+				http.Error(w, "Missing order-dem-norm ID", http.StatusBadRequest)
 				return
 			}
 
 			id, err := strconv.Atoi(idStr)
 			if err != nil {
-				http.Error(w, "Invalid order-norm ID", http.StatusBadRequest)
-				log.Error("Invalid order-norm ID", slog.String("error", err.Error()))
+				http.Error(w, "Invalid order-dem-norm ID", http.StatusBadRequest)
+				log.Error("Invalid order-dem-norm ID", slog.String("error", err.Error()))
 				return
 			}
 
@@ -91,8 +86,8 @@ func OrderDetailsMiddleware(log *slog.Logger, order OrderDetails) func(http.Hand
 	}
 }
 
-// Обработчик New
-func New(log *slog.Logger) http.HandlerFunc {
+// Обработчик GetOrderDetails
+func GetOrderDetails(log *slog.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		details, ok := r.Context().Value("orderDetails").(*storage.ResultOrderDetails)
 		if !ok {
@@ -100,7 +95,7 @@ func New(log *slog.Logger) http.HandlerFunc {
 			return
 		}
 
-		render.JSON(w, r, Response{
+		render.JSON(w, r, ResponseOrder{
 			ID:            details.Order.ID,
 			OrderNum:      details.Order.OrderNum,
 			Creator:       details.Order.Creator,

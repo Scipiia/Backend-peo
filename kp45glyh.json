@@ -1,227 +1,200 @@
 [
   {
-    "name": "nastr_napil_obor",
+    "name": "napil_ram_stv",
+    "type": "number",
+    "count": 1,
+    "label": "Напиловка рам и створок",
+    "value":  0.450,
+    "minutes": 27,
+    "required": true
+  },
+  {
+    "name": "obr_petli",
+    "type": "number",
+    "count": 1,
+    "label": "Обработка под петли",
+    "value":  0.333,
+    "minutes": 20,
+    "required": true
+  },
+  {
+    "name": "obr_zamok_rychky",
+    "type": "number",
+    "count": 1,
+    "label": "Обработка под замок; ручку",
+    "value":  0.167,
+    "minutes": 10,
+    "required": true
+  },
+  {
+    "name": "obr_stv_shping_otvet",
+    "type": "number",
+    "count": 1,
+    "label": "Обработка створки под шпингалет; ответку",
+    "value":  0.167,
+    "minutes": 10,
+    "required": true
+  },
+  {
+    "name": "obr_ram_shping",
+    "type": "number",
+    "count": 1,
+    "label": "Обработка рамы под шпингалет",
+    "value":  0.100,
+    "minutes": 6,
+    "required": true
+  },
+  {
+    "name": "yst_zakl_ram_stv",
+    "type": "number",
+    "count": 1,
+    "label": "Установка закладных в раму; створку",
+    "value":  0.167,
+    "minutes": 10,
+    "required": true
+  },
+  {
+    "name": "sverl_shtift_ram_stv",
+    "type": "number",
+    "count": 1,
+    "label": "Сверловка отверстий под штифты на створке и раме",
+    "value":  0.467,
+    "minutes": 28,
+    "required": true
+  },
+  {
+    "name": "frez_stoik_2rigel_len_stv",
+    "type": "number",
+    "count": 1,
+    "label": "Фрезеровка стойки и 2х ригелей ленивой створки",
+    "value":  0.200,
+    "minutes": 12,
+    "required": true
+  },
+  {
+    "name": "sbor_ram",
+    "type": "number",
+    "count": 1,
+    "label": "Сборка рамы",
+    "value":  0.150,
+    "minutes": 9,
+    "required": true
+  },
+  {
+    "name": "shtift_ram",
+    "type": "number",
+    "count": 1,
+    "label": "Штифтовка рамы",
+    "value": 0.133,
+    "minutes": 8,
+    "required": true
+  },
+  {
+    "name": "sbor_stv",
+    "type": "number",
+    "count": 1,
+    "label": "Сборка створок",
+    "value": 0.417,
+    "minutes": 25,
+    "required": true
+  },
+  {
+    "name": "shtift_stv",
+    "type": "number",
+    "count": 1,
+    "label": "Штифтовка створок",
+    "value": 0.500,
+    "minutes": 30,
+    "required": true
+  },
+  {
+    "name": "nanes_kleya",
+    "type": "number",
+    "count": 1,
+    "label": "Нанесение клея",
+    "value": 0.250,
+    "minutes": 15,
+    "required": true
+  },
+  {
+    "name": "yst_ypl_ram",
+    "type": "number",
+    "count": 1,
+    "label": "Установка уплотнителей: рама",
+    "value": 0.167,
+    "minutes": 10,
+    "required": true
+  },
+  {
+    "name": "yst_ypl_stv",
+    "type": "number",
+    "count": 1,
+    "label": "Установка уплотнителей: створки",
+    "value": 0.433,
+    "minutes": 26,
+    "required": true
+  },
+  {
+    "name": "yst_zamok_nakl_primk_pr",
+    "type": "number",
+    "count": 1,
+    "label": "Установка замка; накладок; примыкающего профиля",
+    "value": 0.100,
+    "minutes": 6,
+    "required": true
+  },
+  {
+    "name": "yst_shping_otvetk_primk_pr",
+    "type": "number",
+    "count": 1,
+    "label": "Установка шпингалета; ответки; примыкающего профиля",
+    "value": 0.333,
+    "minutes": 20,
+    "required": true
+  },
+  {
+    "name": "sbor_petli_ram",
+    "type": "number",
+    "count": 1,
+    "label": "Сборка петель рама",
+    "value": 0.200,
+    "minutes": 12,
+    "required": true
+  },
+  {
+    "name": "sbor_yst_porog",
     "type": "number",
     "count": 0,
-    "label": "Настройка оборудования для напиловки",
-    "value":  0.050,
-    "minutes": 3,
+    "label": "Сборка и установка порога",
+    "value": 0,
+    "minutes": 0,
     "required": true
   },
   {
-    "name": "napil_stv",
+    "name": "navesh",
     "type": "number",
     "count": 1,
-    "label": "Напиловка створки",
-    "value":  0.067,
-    "minutes": 4,
+    "label": "Навешивание",
+    "value": 0.500,
+    "minutes": 30,
     "required": true
   },
   {
-    "name": "napil_ram",
+    "name": "yst_adapt",
     "type": "number",
     "count": 1,
-    "label": "Напиловка рамы",
-    "value":  0.067,
-    "minutes": 4,
+    "label": "Установка адаптера",
+    "value": 0,
+    "minutes": 0,
     "required": true
   },
   {
-    "name": "napil_don_soed",
+    "name": "zashivka",
     "type": "number",
     "count": 1,
-    "label": "Напиловка  донника, соединителя",
-    "value":  0.017,
-    "minutes": 1,
-    "required": true
-  },
-  {
-    "name": "impost_napil",
-    "type": "number",
-    "count": 1,
-    "label": "Напиловка импоста",
-    "value":  0.017,
-    "minutes": 1,
-    "required": true
-  },
-  {
-    "name": "nastr_pbx",
-    "type": "number",
-    "count": 1,
-    "label": "Настройка станка PBX",
-    "value":  0.083,
-    "minutes": 5,
-    "required": true
-  },
-  {
-    "name": "frezer_vo2",
-    "type": "number",
-    "count": 1,
-    "label": "Фрезеровка водоотливных отверстий (2шт)",
-    "value":  0.083,
-    "minutes": 5,
-    "required": true
-  },
-  {
-    "name": "meh_obr_rychka",
-    "type": "number",
-    "count": 1,
-    "label": "Мех обработка под ручку",
-    "value":  0.017,
-    "minutes": 1,
-    "required": true
-  },
-  {
-    "name": "sles_obr_yst_furn",
-    "type": "number",
-    "count": 1,
-    "label": "Слесарная обработка под установку фурнитуры.",
-    "value":  0.033,
-    "minutes": 2,
-    "required": true
-  },
-  {
-    "name": "promej_sb_stv",
-    "type": "number",
-    "count": 1,
-    "label": "Промежуточная сборка створки",
-    "value": 0.150,
-    "minutes": 9,
-    "required": true
-  },
-  {
-    "name": "promej_sb_ram",
-    "type": "number",
-    "count": 1,
-    "label": "Промежуточная сборка рам",
-    "value": 0.117,
-    "minutes": 7,
-    "required": true
-  },
-  {
-    "name": "imp_frezer",
-    "type": "number",
-    "count": 1,
-    "label": "Импост (Фрезеровка)",
-    "value": 0.033,
-    "minutes": 2,
-    "required": true
-  },
-  {
-    "name": "impost_sverlo",
-    "type": "number",
-    "count": 1,
-    "label": "Импост (Сверловка)",
-    "value": 0.017,
-    "minutes": 1,
-    "required": true
-  },
-  {
-    "name": "impost_yst",
-    "type": "number",
-    "count": 1,
-    "label": "Импост (установка)",
-    "value": 0.033,
-    "minutes": 2,
-    "required": true
-  },
-  {
-    "name": "opres_nastr",
-    "type": "number",
-    "count": 1,
-    "label": "Опрессовка (настройка)",
-    "value": 0.075,
-    "minutes": 4.5,
-    "required": true
-  },
-  {
-    "name": "opres_stv",
-    "type": "number",
-    "count": 1,
-    "label": "Опрессовка створок",
-    "value": 0.047,
-    "minutes": 2.8,
-    "required": true
-  },
-  {
-    "name": "opres_ram",
-    "type": "number",
-    "count": 1,
-    "label": "Опресовка рам",
-    "value": 0.047,
-    "minutes": 2.8,
-    "required": true
-  },
-  {
-    "name": "yst_ypl_shtift",
-    "type": "number",
-    "count": 1,
-    "label": "Установка уплотнителей, штифтовка",
-    "value": 0.117,
-    "minutes": 7,
-    "required": true
-  },
-  {
-    "name": "rybka_tag",
-    "type": "number",
-    "count": 1,
-    "label": "Рубка тяг",
-    "value": 0.008,
-    "minutes": 0.5,
-    "required": true
-  },
-  {
-    "name": "podg_tag_yst_stv",
-    "type": "number",
-    "count": 1,
-    "label": "Подготовка тяг под установку створки",
-    "value": 0.017,
-    "minutes": 1,
-    "required": true
-  },
-  {
-    "name": "sbor_rychek",
-    "type": "number",
-    "count": 1,
-    "label": "Сборка ручек",
-    "value": 0.025,
-    "minutes": 1.5,
-    "required": true
-  },
-  {
-    "name": "sbor_petli",
-    "type": "number",
-    "count": 1,
-    "label": "сборка петель",
-    "value": 0.025,
-    "minutes": 1.5,
-    "required": true
-  },
-  {
-    "name": "yst_furn",
-    "type": "number",
-    "count": 1,
-    "label": "Установка фурнитуры",
-    "value": 0.083,
-    "minutes": 5,
-    "required": true
-  },
-  {
-    "name": "navesh_ram",
-    "type": "number",
-    "count": 1,
-    "label": "навешивание на раму (от кол-ва ств)",
-    "value": 0.150,
-    "minutes": 9,
-    "required": true
-  },
-  {
-    "name": "yst_zapoln",
-    "type": "number",
-    "count": 1,
-    "label": "Установка заполнения",
-    "value": 0.150,
-    "minutes": 9,
+    "label": "Зашивка",
+    "value": 0.500,
+    "minutes": 30,
     "required": true
   }
 ]

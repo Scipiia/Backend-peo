@@ -13,11 +13,15 @@ import (
 type ResultGetNorm interface {
 	GetNormOrder(id int64) (*storage.GetOrderDetails, error)
 	GetNormOrders(orderNum, orderType string) ([]storage.GetOrderDetails, error)
+	GetSimpleOrderReport(orderNum string) (*storage.OrderFinalReport, error)
+	GetFinalNormOrders() ([]storage.ReportFinalOrders, error)
+	GetNormOrdersByOrderNum(orderNum string) ([]*storage.GetOrderDetails, error)
+	GetNormOrderIdSub(id int64) ([]*storage.GetOrderDetails, error)
 }
 
 func GetNormOrder(log *slog.Logger, result ResultGetNorm) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const op = "handlers.order-norm.get.GetNormOrder"
+		const op = "handlers.order-dem-norm.get.GetNormOrder"
 
 		// Извлекаем id из URL
 		idStr := chi.URLParam(r, "id")
@@ -43,6 +47,29 @@ func GetNormOrder(log *slog.Logger, result ResultGetNorm) http.HandlerFunc {
 
 		// Успешный ответ
 		render.JSON(w, r, norm)
+	}
+}
+
+func GetNormOrdersOrderNum(log *slog.Logger, result ResultGetNorm) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		const op = "handlers.order-norm.get.GetNormOrders"
+
+		orderNum := r.URL.Query().Get("order_num")
+		//orderNum := chi.URLParam(r, "order_num")
+
+		log.With(
+			slog.String("op", op),
+			slog.String("order_num", orderNum),
+		).Info("Запрос на получение заказов")
+
+		orders, err := result.GetNormOrdersByOrderNum(orderNum)
+		if err != nil {
+			log.With(slog.String("op", op), slog.String("error", err.Error())).Error("Ошибка при получении нормировок по номеру заказа")
+			http.Error(w, "Внутренняя ошибка сервера", http.StatusInternalServerError)
+			return
+		}
+
+		render.JSON(w, r, orders)
 	}
 }
 
@@ -72,5 +99,71 @@ func GetNormOrders(log *slog.Logger, result ResultGetNorm) http.HandlerFunc {
 
 		// Возвращаем JSON
 		render.JSON(w, r, items)
+	}
+}
+
+func FinalReportNormOrder(log *slog.Logger, result ResultGetNorm) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		const op = "handlers.order-norm.get.FinalReportNormOrder"
+
+		orderNum := chi.URLParam(r, "order_num")
+		//orderNum, err := strconv.ParseInt(idStr, 10, 64)
+		//if err != nil {
+		//	http.Error(w, "Invalid orderNum", http.StatusBadRequest)
+		//	return
+		//}
+
+		log.Info("Получение нормировки", slog.String("orderNum", orderNum))
+
+		report, err := result.GetSimpleOrderReport(orderNum)
+		if err != nil {
+			log.With(slog.String("op", op), slog.String("error", err.Error())).Error("Ошибка при получении заказов по номеру заказа")
+			http.Error(w, "Внутренняя ошибка сервера", http.StatusInternalServerError)
+			return
+		}
+
+		log.Info("ASASASSASTTTTTTT", report)
+
+		render.JSON(w, r, report)
+	}
+}
+
+func FinalReportNormOrders(log *slog.Logger, result ResultGetNorm) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		const op = "handlers.order-norm.get.FinalReportNormOrders"
+
+		orders, err := result.GetFinalNormOrders()
+		if err != nil {
+			log.With(slog.String("op", op), slog.String("error", err.Error())).Error("Ошибка при получении заказов по номеру заказа")
+			http.Error(w, "Внутренняя ошибка сервера", http.StatusInternalServerError)
+			return
+		}
+
+		render.JSON(w, r, orders)
+	}
+}
+
+func DoubleReportOrder(log *slog.Logger, result ResultGetNorm) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		const op = "handlers.order-norm.get.DoubleReportOrder"
+
+		// Извлекаем id из URL
+		idStr := chi.URLParam(r, "id")
+		id, err := strconv.ParseInt(idStr, 10, 64)
+		if err != nil {
+			http.Error(w, "Invalid ID", http.StatusBadRequest)
+			return
+		}
+
+		log.Info("Получение нормировки", slog.Int64("id", id))
+
+		sub, err := result.GetNormOrderIdSub(id)
+		if err != nil {
+			log.With(slog.String("op", op), slog.String("error", err.Error())).Error("Ошибка при получении заказов по номеру заказа")
+			http.Error(w, "Внутренняя ошибка сервера", http.StatusInternalServerError)
+			return
+		}
+
+		render.JSON(w, r, sub)
 	}
 }
