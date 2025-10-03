@@ -14,7 +14,7 @@ func (s *Storage) GetFormByCode(code string) (*storage.Form, error) {
 	const op = "storage.mysql.sql.GetFormByCode"
 
 	query := `
-		SELECT id, code, name, category, operations 
+		SELECT id, code, name, category, operations, systema, izd, profile 
 		FROM templates 
 		WHERE code = ? AND is_active = TRUE
 	`
@@ -29,6 +29,9 @@ func (s *Storage) GetFormByCode(code string) (*storage.Form, error) {
 		&template.Name,
 		&template.Category,
 		&operationsJSON,
+		&template.Systema,
+		&template.TypeIzd,
+		&template.Profile,
 	)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -48,7 +51,7 @@ func (s *Storage) GetFormByCode(code string) (*storage.Form, error) {
 func (s *Storage) GetAllForms() ([]*storage.Form, error) {
 	const op = "storage.mysql.sql.GetAllForms"
 
-	stmt := "SELECT id, code, name, category FROM templates WHERE is_active = TRUE"
+	stmt := "SELECT id, code, name, category, systema, izd, profile FROM templates WHERE is_active = TRUE"
 
 	rows, err := s.db.Query(stmt)
 	if err != nil {
@@ -62,7 +65,7 @@ func (s *Storage) GetAllForms() ([]*storage.Form, error) {
 	for rows.Next() {
 		template := &storage.Form{}
 
-		err := rows.Scan(&template.ID, &template.Code, &template.Name, &template.Category)
+		err := rows.Scan(&template.ID, &template.Code, &template.Name, &template.Category, &template.Systema, &template.TypeIzd, &template.Profile)
 		if err != nil {
 			return nil, fmt.Errorf("%s: ошибка сканирования строки: %w", op, err)
 		}

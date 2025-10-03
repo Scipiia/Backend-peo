@@ -220,7 +220,7 @@ func (s *Storage) GetNormOrdersByOrderNum(orderNum string) ([]*storage.GetOrderD
 func (s *Storage) GetNormOrders(orderNum, orderType string) ([]storage.GetOrderDetails, error) {
 	const op = "storage.mysql.GetNormOrders"
 
-	stmt := `SELECT id, order_num, name, count, total_time, created_at, type, part_type, parent_product_id, parent_assembly FROM product_instances 
+	stmt := `SELECT id, order_num, name, count, total_time, created_at, type, part_type, parent_product_id, parent_assembly, status FROM product_instances 
         	WHERE 1=1 AND (?='' OR order_num LIKE CONCAT('%', ?, '%')) AND (? = '' OR type = ?) AND part_type='main' ORDER BY created_at DESC`
 
 	rows, err := s.db.Query(stmt, orderNum, orderNum, orderType, orderType)
@@ -243,6 +243,7 @@ func (s *Storage) GetNormOrders(orderNum, orderType string) ([]storage.GetOrderD
 			&item.PartType,
 			&item.ParentProductID,
 			&item.ParentAssembly,
+			&item.Status,
 		)
 		if err != nil {
 			return nil, fmt.Errorf("%s: сканирование: %w", op, err)

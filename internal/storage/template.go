@@ -6,6 +6,9 @@ type Form struct {
 	Code       string      `json:"code"`
 	Name       string      `json:"name"`
 	Category   string      `json:"category"`
+	Systema    *string     `json:"systema"`
+	TypeIzd    *string     `json:"type_izd"`
+	Profile    *string     `json:"profile"`
 	Operations []Operation `json:"operations"`
 }
 

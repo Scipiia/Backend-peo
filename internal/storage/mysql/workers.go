@@ -6,10 +6,10 @@ import (
 	"vue-golang/internal/storage"
 )
 
-func (s *Storage) GetWorkers() ([]storage.GetWorkers, error) {
+func (s *Storage) GetAllWorkers() ([]storage.GetWorkers, error) {
 	const op = "storage.mysql.GetWorkers"
 
-	stmt := "SELECT id, name, code FROM employees WHERE is_active = TRUE"
+	stmt := "SELECT id, name FROM employees WHERE is_active = TRUE"
 
 	var workers []storage.GetWorkers
 
@@ -22,7 +22,7 @@ func (s *Storage) GetWorkers() ([]storage.GetWorkers, error) {
 	for rows.Next() {
 		var worker storage.GetWorkers
 
-		err := rows.Scan(&worker.ID, &worker.Name, &worker.Code)
+		err := rows.Scan(&worker.ID, &worker.Name)
 		if err != nil {
 			return nil, fmt.Errorf("%s: failed to scan row for workers: %w", op, err)
 		}
@@ -43,6 +43,20 @@ func (s *Storage) SaveOperationWorkers(req storage.SaveWorkers) error {
 		return fmt.Errorf("%s: begin transaction: %w", op, err)
 	}
 	defer tx.Rollback()
+
+	// 🔥 УДАЛЯЕМ ВСЕ НАЗНАЧЕНИЯ ДЛЯ СБОРКИ: корень + прямые дети
+	_, err = tx.Exec(`
+		DELETE FROM operation_executors
+		WHERE product_id = ? 
+		   OR product_id IN (
+		       SELECT * FROM (
+		           SELECT id FROM product_instances WHERE parent_product_id = ?
+		       ) AS tmp
+		   )
+	`, req.RootProductID, req.RootProductID)
+	if err != nil {
+		return fmt.Errorf("%s: delete old assignments for root=%d: %w", op, req.RootProductID, err)
+	}
 
 	stmt, err := tx.Prepare(`
         INSERT INTO operation_executors 
@@ -73,6 +87,7 @@ func (s *Storage) SaveOperationWorkers(req storage.SaveWorkers) error {
 		}
 	}
 
+	fmt.Println("ROOOOOOT", req.RootProductID)
 	// 2. Если указано — обновляем статус всей сборки
 	if req.UpdateStatus != "" && req.RootProductID != 0 {
 		// Обновляем main + все его sub

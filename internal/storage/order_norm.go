@@ -16,6 +16,10 @@ type OrderNormDetails struct {
 	Customer        string          `json:"customer"`
 	Position        int             `json:"position"`
 	Status          string          `json:"status"`
+	Systema         string          `json:"systema"`
+	TypeIzd         string          `json:"type_izd"`
+	Profile         string          `json:"profile"`
+	Sqr             float64         `json:"sqr"`
 }
 
 type NormOperation struct {
@@ -39,4 +43,5 @@ type GetOrderDetails struct {
 	PartType        string          `json:"part_type"`
 	ParentAssembly  string          `json:"parent_assembly"`
 	ParentProductID *int64          `json:"parent_product_id"`
+	Status          *string         `json:"status"`
 }

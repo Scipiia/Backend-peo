@@ -17,6 +17,9 @@ type ResultGetNorm interface {
 	GetFinalNormOrders() ([]storage.ReportFinalOrders, error)
 	GetNormOrdersByOrderNum(orderNum string) ([]*storage.GetOrderDetails, error)
 	GetNormOrderIdSub(id int64) ([]*storage.GetOrderDetails, error)
+
+	//TODO new logic
+	GetPEOProductsByCategory() ([]storage.PEOProduct, []storage.GetWorkers, error)
 }
 
 func GetNormOrder(log *slog.Logger, result ResultGetNorm) http.HandlerFunc {
@@ -132,14 +135,23 @@ func FinalReportNormOrders(log *slog.Logger, result ResultGetNorm) http.HandlerF
 	return func(w http.ResponseWriter, r *http.Request) {
 		const op = "handlers.order-norm.get.FinalReportNormOrders"
 
-		orders, err := result.GetFinalNormOrders()
+		//orders, err := result.GetFinalNormOrders()
+		category, i, err := result.GetPEOProductsByCategory()
 		if err != nil {
 			log.With(slog.String("op", op), slog.String("error", err.Error())).Error("Ошибка при получении заказов по номеру заказа")
 			http.Error(w, "Внутренняя ошибка сервера", http.StatusInternalServerError)
 			return
 		}
 
-		render.JSON(w, r, orders)
+		// Отправить как JSON:
+		response := map[string]interface{}{
+			"employees": i,
+			"products":  category,
+		}
+
+		log.Info("REEEESSPPPP", response)
+
+		render.JSON(w, r, response)
 	}
 }
 

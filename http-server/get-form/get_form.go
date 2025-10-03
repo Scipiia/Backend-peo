@@ -23,6 +23,9 @@ type ResponseForm struct {
 	Code       string              `json:"code"`
 	Name       string              `json:"name"`
 	Category   string              `json:"category"`
+	Systema    *string             `json:"systema"`
+	TypeIzd    *string             `json:"type_izd"`
+	Profile    *string             `json:"profile"`
 	Operations []storage.Operation `json:"operations"`
 }
 
@@ -69,12 +72,16 @@ func GetFormByCode(log *slog.Logger, provider FormsJSON) http.HandlerFunc {
 			Code:       template.Code,
 			Name:       template.Name,
 			Category:   template.Category,
+			Systema:    template.Systema,
+			TypeIzd:    template.TypeIzd,
+			Profile:    template.Profile,
 			Operations: template.Operations,
 		}
 
 		log.With(slog.String("code", code)).Info("Successfully fetched form")
 
 		// Отправляем JSON
+		log.Info("FOOORM1", response)
 		render.JSON(w, r, response)
 	}
 }

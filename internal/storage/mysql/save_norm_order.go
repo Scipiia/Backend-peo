@@ -9,10 +9,11 @@ import (
 func (s *Storage) SaveNormOrder(result storage.OrderNormDetails) (int64, error) {
 	const op = "storage.mysql.sql.SaveNormOrder"
 	stmt := `INSERT INTO product_instances (order_num, template_code, name, count, total_time, type, part_type, 
-            parent_assembly, parent_product_id, customer, position, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+            parent_assembly, parent_product_id, customer, position, status, systema, type_izd, profile, sqr) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?)`
 
 	exec, err := s.db.Exec(stmt, result.OrderNum, result.TemplateCode, result.Name, result.Count, result.TotalTime,
-		result.Type, result.PartType, result.ParentAssembly, result.ParentProductID, result.Customer, result.Position, result.Status)
+		result.Type, result.PartType, result.ParentAssembly, result.ParentProductID, result.Customer, result.Position,
+		result.Status, result.Systema, result.TypeIzd, result.Profile, result.Sqr)
 	if err != nil {
 		if mysqlErr, ok := err.(*mysql.MySQLError); ok && mysqlErr.Number == 1452 {
 			return 0, fmt.Errorf("%s: Ошибка сохранения нормировки в базу='%s'", op, err)
