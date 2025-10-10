@@ -176,14 +176,15 @@ func (s *Storage) GetSimpleOrderReport(orderNum string) (*storage.OrderFinalRepo
 
 // TODO new logic
 
-func (s *Storage) GetPEOProductsByCategory() ([]storage.PEOProduct, []storage.GetWorkers, error) {
-	const op = "storage.mysql.GetPEOProductsByCategory"
+type ProductFilter struct {
+	From     time.Time
+	To       time.Time
+	OrderNum string
+	Type     []string
+}
 
-	// Шаг 1: Получаем всех сотрудников нужной бригады
-	//employees, err := s.getEmployeesByTeam()
-	//if err != nil {
-	//	return nil, nil, fmt.Errorf("%s: %w", op, err)
-	//}
+func (s *Storage) GetPEOProductsByCategory(filter ProductFilter) ([]storage.PEOProduct, []storage.GetWorkers, error) {
+	const op = "storage.mysql.GetPEOProductsByCategory"
 
 	employees, err := s.GetAllWorkers()
 	if err != nil {
@@ -201,30 +202,71 @@ func (s *Storage) GetPEOProductsByCategory() ([]storage.PEOProduct, []storage.Ge
 		employeeIDs[i] = emp.ID
 	}
 
-	// Шаг 3: Получаем изделия нужной категории (только assigned, текущий месяц)
-	//start, end := getCurrentMonthRange()
-	//typePlaceholders := placeholders(len(types))
+	// Шаг 2: Формируем SQL с динамическими условиями
+	var conditions []string
+	var args []interface{}
+
+	// Всегда: статус assigned
+	conditions = append(conditions, "p.status = ?")
+	args = append(args, "assigned")
+
+	// Фильтр по дате: created_at >= from
+	if !filter.From.IsZero() {
+		conditions = append(conditions, "p.created_at >= ?")
+		args = append(args, filter.From)
+	}
+
+	// Фильтр по дате: created_at < to + 1 день
+	if !filter.To.IsZero() {
+		nextDay := filter.To.AddDate(0, 0, 1) // чтобы включить весь день
+		conditions = append(conditions, "p.created_at < ?")
+		args = append(args, nextDay)
+	}
+
+	// Фильтр по номеру заказа
+	if filter.OrderNum != "" {
+		conditions = append(conditions, "p.order_num LIKE ?")
+		args = append(args, "%"+filter.OrderNum+"%")
+	}
+
+	// После сбора других условий:
+	if len(filter.Type) > 0 {
+		// Создаём (?, ?, ?)
+		placeholders := make([]string, len(filter.Type))
+		argsForTypes := make([]interface{}, len(filter.Type))
+		for i, t := range filter.Type {
+			placeholders[i] = "?"
+			argsForTypes[i] = t
+		}
+		conditions = append(conditions, fmt.Sprintf("p.type IN (%s)", strings.Join(placeholders, ",")))
+		args = append(args, argsForTypes...)
+	}
+
+	// Собираем WHERE
+	whereClause := ""
+	if len(conditions) > 0 {
+		whereClause = "WHERE " + strings.Join(conditions, " AND ")
+	}
 
 	//type IN (` + typePlaceholders + `)
 	queryProducts := `
 		SELECT 
-			p.id, p.order_num, p.customer, p.total_time, p.created_at, p.status, p.part_type, p.type, p.parent_product_id, p.parent_assembly, c.short_name_customer,
+			p.id, p.order_num, p.customer, p.total_time, p.created_at, p.status,
+			p.part_type, p.type, p.parent_product_id, p.parent_assembly,
+			c.short_name_customer,
 			p.systema, p.type_izd, p.profile, p.count, p.sqr
-		FROM product_instances p 
+		FROM product_instances p
 		LEFT JOIN customer c ON p.customer = c.name
-		WHERE status = 'assigned'
-		  AND created_at >= ?
-		  AND created_at < ?
-		ORDER BY order_num, created_at
+		` + whereClause + `
+		ORDER BY p.order_num, p.created_at
 	`
 
-	start, end := getCurrentMonthRange()
-
-	rowsProducts, err := s.db.Query(queryProducts, start, end)
+	fmt.Println("ZAPROS", queryProducts)
+	// Выполняем запрос
+	rowsProducts, err := s.db.Query(queryProducts, args...)
 	if err != nil {
 		return nil, nil, fmt.Errorf("%s: ошибка получения изделий: %w", op, err)
 	}
-
 	defer rowsProducts.Close()
 
 	// Собираем изделия
@@ -232,12 +274,24 @@ func (s *Storage) GetPEOProductsByCategory() ([]storage.PEOProduct, []storage.Ge
 	var productList []storage.PEOProduct
 
 	for rowsProducts.Next() {
-		var id int64
-		var orderNum, customer, status, partType, Type, parentAssembly, customerType, systema, typeIzd, profile string
-		var totalTime, sqr float64
-		var createdAt time.Time
-		var count int
-		var parentProductID sql.NullInt64
+		var (
+			id              int64
+			orderNum        string
+			customer        string
+			totalTime       float64
+			createdAt       time.Time
+			status          string
+			partType        string
+			Type            string
+			parentProductID sql.NullInt64
+			parentAssembly  string
+			customerType    string
+			systema         string
+			typeIzd         string
+			profile         string
+			count           int
+			sqr             float64
+		)
 
 		err := rowsProducts.Scan(&id, &orderNum, &customer, &totalTime, &createdAt, &status, &partType, &Type, &parentProductID, &parentAssembly,
 			&customerType, &systema, &typeIzd, &profile, &count, &sqr)
@@ -246,7 +300,6 @@ func (s *Storage) GetPEOProductsByCategory() ([]storage.PEOProduct, []storage.Ge
 		}
 
 		// Обработка NULL для строк
-
 		if customerType == "" {
 			customerType = "не определено" // или ""
 		}
@@ -310,7 +363,7 @@ func (s *Storage) GetPEOProductsByCategory() ([]storage.PEOProduct, []storage.Ge
 		  AND employee_id IN (` + placeholders(len(employeeIDs)) + `)
 	`
 
-	args := make([]interface{}, 0, len(productIDs)+len(employeeIDs))
+	args = make([]interface{}, 0, len(productIDs)+len(employeeIDs))
 	for _, id := range productIDs {
 		args = append(args, id)
 	}

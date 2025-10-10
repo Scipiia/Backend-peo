@@ -7,7 +7,9 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 	"vue-golang/internal/storage"
+	"vue-golang/internal/storage/mysql"
 )
 
 type ResultGetNorm interface {
@@ -19,7 +21,7 @@ type ResultGetNorm interface {
 	GetNormOrderIdSub(id int64) ([]*storage.GetOrderDetails, error)
 
 	//TODO new logic
-	GetPEOProductsByCategory() ([]storage.PEOProduct, []storage.GetWorkers, error)
+	GetPEOProductsByCategory(filter mysql.ProductFilter) ([]storage.PEOProduct, []storage.GetWorkers, error)
 }
 
 func GetNormOrder(log *slog.Logger, result ResultGetNorm) http.HandlerFunc {
@@ -135,18 +137,61 @@ func FinalReportNormOrders(log *slog.Logger, result ResultGetNorm) http.HandlerF
 	return func(w http.ResponseWriter, r *http.Request) {
 		const op = "handlers.order-norm.get.FinalReportNormOrders"
 
-		//orders, err := result.GetFinalNormOrders()
-		category, i, err := result.GetPEOProductsByCategory()
+		// Парсим query-параметры
+		fromStr := r.URL.Query().Get("from") // формат: 2025-04-01
+		toStr := r.URL.Query().Get("to")
+		orderNum := r.URL.Query().Get("order_num")
+		typeIzd := r.URL.Query()["type"]
+
+		var from, to time.Time
+		//var err error
+
+		parseDate := func(dateStr string, defaultTime time.Time) (time.Time, error) {
+			if dateStr == "" {
+				return defaultTime, nil
+			}
+			return time.Parse("2006-01-02", dateStr)
+		}
+
+		// По умолчанию: начало и конец текущего месяца
+		now := time.Now()
+		startOfMonth := time.Date(now.Year(), now.Month(), 1, 0, 0, 0, 0, now.Location())
+		endOfMonth := startOfMonth.AddDate(0, 1, 0).Add(-time.Second) // последний момент предыдущего месяца
+
+		from, err := parseDate(fromStr, startOfMonth)
 		if err != nil {
-			log.With(slog.String("op", op), slog.String("error", err.Error())).Error("Ошибка при получении заказов по номеру заказа")
+			log.With(slog.String("op", op), slog.String("error", err.Error())).Warn("Неверный формат from")
+			http.Error(w, "Неверный формат даты 'from'", http.StatusBadRequest)
+			return
+		}
+
+		to, err = parseDate(toStr, endOfMonth)
+		if err != nil {
+			log.With(slog.String("op", op), slog.String("error", err.Error())).Warn("Неверный формат to")
+			http.Error(w, "Неверный формат даты 'to'", http.StatusBadRequest)
+			return
+		}
+
+		// Формируем фильтр
+		filter := mysql.ProductFilter{
+			From:     from,
+			To:       to,
+			OrderNum: orderNum,
+			Type:     typeIzd,
+		}
+
+		// Запрашиваем данные
+		products, employees, err := result.GetPEOProductsByCategory(filter)
+		if err != nil {
+			log.With(slog.String("op", op), slog.Any("error", err)).Error("Ошибка при получении изделий")
 			http.Error(w, "Внутренняя ошибка сервера", http.StatusInternalServerError)
 			return
 		}
 
 		// Отправить как JSON:
 		response := map[string]interface{}{
-			"employees": i,
-			"products":  category,
+			"employees": employees,
+			"products":  products,
 		}
 
 		log.Info("REEEESSPPPP", response)
