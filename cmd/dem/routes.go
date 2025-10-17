@@ -75,5 +75,8 @@ func routes(cfg config.Config, log *slog.Logger, storage *mysql.Storage) *chi.Mu
 	router.Get("/api/allians/{order_num}", get.FinalReportNormOrder(log, storage))
 	router.Get("/api/alllllll", get.FinalReportNormOrders(log, storage))
 
+	//TODO финальное обновление
+	router.Put("/api/final/update/{id}", update.UpdateFinalOrder(log, storage))
+
 	return router
 }

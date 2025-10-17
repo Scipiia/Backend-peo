@@ -207,8 +207,9 @@ func (s *Storage) GetPEOProductsByCategory(filter ProductFilter) ([]storage.PEOP
 	var args []interface{}
 
 	// Всегда: статус assigned
-	conditions = append(conditions, "p.status = ?")
+	conditions = append(conditions, "p.status IN (?, ?)")
 	args = append(args, "assigned")
+	args = append(args, "final")
 
 	// Фильтр по дате: created_at >= from
 	if !filter.From.IsZero() {
@@ -253,8 +254,8 @@ func (s *Storage) GetPEOProductsByCategory(filter ProductFilter) ([]storage.PEOP
 		SELECT 
 			p.id, p.order_num, p.customer, p.total_time, p.created_at, p.status,
 			p.part_type, p.type, p.parent_product_id, p.parent_assembly,
-			c.short_name_customer,
-			p.systema, p.type_izd, p.profile, p.count, p.sqr
+			COALESCE(c.short_name_customer, p.customer_type) AS customer_type,
+			p.systema, p.type_izd, p.profile, p.count, p.sqr, p.brigade, p.norm_money, p.position
 		FROM product_instances p
 		LEFT JOIN customer c ON p.customer = c.name
 		` + whereClause + `
@@ -291,10 +292,13 @@ func (s *Storage) GetPEOProductsByCategory(filter ProductFilter) ([]storage.PEOP
 			profile         string
 			count           int
 			sqr             float64
+			brigade         string
+			normMoney       float64
+			position        float64
 		)
 
 		err := rowsProducts.Scan(&id, &orderNum, &customer, &totalTime, &createdAt, &status, &partType, &Type, &parentProductID, &parentAssembly,
-			&customerType, &systema, &typeIzd, &profile, &count, &sqr)
+			&customerType, &systema, &typeIzd, &profile, &count, &sqr, &brigade, &normMoney, &position)
 		if err != nil {
 			return nil, nil, fmt.Errorf("%s: scan product: %w", op, err)
 		}
@@ -314,6 +318,10 @@ func (s *Storage) GetPEOProductsByCategory(filter ProductFilter) ([]storage.PEOP
 
 		if profile == "" {
 			profile = "не определено" // или ""
+		}
+
+		if brigade == "" {
+			brigade = "не определено" // или ""
 		}
 
 		// Преобразуем в *int64
@@ -339,6 +347,9 @@ func (s *Storage) GetPEOProductsByCategory(filter ProductFilter) ([]storage.PEOP
 			Profile:         profile,
 			Count:           count,
 			Sqr:             sqr,
+			Brigade:         brigade,
+			NormMoney:       normMoney,
+			Position:        position,
 			EmployeeMinutes: make(map[int64]float64),
 		}
 

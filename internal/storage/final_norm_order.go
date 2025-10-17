@@ -53,6 +53,9 @@ type PEOProduct struct {
 	Profile         string    `json:"profile"`
 	Count           int       `json:"count"`
 	Sqr             float64   `json:"sqr"`
+	Brigade         string    `json:"brigade"`
+	NormMoney       float64   `json:"norm_money"`
+	Position        float64   `json:"position"`
 
 	// Дополнительные поля, которые ты добавишь позже
 	// Material       *string `json:"material"`

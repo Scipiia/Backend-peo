@@ -6,7 +6,7 @@ import (
 	"vue-golang/internal/storage"
 )
 
-func (s *Storage) UpdateNormOrder(ID int64, update storage.GetOrderDetails) error {
+func (s *Storage) UpdateNormOrder(ID int64, update storage.UpdateOrderDetails) error {
 	const op = "storage.mysql.sql.UpdateNormOrder"
 
 	stmt := `UPDATE product_instances SET total_time = ?, type = ? WHERE id = ?`
@@ -53,6 +53,20 @@ func (s *Storage) UpdateNormOrder(ID int64, update storage.GetOrderDetails) erro
 	// 4. Коммит
 	if err = tx.Commit(); err != nil {
 		return fmt.Errorf("%s: commit: %w", op, err)
+	}
+
+	return nil
+}
+
+func (s *Storage) UpdateFinalOrder(ID int64, update storage.UpdateFinalOrderDetails) error {
+	const op = "storage.mysql.sql.UpdateFinalOrder"
+
+	stmt := `UPDATE product_instances SET customer_type = ?, norm_money = ?, profile = ?, sqr = ?, systema = ?, 
+            parent_assembly = ?, brigade = ?, type_izd = ?, status = 'final' WHERE id = ?`
+
+	_, err := s.db.Exec(stmt, update.CustomerType, update.NormMoney, update.Profile, update.Sqr, update.Systema, update.ParentAssembly, update.Brigade, update.TypeIzd, ID)
+	if err != nil {
+		return fmt.Errorf("%s: %w", op, err)
 	}
 
 	return nil
