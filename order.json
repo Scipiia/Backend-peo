@@ -1,288 +1,90 @@
 [
   {
-    "name": "nast_napil",
+    "name": "napil_podgot",
+    "type": "number",
+    "count": 1,
+    "label": "Напиловка  (В т.ч. 5 мин. На подготовку)",
+    "value": 1.0,
+    "minutes": 60,
+    "required": true
+  },
+  {
+    "name": "obr_stoik_rigel",
+    "type": "number",
+    "count": 1,
+    "label": "Обработка стойки, ригеля",
+    "value": 0.88,
+    "minutes": 53,
+    "required": true
+  },
+  {
+    "name": "podgt_sbork",
+    "type": "number",
+    "count": 1,
+    "label": "Подготовка к сборке",
+    "value": 2.87,
+    "minutes": 172,
+    "required": true
+  },
+  {
+    "name": "sbor_stv",
+    "type": "number",
+    "count": 1,
+    "label": "Сборка створок",
+    "value": 2.0,
+    "minutes": 120,
+    "required": true
+  },
+  {
+    "name": "yst_ypl",
+    "type": "number",
+    "count": 1,
+    "label": "Установка уплотнителей",
+    "value": 0.67,
+    "minutes": 40,
+    "required": true
+  },
+  {
+    "name": "yst_fetr_rezr31",
+    "type": "number",
+    "count": 1,
+    "label": "Установка фетра и резины R-031",
+    "value": 0.33,
+    "minutes": 20,
+    "required": true
+  },
+  {
+    "name": "podg_ypak_korob",
+    "type": "number",
+    "count": 1,
+    "label": "Подготовка и упаковка коробов",
+    "value": 0.50,
+    "minutes": 30,
+    "required": true
+  },
+  {
+    "name": "gl",
     "type": "number",
     "count": 0,
-    "label": "Настройка оборудования для напиловки",
+    "label": "Глухое окно",
     "value": 0,
     "minutes": 0,
     "required": true
   },
   {
-    "name": "napil_kontyr",
+    "name": "impost",
     "type": "number",
     "count": 0,
-    "label": "Напиловка контура",
+    "label": "Импост",
     "value": 0,
     "minutes": 0,
     "required": true
   },
   {
-    "name": "napil_krishek",
+    "name": "fortochka",
     "type": "number",
     "count": 0,
-    "label": "Напиловка крышек",
-    "value": 0,
-    "minutes": 0,
-    "required": true
-  },
-  {
-    "name": "napil_impost",
-    "type": "number",
-    "count": 0,
-    "label": "Напиловка импоста",
-    "value": 0,
-    "minutes": 0,
-    "required": true
-  },
-  {
-    "name": "soedinitel",
-    "type": "number",
-    "count": 0,
-    "label": "Соединитель",
-    "value": 0,
-    "minutes": 0,
-    "required": true
-  },
-  {
-    "name": "promej_sborka",
-    "type": "number",
-    "count": 0,
-    "label": "Промежуточная сборка",
-    "value": 0,
-    "minutes": 0,
-    "required": true
-  },
-  {
-    "name": "impost_sverlo",
-    "type": "number",
-    "count": 0,
-    "label": "Импост (сверловка)",
-    "value": 0,
-    "minutes": 0,
-    "required": true
-  },
-  {
-    "name": "impost_frezer",
-    "type": "number",
-    "count": 0,
-    "label": "Импост (фрезеровка)",
-    "value": 0,
-    "minutes": 0,
-    "required": true
-  },
-  {
-    "name": "impost_sborka",
-    "type": "number",
-    "count": 0,
-    "label": "Импост (сборка)",
-    "value": 0,
-    "minutes": 0,
-    "required": true
-  },
-  {
-    "name": "opres_nastr",
-    "type": "number",
-    "count": 0,
-    "label": "Опресовка (настройка)",
-    "value": 0,
-    "minutes": 0,
-    "required": true
-  },
-  {
-    "name": "opresovka",
-    "type": "number",
-    "count": 0,
-    "label": "Опресовка",
-    "value": 0,
-    "minutes": 0,
-    "required": true
-  },
-  {
-    "name": "ystanovka_yplotn",
-    "type": "number",
-    "count": 0,
-    "label": "Установка уплотнителей, штифтовка",
-    "value": 0,
-    "minutes": 0,
-    "required": true
-  },
-  {
-    "name": "zashivka",
-    "type": "number",
-    "count": 0,
-    "label": "Зашивка",
-    "value": 0,
-    "minutes": 0,
-    "required": true
-  },
-  {
-    "name": "napil_stoiki_do3m",
-    "type": "number",
-    "count": 0,
-    "label": "Напиловка стойки до 3м",
-    "value": 0,
-    "minutes": 0,
-    "required": true
-  },
-  {
-    "name": "napil_stoiki_bol3m",
-    "type": "number",
-    "count": 0,
-    "label": "Напиловка стойки больше 3м",
-    "value": 0,
-    "minutes": 0,
-    "required": true
-  },
-  {
-    "name": "napil_rigel_do1m",
-    "type": "number",
-    "count": 0,
-    "label": "Напиловка ригеля до 1м",
-    "value": 0,
-    "minutes": 0,
-    "required": true
-  },
-  {
-    "name": "napil_rigel_bol1m",
-    "type": "number",
-    "count": 0,
-    "label": "Напиловка ригеля больше 1м",
-    "value": 0,
-    "minutes": 0,
-    "required": true
-  },
-  {
-    "name": "sverl_rigel_zamok",
-    "type": "number",
-    "count": 0,
-    "label": "Сверловка ригеля под замок",
-    "value": 0,
-    "minutes": 0,
-    "required": true
-  },
-  {
-    "name": "ystan_zamkov",
-    "type": "number",
-    "count": 0,
-    "label": "Установка замков",
-    "value": 0,
-    "minutes": 0,
-    "required": true
-  },
-  {
-    "name": "napil_shtapik",
-    "type": "number",
-    "count": 0,
-    "label": "Напиловка штапика",
-    "value": 0,
-    "minutes": 0,
-    "required": true
-  },
-  {
-    "name": "ypakovka",
-    "type": "number",
-    "count": 0,
-    "label": "Упаковка",
-    "value": 0,
-    "minutes": 0,
-    "required": true
-  },
-  {
-    "name": "frezer_rigel",
-    "type": "number",
-    "count": 0,
-    "label": "Фрезеровка ригеля",
-    "value": 0,
-    "minutes": 0,
-    "required": true
-  },
-  {
-    "name": "obrabot_ram",
-    "type": "number",
-    "count": 0,
-    "label": "Обработка рам",
-    "value": 0,
-    "minutes": 0,
-    "required": true
-  },
-  {
-    "name": "hands_sborka",
-    "type": "number",
-    "count": 0,
-    "label": "Ручная сборка",
-    "value": 0,
-    "minutes": 0,
-    "required": true
-  },
-  {
-    "name": "frezer_nastr",
-    "type": "number",
-    "count": 0,
-    "label": "Фрезеровка (настройка)",
-    "value": 0,
-    "minutes": 0,
-    "required": true
-  },
-  {
-    "name": "shtiftovka",
-    "type": "number",
-    "count": 0,
-    "label": "Штифтовка",
-    "value": 0,
-    "minutes": 0,
-    "required": true
-  },
-  {
-    "name": "ystanovka_zapoln",
-    "type": "number",
-    "count": 0,
-    "label": "Установка заполнения",
-    "value": 0,
-    "minutes": 0,
-    "required": true
-  },
-  {
-    "name": "ystanovka_zapoln",
-    "type": "number",
-    "count": 0,
-    "label": "Установка заполнения",
-    "value": 0,
-    "minutes": 0,
-    "required": true
-  },
-  {
-    "name": "napil_donnik",
-    "type": "number",
-    "count": 0,
-    "label": "Напиловка донника",
-    "value": 0,
-    "minutes": 0,
-    "required": true
-  },
-  {
-    "name": "adapter_napil",
-    "type": "number",
-    "count": 0,
-    "label": "Напиловка адаптера",
-    "value": 0,
-    "minutes": 0,
-    "required": true
-  },
-  {
-    "name": "adapter_ystan",
-    "type": "number",
-    "count": 0,
-    "label": "Установка адаптера",
-    "value": 0,
-    "minutes": 0,
-    "required": true
-  },
-  {
-    "name": "ystan_yplotn_falc",
-    "type": "number",
-    "count": 0,
-    "label": "Установка уплотнителей фальца",
+    "label": "Форточка",
     "value": 0,
     "minutes": 0,
     "required": true

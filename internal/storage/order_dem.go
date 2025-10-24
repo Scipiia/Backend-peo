@@ -15,6 +15,7 @@ type OrderDemPrice struct {
 	NamePosition string   `json:"name_position"`
 	Count        *float64 `json:"count"`
 	Image        *string  `json:"image"`
+	Color        *string  `json:"color"`
 	Sqr          float64  `json:"sqr"`
 }
 

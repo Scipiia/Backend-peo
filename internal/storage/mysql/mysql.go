@@ -14,6 +14,7 @@ func New() (*Storage, error) {
 	const op = "storage.postgresql.New"
 
 	db, err := sql.Open("mysql", "root:@tcp(mysql-8.0:3306)/test_new_logic?parseTime=true")
+	//db, err := sql.Open("mysql", "Kuznecov_av:BV02y0Xer72a@tcp(192.168.2.10:3306)/demetra_test?parseTime=true")
 	//ubuntu
 	//db, err := sql.Open("mysql", "user:password@tcp(localhost:3306)/test_new_logic?parseTime=true")
 	//db, err := sql.Open("mysql", "user:password@tcp(localhost:3306)/basa_zapas")

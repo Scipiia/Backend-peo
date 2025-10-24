@@ -39,7 +39,6 @@ func routes(cfg config.Config, log *slog.Logger, storage *mysql.Storage) *chi.Mu
 
 	//TODO массив со всеми заказами из дема
 	router.Get("/api/orders", getorder.GetOrdersFilter(log, storage))
-	router.Handle("/api/generate-excel", getorder.OrdersMonthMiddleware(log, storage)(getorder.GenerateExel(log)))
 
 	//TODO middleware
 	// Middleware для получения данных о заказе
@@ -73,7 +72,7 @@ func routes(cfg config.Config, log *slog.Logger, storage *mysql.Storage) *chi.Mu
 
 	//TODO финальные маршруты для всех готовых заказов и возможность провалиться в них
 	router.Get("/api/allians/{order_num}", get.FinalReportNormOrder(log, storage))
-	router.Get("/api/alllllll", get.FinalReportNormOrders(log, storage))
+	router.Get("/api/all_final_order", get.FinalReportNormOrders(log, storage))
 
 	//TODO финальное обновление
 	router.Put("/api/final/update/{id}", update.UpdateFinalOrder(log, storage))

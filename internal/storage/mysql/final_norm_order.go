@@ -249,7 +249,6 @@ func (s *Storage) GetPEOProductsByCategory(filter ProductFilter) ([]storage.PEOP
 		whereClause = "WHERE " + strings.Join(conditions, " AND ")
 	}
 
-	//type IN (` + typePlaceholders + `)
 	queryProducts := `
 		SELECT 
 			p.id, p.order_num, p.customer, p.total_time, p.created_at, p.status,
@@ -305,23 +304,23 @@ func (s *Storage) GetPEOProductsByCategory(filter ProductFilter) ([]storage.PEOP
 
 		// Обработка NULL для строк
 		if customerType == "" {
-			customerType = "не определено" // или ""
+			customerType = "не определено"
 		}
 
 		if systema == "" {
-			systema = "не определено" // или ""
+			systema = "не определено"
 		}
 
 		if typeIzd == "" {
-			typeIzd = "не определено" // или ""
+			typeIzd = "не определено"
 		}
 
 		if profile == "" {
-			profile = "не определено" // или ""
+			profile = "не определено"
 		}
 
 		if brigade == "" {
-			brigade = "не определено" // или ""
+			brigade = "не определено"
 		}
 
 		// Преобразуем в *int64
@@ -396,11 +395,8 @@ func (s *Storage) GetPEOProductsByCategory(filter ProductFilter) ([]storage.PEOP
 		if err != nil {
 			return nil, nil, fmt.Errorf("%s: ошибка сканирования исполнителя: %w", op, err)
 		}
-		//fmt.Println("GGGGGGG", minutes)
 		if p, ok := products[productID]; ok {
 			p.EmployeeMinutes[employeeID] += minutes
-			fmt.Printf("KKKK product=%d, employee=%d, current=%f, adding=%f\n",
-				productID, employeeID, p.EmployeeMinutes[employeeID], minutes)
 		}
 	}
 
@@ -426,14 +422,6 @@ func (s *Storage) getEmployeesByTeam() ([]storage.PEOEmployee, error) {
 	return emps, nil
 }
 
-func getCurrentMonthRange() (start, end time.Time) {
-	now := time.Now()
-	start = time.Date(now.Year(), now.Month(), 1, 0, 0, 0, 0, time.Local)
-	end = start.AddDate(0, 1, 0)
-	return start, end
-}
-
-// placeholders генерирует строку вида "?,?,?"
 func placeholders(n int) string {
 	if n <= 0 {
 		return ""

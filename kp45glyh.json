@@ -9,75 +9,48 @@
     "required": true
   },
   {
-    "name": "napil_bez_impost",
+    "name": "napil_krishek_naprav",
     "type": "number",
     "count": 1,
-    "label": "Напиловка (без импоста)",
-    "value":  0.214,
-    "minutes": 12.85,
+    "label": "Напиловка (в т.ч. Крышки и направляющие)",
+    "value":  0.215,
+    "minutes": 13,
     "required": true
   },
   {
-    "name": "nastr_pbx",
+    "name": "obrabotka",
     "type": "number",
     "count": 1,
-    "label": "Настройка станка РВХ",
-    "value":  0.120,
-    "minutes": 7.22,
+    "label": "Обработка",
+    "value":  0.566,
+    "minutes": 34,
     "required": true
   },
   {
-    "name": "pzr",
+    "name": "yst_zakld_roliki",
     "type": "number",
     "count": 1,
-    "label": "ПЗР",
-    "value":  0.123,
-    "minutes": 7.38,
+    "label": "Установка закладных под ролики",
+    "value":  0.133,
+    "minutes": 8,
     "required": true
   },
   {
-    "name": "rabota_pbx",
+    "name": "sbor_opres",
     "type": "number",
     "count": 1,
-    "label": "Работа станка РВХ",
-    "value":  0.115,
-    "minutes": 6.92,
-    "required": true
-  },
-  {
-    "name": "frezer_nastr",
-    "type": "number",
-    "count": 1,
-    "label": "Фрезеровка (Настройка)",
-    "value":  0.050,
-    "minutes": 3.0,
-    "required": true
-  },
-  {
-    "name": "frezer_porog_ram_porog_shping_promej_sb",
-    "type": "number",
-    "count": 1,
-    "label": "Фрезеровка рамы, порога под шпингалеты. промежуточная сборка",
-    "value":  0.400,
-    "minutes": 24.0,
-    "required": true
-  },
-  {
-    "name": "frez_yst_shtylp",
-    "type": "number",
-    "count": 1,
-    "label": "Фрезеровка и установка штульпов",
-    "value":  0.307,
-    "minutes": 18.4,
+    "label": "Сборка под опресовку",
+    "value":  0.133,
+    "minutes": 16,
     "required": true
   },
   {
     "name": "opres_nastr",
     "type": "number",
-    "count": 0,
+    "count": 1,
     "label": "Опрессовка (настройка)",
-    "value":  0,
-    "minutes": 0,
+    "value":  0.067,
+    "minutes": 4,
     "required": true
   },
   {
@@ -85,77 +58,41 @@
     "type": "number",
     "count": 1,
     "label": "Опрессовка",
-    "value":  0.117,
-    "minutes": 7,
+    "value":  0.047,
+    "minutes": 3,
     "required": true
   },
   {
-    "name": "podg_derj_shetki",
+    "name": "obrezinivanie",
     "type": "number",
     "count": 1,
-    "label": "Подготовка держателя щетки",
-    "value":  0.100,
-    "minutes": 6,
+    "label": "Обрезинивание",
+    "value":  0.166,
+    "minutes": 10,
     "required": true
   },
   {
-    "name": "krepl_brys",
+    "name": "yst_zamok_rolik_otv_fetr",
     "type": "number",
     "count": 1,
-    "label": "Крепление бруска",
-    "value":  0.133,
-    "minutes": 8,
+    "label": "Установка замка; роликов; ответки; фетра в крышку",
+    "value":  0.500,
+    "minutes": 30,
     "required": true
   },
   {
-    "name": "yst_porog_ypl_derj_shetk",
+    "name": "zashivka",
     "type": "number",
     "count": 1,
-    "label": "Установка порогов, уплотнителей, держателей щётки",
-    "value":  0.275,
-    "minutes": 16.5,
-    "required": true
-  },
-  {
-    "name": "sbor_petli",
-    "type": "number",
-    "count": 1,
-    "label": "Сборка петель",
+    "label": "Зашивка",
     "value":  0.200,
-    "minutes": 12.00,
-    "required": true
-  },
-  {
-    "name": "yst_dver_zamok_nakl_cilindr_stubl",
-    "type": "number",
-    "count": 1,
-    "label": "Установка дверных замков, крепление накладок цилиндра Stublina",
-    "value":  0.095,
-    "minutes": 5.7,
-    "required": true
-  },
-  {
-    "name": "navesh_stv_yst_otv_plan",
-    "type": "number",
-    "count": 1,
-    "label": "Навешивание створки, установка отв. Планок",
-    "value":  1.0,
-    "minutes": 60,
-    "required": true
-  },
-  {
-    "name": "yst_zapoln",
-    "type": "number",
-    "count": 1,
-    "label": "Установка заполнения",
-    "value":  0.473,
-    "minutes": 28.40,
+    "minutes": 20,
     "required": true
   },
   {
     "name": "dop_impost_napil",
     "type": "number",
-    "count": 1,
+    "count": 0,
     "label": "Доп. импост (напиловка)",
     "value":  0.025,
     "minutes": 1.5,
@@ -164,35 +101,26 @@
   {
     "name": "dop_impost_frezer",
     "type": "number",
-    "count": 1,
+    "count": 0,
     "label": "Доп. импост (Фрезеровка)",
-    "value":  0.050,
-    "minutes": 3.0,
-    "required": true
-  },
-  {
-    "name": "dop_impost_sverl",
-    "type": "number",
-    "count": 1,
-    "label": "Доп. импост (Сверловка)",
-    "value":  0.033,
-    "minutes": 2.0,
-    "required": true
-  },
-  {
-    "name": "dop_impost_yst",
-    "type": "number",
-    "count": 1,
-    "label": "Доп. импост (установка)",
     "value":  0.033,
     "minutes": 2,
     "required": true
   },
   {
-    "name": "dop_impost_shtift",
+    "name": "dop_impost_sverl",
     "type": "number",
-    "count": 1,
-    "label": "Доп. импост (штифтовка)",
+    "count": 0,
+    "label": "Доп. импост (Сверловка)",
+    "value":  0.017,
+    "minutes": 1,
+    "required": true
+  },
+  {
+    "name": "dop_impost_yst",
+    "type": "number",
+    "count": 0,
+    "label": "Доп. импост (установка)",
     "value":  0.033,
     "minutes": 2,
     "required": true

@@ -112,11 +112,6 @@ func FinalReportNormOrder(log *slog.Logger, result ResultGetNorm) http.HandlerFu
 		const op = "handlers.order-norm.get.FinalReportNormOrder"
 
 		orderNum := chi.URLParam(r, "order_num")
-		//orderNum, err := strconv.ParseInt(idStr, 10, 64)
-		//if err != nil {
-		//	http.Error(w, "Invalid orderNum", http.StatusBadRequest)
-		//	return
-		//}
 
 		log.Info("Получение нормировки", slog.String("orderNum", orderNum))
 

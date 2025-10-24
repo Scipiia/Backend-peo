@@ -27,14 +27,12 @@ func SaveWorkersOperation(log *slog.Logger, result ResultWorkers) http.HandlerFu
 			return
 		}
 
-		// 🔹 Проверка: не пусто ли
 		if len(req.Assignments) == 0 {
 			log.Warn("Empty assignments list", slog.String("op", op))
 			http.Error(w, "No assignments provided", http.StatusBadRequest)
 			return
 		}
 
-		// 🔹 Проверка каждого элемента
 		for i, a := range req.Assignments {
 			if a.ProductID == 0 {
 				log.Error("Missing product_id", slog.Int("index", i), slog.Any("assignment", a))
@@ -58,7 +56,6 @@ func SaveWorkersOperation(log *slog.Logger, result ResultWorkers) http.HandlerFu
 			slog.Any("sample", req.Assignments[0]),
 		)
 
-		// 🔹 Передаём в storage
 		err := result.SaveOperationWorkers(req)
 		if err != nil {
 			log.Error("Failed to save assignments", slog.String("op", op), slog.String("error", err.Error()))
@@ -70,7 +67,6 @@ func SaveWorkersOperation(log *slog.Logger, result ResultWorkers) http.HandlerFu
 			slog.Int("saved_count", len(req.Assignments)),
 		)
 
-		// 🔹 Ответ
 		render.JSON(w, r, map[string]interface{}{
 			"status":  "success",
 			"saved":   len(req.Assignments),

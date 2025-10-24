@@ -48,16 +48,12 @@ func getOrderDetails(log *slog.Logger, order OrderDetails, id int) (*storage.Res
 		return nil, fmt.Errorf("order-dem not found: %w", err)
 	}
 
-	log.Info("PIIIIIIZDA", details)
-
 	return details, nil
 }
 
 func OrderDetailsMiddleware(log *slog.Logger, order OrderDetails) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			// Получаем ID заказа из параметров запроса
-			//idStr := r.URL.Query().Get("id")
 			idStr := chi.URLParam(r, "id")
 			if idStr == "" {
 				log.Error("Missing order-dem-norm ID in query parameters")
@@ -67,8 +63,8 @@ func OrderDetailsMiddleware(log *slog.Logger, order OrderDetails) func(http.Hand
 
 			id, err := strconv.Atoi(idStr)
 			if err != nil {
-				http.Error(w, "Invalid order-dem-norm ID", http.StatusBadRequest)
 				log.Error("Invalid order-dem-norm ID", slog.String("error", err.Error()))
+				http.Error(w, "Invalid order-dem-norm ID", http.StatusBadRequest)
 				return
 			}
 
@@ -91,7 +87,8 @@ func GetOrderDetails(log *slog.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		details, ok := r.Context().Value("orderDetails").(*storage.ResultOrderDetails)
 		if !ok {
-			http.Error(w, "Order details not found in context pizda", http.StatusInternalServerError)
+			log.Error("Order details not found in context")
+			http.Error(w, "Order details not found in context", http.StatusInternalServerError)
 			return
 		}
 
@@ -102,7 +99,7 @@ func GetOrderDetails(log *slog.Logger) http.HandlerFunc {
 			Customer:      details.Order.Customer,
 			DopInfo:       details.Order.DopInfo,
 			MsNote:        details.Order.MsNote,
-			OrderDemPrice: details.OrderDemPrice, // Массив планов
+			OrderDemPrice: details.OrderDemPrice,
 			Error:         "",
 			Status:        strconv.Itoa(http.StatusOK),
 		})

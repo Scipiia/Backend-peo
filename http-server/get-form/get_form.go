@@ -38,7 +38,6 @@ func GetFormByCode(log *slog.Logger, provider FormsJSON) http.HandlerFunc {
 			slog.String("request_id", middleware.GetReqID(r.Context())),
 		).Info("Fetching template by code")
 
-		// Получаем code из query: ?code=GLUHOE_OKNO_BASIC
 		code := r.URL.Query().Get("code")
 		if code == "" {
 			log.With(slog.String("op", op)).Error("Missing 'code' in query parameters")
