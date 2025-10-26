@@ -20,7 +20,7 @@ func main() {
 
 	log := setupLogger(cfg.Env)
 
-	storage, err := mysql.New()
+	storage, err := mysql.New(*cfg)
 	if err != nil {
 		log.Error("failed to open db", err)
 		os.Exit(1)
@@ -44,28 +44,12 @@ func main() {
 	log.Error("server stopped")
 }
 
-//func setupLogger(env string) *slog.Logger {
-//	var log *slog.Logger
-//
-//	switch env {
-//	case envLocal:
-//		log = slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug}))
-//	case envDev:
-//		log = slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug}))
-//	case envProd:
-//		log = slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelInfo}))
-//	}
-//
-//	return log
-//}
-
 type dualHandler struct {
 	coreHandler  slog.Handler
 	errorHandler slog.Handler
 }
 
 func (h *dualHandler) Enabled(ctx context.Context, lvl slog.Level) bool {
-	// Разрешаем обработку, если хоть один из хендлеров может обработать уровень
 	return h.coreHandler.Enabled(ctx, lvl) || h.errorHandler.Enabled(ctx, lvl)
 }
 
@@ -82,12 +66,10 @@ func (h *dualHandler) Handle(ctx context.Context, r slog.Record) error {
 
 	// 2. Если это ошибка — пишем в файл
 	if r.Level >= slog.LevelError && h.errorHandler.Enabled(ctx, r.Level) {
-		// Клонируем запись, потому что Handle может мутировать
 		cloned := r.Clone()
 		fileErr := h.errorHandler.Handle(ctx, cloned)
 		if fileErr != nil {
-			// Не прерываем основной поток, но можем залогировать проблему
-			// (хотя здесь уже сложно — лучше игнорировать)
+
 		}
 	}
 
@@ -150,7 +132,5 @@ func setupLogger(env string) *slog.Logger {
 	// Создаём логгер
 	logger := slog.New(handler)
 
-	// 💡 Сохранить errorFile где-то, если хотите закрыть в будущем (например, при graceful shutdown)
-	// Но если логгер глобальный — можно не закрывать явно, или использовать sync.Pool / закрытие при выходе.
 	return logger
 }

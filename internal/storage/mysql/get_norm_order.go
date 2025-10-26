@@ -51,13 +51,14 @@ func (s *Storage) GetNormOrderIdSub(id int64) ([]*storage.GetOrderDetails, error
 
 	stmt := `
 		SELECT 
-			id, name, count, total_time, created_at, updated_at, 
-			type, part_type, parent_assembly, parent_product_id, order_num
-		FROM product_instances 
-		WHERE id = ? OR parent_product_id = ?
+			pi.id, pi.name, pi.count, pi.total_time, pi.created_at, pi.updated_at, 
+			pi.type, pi.part_type, pi.parent_assembly, pi.parent_product_id, pi.order_num, pi.template_code, t.head_name
+		FROM product_instances pi
+		LEFT JOIN templates t ON pi.template_code = t.code
+		WHERE pi.id = ? OR pi.parent_product_id = ?
 		ORDER BY 
-			CASE WHEN part_type = 'main' THEN 0 ELSE 1 END, 
-			id
+			CASE WHEN pi.part_type = 'main' THEN 0 ELSE 1 END, 
+			pi.id
 	`
 
 	stmtOps := `SELECT operation_name, operation_label, count, value, minutes FROM operation_values WHERE product_id = ?`
@@ -86,6 +87,8 @@ func (s *Storage) GetNormOrderIdSub(id int64) ([]*storage.GetOrderDetails, error
 			&parentAssembly,
 			&detail.ParentProductID,
 			&detail.OrderNum,
+			&detail.TemplateCode,
+			&detail.HeadName,
 		)
 		if err != nil {
 			return nil, fmt.Errorf("%s: ошибка сканирования: %w", op, err)

@@ -207,8 +207,6 @@ func DoubleReportOrder(log *slog.Logger, result ResultGetNorm) http.HandlerFunc 
 			return
 		}
 
-		log.Info("Получение нормировки", slog.Int64("id", id))
-
 		sub, err := result.GetNormOrderIdSub(id)
 		if err != nil {
 			log.With(slog.String("op", op), slog.String("error", err.Error())).Error("Ошибка при получении заказов по номеру заказа")

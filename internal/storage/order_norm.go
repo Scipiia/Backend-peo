@@ -44,4 +44,6 @@ type GetOrderDetails struct {
 	ParentAssembly  string          `json:"parent_assembly"`
 	ParentProductID *int64          `json:"parent_product_id"`
 	Status          *string         `json:"status"`
+	TemplateCode    string          `json:"template_code"`
+	HeadName        string          `json:"head_name"`
 }

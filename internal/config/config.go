@@ -10,14 +10,20 @@ type Config struct {
 	Env         string `yaml:"env" env-default:"prod"`
 	StoragePath string `yaml:"storage_path" env-required:"true"`
 	HTTPServer  `yaml:"http_server"`
+	DBUser      string `yaml:"db_user" env-required:"true"`
+	DBPassword  string `yaml:"db_password" env-required:"true"`
+	DBHost      string `yaml:"db_host" env-default:"localhost"`
+	DBPort      int    `yaml:"db_port" env-default:"3306"`
+	DBName      string `yaml:"db_name" env-required:"true"`
+	ParseTime   bool   `yaml:"parse_time" env-required:"true"`
 }
 
 type HTTPServer struct {
 	Address     string        `yaml:"address" env-default:"localhost:4001"`
 	Timeout     time.Duration `yaml:"timeout"  env-default:"4s"`
 	IdleTimeout time.Duration `yaml:"idle_timeout"  env-default:"60s"`
-	User        string        `yaml:"user" env-required:"true"`
-	Password    string        `yaml:"password" env-required:"true"`
+	//User        string        `yaml:"user" env-required:"true"`
+	//Password    string        `yaml:"password" env-required:"true"`
 }
 
 func MustConfig() *Config {
