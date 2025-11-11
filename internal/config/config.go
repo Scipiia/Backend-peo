@@ -11,7 +11,7 @@ type Config struct {
 	StoragePath string `yaml:"storage_path" env-required:"true"`
 	HTTPServer  `yaml:"http_server"`
 	DBUser      string `yaml:"db_user" env-required:"true"`
-	DBPassword  string `yaml:"db_password" env-required:"true"`
+	DBPassword  string `yaml:"db_password" env-required:"false"`
 	DBHost      string `yaml:"db_host" env-default:"localhost"`
 	DBPort      int    `yaml:"db_port" env-default:"3306"`
 	DBName      string `yaml:"db_name" env-required:"true"`

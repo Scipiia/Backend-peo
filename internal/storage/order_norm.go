@@ -46,4 +46,5 @@ type GetOrderDetails struct {
 	Status          *string         `json:"status"`
 	TemplateCode    string          `json:"template_code"`
 	HeadName        string          `json:"head_name"`
+	TypeIzd         string          `json:"type_izd"`
 }

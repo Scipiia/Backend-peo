@@ -1,20 +1,19 @@
 package save
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"github.com/go-chi/render"
 	"log/slog"
 	"net/http"
+	"time"
 	"vue-golang/internal/storage"
 )
 
 type ResultWorkers interface {
-	SaveOperationWorkers(req storage.SaveWorkers) error
+	SaveOperationWorkers(ctx context.Context, req storage.SaveWorkers) error
 }
-
-// handlers/executor/save.go
-// handlers/executor/handlers.go
 
 func SaveWorkersOperation(log *slog.Logger, result ResultWorkers) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -28,24 +27,24 @@ func SaveWorkersOperation(log *slog.Logger, result ResultWorkers) http.HandlerFu
 		}
 
 		if len(req.Assignments) == 0 {
-			log.Warn("Empty assignments list", slog.String("op", op))
+			log.Warn("Пустой лист назначения сотрудников на операции", slog.String("op", op))
 			http.Error(w, "No assignments provided", http.StatusBadRequest)
 			return
 		}
 
 		for i, a := range req.Assignments {
 			if a.ProductID == 0 {
-				log.Error("Missing product_id", slog.Int("index", i), slog.Any("assignment", a))
+				log.Error("Ошибка id в dem_product_instance_al", slog.Int("index", i), slog.Any("assignment", a))
 				http.Error(w, fmt.Sprintf("Assignment %d: product_id is required", i), http.StatusBadRequest)
 				return
 			}
 			if a.EmployeeID == 0 {
-				log.Error("Missing employee_id", slog.Int("index", i), slog.Any("assignment", a))
+				log.Error("Ошибка назначения сотрудника id", slog.Int("index", i), slog.Any("assignment", a))
 				http.Error(w, fmt.Sprintf("Assignment %d: employee_id is required", i), http.StatusBadRequest)
 				return
 			}
 			if a.OperationName == "" {
-				log.Error("Missing operation_name", slog.Int("index", i), slog.Any("assignment", a))
+				log.Error("Ошибка операции", slog.Int("index", i), slog.Any("assignment", a))
 				http.Error(w, fmt.Sprintf("Assignment %d: operation_name is required", i), http.StatusBadRequest)
 				return
 			}
@@ -56,9 +55,12 @@ func SaveWorkersOperation(log *slog.Logger, result ResultWorkers) http.HandlerFu
 			slog.Any("sample", req.Assignments[0]),
 		)
 
-		err := result.SaveOperationWorkers(req)
+		ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
+		defer cancel()
+
+		err := result.SaveOperationWorkers(ctx, req)
 		if err != nil {
-			log.Error("Failed to save assignments", slog.String("op", op), slog.String("error", err.Error()))
+			log.Error("Ошибка сохранения назначении сотрудников", slog.String("op", op), slog.String("error", err.Error()))
 			http.Error(w, "Internal server error", http.StatusInternalServerError)
 			return
 		}
@@ -70,7 +72,7 @@ func SaveWorkersOperation(log *slog.Logger, result ResultWorkers) http.HandlerFu
 		render.JSON(w, r, map[string]interface{}{
 			"status":  "success",
 			"saved":   len(req.Assignments),
-			"details": req.Assignments, // опционально — для отладки
+			"details": req.Assignments,
 		})
 	}
 }

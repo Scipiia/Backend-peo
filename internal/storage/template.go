@@ -1,7 +1,6 @@
 package storage
 
-// models/get_template.go
-type Form struct {
+type Template struct {
 	ID         int         `json:"ID"`
 	Code       string      `json:"code"`
 	Name       string      `json:"name"`
@@ -17,7 +16,7 @@ type Operation struct {
 	Type     string  `json:"type"`
 	Count    float64 `json:"count"`
 	Label    string  `json:"label"`
-	Value    float64 `json:"value"` // в часах
+	Value    float64 `json:"value"`
 	Minutes  float64 `json:"minutes"`
 	Required bool    `json:"required"`
 }

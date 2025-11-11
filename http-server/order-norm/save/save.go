@@ -1,17 +1,19 @@
 package save
 
 import (
+	"context"
 	"encoding/json"
 	"github.com/go-chi/render"
 	"log/slog"
 	"net/http"
 	"strconv"
+	"time"
 	"vue-golang/internal/storage"
 )
 
 type ResultNorm interface {
-	SaveNormOrder(result storage.OrderNormDetails) (int64, error)
-	SaveNormOperation(OrderID int64, operations []storage.NormOperation) error
+	SaveNormOrder(ctx context.Context, result storage.OrderNormDetails) (int64, error)
+	SaveNormOperation(ctx context.Context, OrderID int64, operations []storage.NormOperation) error
 }
 
 type Response struct {
@@ -22,7 +24,7 @@ type Response struct {
 
 func SaveNormOrderOperation(log *slog.Logger, res ResultNorm) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const op = "handlers.normirovka.SaveNormOrderOperation"
+		const op = "handlers.save.SaveNormOrderOperation"
 
 		//var req RequestNormData
 		var req storage.OrderNormDetails
@@ -33,23 +35,25 @@ func SaveNormOrderOperation(log *slog.Logger, res ResultNorm) http.HandlerFunc {
 			return
 		}
 
-		orderID, err := res.SaveNormOrder(req)
+		ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
+		defer cancel()
+
+		orderID, err := res.SaveNormOrder(ctx, req)
 		if err != nil {
-			log.Info("Ошибка реквеста сообщения при вставке в базу заказа сука блять уебище тупорылое DOOR ебаные", err)
-			render.JSON(w, r, Response{Error: "da bleeeat"})
+			log.Error("Ошибка при сохранения нормированного наряда", slog.String("op", op), slog.String("error", err.Error()))
+			render.JSON(w, r, Response{Error: "не удалось сохранить нормировку"})
 			return
 		}
 
-		log.Info("RREEQWQWWQ", req.Operations)
 		// Сохраняем операции
-		err = res.SaveNormOperation(orderID, req.Operations)
+		err = res.SaveNormOperation(ctx, orderID, req.Operations)
 		if err != nil {
-			log.Info("Ошибка реквеста сообщения при вставке в базу операции сука блять уебище тупорылое ROOOT ебаные", err)
-			render.JSON(w, r, Response{Error: "da bleeeat1"})
+			log.Error("Ошибка при сохранении операции нормированного наряда", slog.String("op", op), slog.String("error", err.Error()))
+			render.JSON(w, r, Response{Error: "не удалось сохранить нормировку"})
 			return
 		}
 
-		log.Info("message added", slog.Int64("id", orderID))
+		//log.Info("message added", slog.Int64("id", orderID))
 
 		render.JSON(w, r, Response{
 			OrderID: orderID,

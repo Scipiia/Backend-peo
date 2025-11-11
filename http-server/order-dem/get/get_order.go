@@ -2,12 +2,12 @@ package get
 
 import (
 	"context"
-	"fmt"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 	"log/slog"
 	"net/http"
 	"strconv"
+	"time"
 	"vue-golang/internal/storage"
 )
 
@@ -31,64 +31,34 @@ type ResponseOrder struct {
 }
 
 type OrderDetails interface {
-	GetOrderDetails(id int) (*storage.ResultOrderDetails, error)
+	GetOrderDetails(ctx context.Context, id int) (*storage.ResultOrderDetails, error)
 }
 
-// Общая функция для получения данных о заказе
-func getOrderDetails(log *slog.Logger, order OrderDetails, id int) (*storage.ResultOrderDetails, error) {
-	const op = "handler.get-norm-details"
-
-	log = log.With(
-		slog.String("op", op),
-	)
-
-	details, err := order.GetOrderDetails(id)
-	if err != nil {
-		log.Info("Order not found", slog.Int("id", id), slog.String("error", err.Error()))
-		return nil, fmt.Errorf("order-dem not found: %w", err)
-	}
-
-	return details, nil
-}
-
-func OrderDetailsMiddleware(log *slog.Logger, order OrderDetails) func(http.Handler) http.Handler {
-	return func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			idStr := chi.URLParam(r, "id")
-			if idStr == "" {
-				log.Error("Missing order-dem-norm ID in query parameters")
-				http.Error(w, "Missing order-dem-norm ID", http.StatusBadRequest)
-				return
-			}
-
-			id, err := strconv.Atoi(idStr)
-			if err != nil {
-				log.Error("Invalid order-dem-norm ID", slog.String("error", err.Error()))
-				http.Error(w, "Invalid order-dem-norm ID", http.StatusBadRequest)
-				return
-			}
-
-			// Получаем данные о заказе
-			details, err := getOrderDetails(log, order, id)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusNotFound)
-				return
-			}
-
-			// Сохраняем данные о заказе в контексте
-			ctx := context.WithValue(r.Context(), "orderDetails", details)
-			next.ServeHTTP(w, r.WithContext(ctx))
-		})
-	}
-}
-
-// Обработчик GetOrderDetails
-func GetOrderDetails(log *slog.Logger) http.HandlerFunc {
+func GetOrderDetails(log *slog.Logger, order OrderDetails) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		details, ok := r.Context().Value("orderDetails").(*storage.ResultOrderDetails)
-		if !ok {
-			log.Error("Order details not found in context")
-			http.Error(w, "Order details not found in context", http.StatusInternalServerError)
+		const op = "handler.get_orders.GetOrderDetails1"
+
+		idStr := chi.URLParam(r, "id")
+		if idStr == "" {
+			log.Error("Missing order-dem-norm ID in query parameters")
+			http.Error(w, "Missing order-dem-norm ID", http.StatusBadRequest)
+			return
+		}
+
+		id, err := strconv.Atoi(idStr)
+		if err != nil {
+			log.Error("Invalid order-dem-norm ID", slog.String("error", err.Error()))
+			http.Error(w, "Invalid order-dem-norm ID", http.StatusBadRequest)
+			return
+		}
+
+		ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
+		defer cancel()
+
+		details, err := order.GetOrderDetails(ctx, id)
+		if err != nil {
+			log.Error("не удалось получить детали заказа из дема", slog.String("error", err.Error()))
+			http.Error(w, err.Error(), http.StatusNotFound)
 			return
 		}
 
@@ -103,6 +73,5 @@ func GetOrderDetails(log *slog.Logger) http.HandlerFunc {
 			Error:         "",
 			Status:        strconv.Itoa(http.StatusOK),
 		})
-
 	}
 }

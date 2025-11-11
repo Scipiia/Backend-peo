@@ -5,7 +5,9 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/rs/cors"
 	"log/slog"
-	getform "vue-golang/http-server/get-form"
+	"net/http"
+	"strings"
+	gettemplate "vue-golang/http-server/get-template"
 	getorder "vue-golang/http-server/order-dem/get"
 	"vue-golang/http-server/order-norm/get"
 	"vue-golang/http-server/order-norm/save"
@@ -19,15 +21,6 @@ import (
 func routes(cfg config.Config, log *slog.Logger, storage *mysql.Storage) *chi.Mux {
 	router := chi.NewRouter()
 
-	router.Use(middleware.RequestID)
-	//ip пользователя
-	router.Use(middleware.RealIP)
-	router.Use(middleware.Logger)
-	router.Use(middleware.Recoverer)
-	router.Use(middleware.URLFormat)
-
-	router.Use(middleware.Logger)
-
 	corsHandler := cors.New(cors.Options{
 		AllowedOrigins:   []string{"http://localhost:8081"}, // Разрешаем запросы с фронтенда
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
@@ -37,25 +30,46 @@ func routes(cfg config.Config, log *slog.Logger, storage *mysql.Storage) *chi.Mu
 
 	router.Use(corsHandler.Handler)
 
+	router.Use(middleware.RequestID)
+	//ip пользователя
+	router.Use(middleware.RealIP)
+	router.Use(middleware.Logger)
+	router.Use(middleware.Recoverer)
+	router.Use(middleware.URLFormat)
+	router.Use(middleware.Logger)
+
+	fs := http.FileServer(http.Dir("./dist")) // путь к билду Vue
+
+	router.Get("/*", func(w http.ResponseWriter, r *http.Request) {
+		// Если путь начинается с /api — уже должен был быть обработан выше
+		// Но на всякий случай: если дошли сюда — это не API
+		if strings.HasPrefix(r.URL.Path, "/api/") {
+			http.NotFound(w, r)
+			return
+		}
+		// Отдаем index.html для Vue Router
+		fs.ServeHTTP(w, r)
+	})
+
 	//TODO массив со всеми заказами из дема
 	router.Get("/api/orders", getorder.GetOrdersFilter(log, storage))
 
-	//TODO middleware
-	// Middleware для получения данных о заказе
 	// Маршруты для Гловяка где он внесет все данные по заказу
-	orderDetailsMiddleware := getorder.OrderDetailsMiddleware(log, storage)
-	router.With(orderDetailsMiddleware).Get("/api/orders/order/{id}", getorder.GetOrderDetails(log))
+	router.Get("/api/orders/order/{id}", getorder.GetOrderDetails(log, storage))
 
-	//TODO новая логика с распределением операции YYYYYYYYYYYYYYYYY
-	router.Get("/template", getform.GetFormByCode(log, storage))
-	router.Get("/all_templates", getform.GetAllForms(log, storage))
+	//TODO получение шаблонов
+	router.Get("/api/template", gettemplate.GetTemplatesByCode(log, storage))
+	router.Get("/api/all_templates", gettemplate.GetAllTemplates(log, storage))
 
 	//TODO сохранение нормированных нарядов
-	router.Post("/api/orders/order-norm/form", save.SaveNormOrderOperation(log, storage))
+	router.Post("/api/orders/order-norm/template", save.SaveNormOrderOperation(log, storage))
+
+	//TODO обновление статуса нормировки(отмена)
+	router.Post("/api/orders/cancel", update.UpdateCancelStatus(log, storage))
 
 	//TODO get получение нормированного наряда
 	router.Get("/api/orders/order/norm/{id}", get.GetNormOrder(log, storage))
-	//TODO получение нескольких заказов нормирования(связанных между собой) НННННННННННННННННН
+	//TODO получение нескольких заказов нормирования(связанных между собой)
 	router.Get("/api/orders/order-norm/by-order", get.GetNormOrdersOrderNum(log, storage))
 	router.Get("/api/orders/order-norm/{id}", get.DoubleReportOrder(log, storage))
 

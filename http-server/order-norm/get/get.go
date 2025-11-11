@@ -1,6 +1,7 @@
 package get
 
 import (
+	"context"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 	"log/slog"
@@ -13,22 +14,21 @@ import (
 )
 
 type ResultGetNorm interface {
-	GetNormOrder(id int64) (*storage.GetOrderDetails, error)
-	GetNormOrders(orderNum, orderType string) ([]storage.GetOrderDetails, error)
-	GetSimpleOrderReport(orderNum string) (*storage.OrderFinalReport, error)
-	GetFinalNormOrders() ([]storage.ReportFinalOrders, error)
-	GetNormOrdersByOrderNum(orderNum string) ([]*storage.GetOrderDetails, error)
-	GetNormOrderIdSub(id int64) ([]*storage.GetOrderDetails, error)
+	GetNormOrder(ctx context.Context, id int64) (*storage.GetOrderDetails, error)
+	GetNormOrdersByOrderNum(ctx context.Context, orderNum string) ([]*storage.GetOrderDetails, error)
+	GetNormOrders(ctx context.Context, orderNum, orderType string) ([]storage.GetOrderDetails, error)
+	GetNormOrderIdSub(ctx context.Context, id int64) ([]*storage.GetOrderDetails, error)
 
-	//TODO new logic
-	GetPEOProductsByCategory(filter mysql.ProductFilter) ([]storage.PEOProduct, []storage.GetWorkers, error)
+	GetSimpleOrderReport(ctx context.Context, orderNum string) (*storage.OrderFinalReport, error)
+	//GetFinalNormOrders(ctx context.Context) ([]storage.ReportFinalOrders, error)
+
+	GetPEOProductsByCategory(ctx context.Context, filter mysql.ProductFilter) ([]storage.PEOProduct, []storage.GetWorkers, error)
 }
 
 func GetNormOrder(log *slog.Logger, result ResultGetNorm) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const op = "handlers.order-dem-norm.get.GetNormOrder"
+		const op = "handlers.get.GetNormOrder"
 
-		// Извлекаем id из URL
 		idStr := chi.URLParam(r, "id")
 		id, err := strconv.ParseInt(idStr, 10, 64)
 		if err != nil {
@@ -36,12 +36,14 @@ func GetNormOrder(log *slog.Logger, result ResultGetNorm) http.HandlerFunc {
 			return
 		}
 
-		log.Info("Получение нормировки", slog.Int64("id", id))
+		//log.Info("Получение нормировки", slog.Int64("id", id))
+		ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
+		defer cancel()
 
-		norm, err := result.GetNormOrder(id)
+		norm, err := result.GetNormOrder(ctx, id)
 		if err != nil {
 			if strings.Contains(err.Error(), "не найдена") {
-				log.Info("Ошибка реквеста сообщения при вставке в базу заказа сука блять уебище тупорылое DOOR ебаные", err)
+				log.With(slog.String("op", op), slog.String("error", err.Error())).Error("Ошибка при получении нормированного заказа с операциями")
 				http.Error(w, "Нормировка не найдена", http.StatusNotFound)
 				return
 			}
@@ -67,7 +69,10 @@ func GetNormOrdersOrderNum(log *slog.Logger, result ResultGetNorm) http.HandlerF
 			slog.String("order_num", orderNum),
 		).Info("Запрос на получение заказов")
 
-		orders, err := result.GetNormOrdersByOrderNum(orderNum)
+		ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
+		defer cancel()
+
+		orders, err := result.GetNormOrdersByOrderNum(ctx, orderNum)
 		if err != nil {
 			log.With(slog.String("op", op), slog.String("error", err.Error())).Error("Ошибка при получении нормировок по номеру заказа")
 			http.Error(w, "Внутренняя ошибка сервера", http.StatusInternalServerError)
@@ -80,7 +85,7 @@ func GetNormOrdersOrderNum(log *slog.Logger, result ResultGetNorm) http.HandlerF
 
 func GetNormOrders(log *slog.Logger, result ResultGetNorm) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const op = "handlers.order-norm.get.GetNormOrders"
+		const op = "handlers.get.GetNormOrders"
 
 		// Получаем фильтр
 		orderNum := r.URL.Query().Get("order_num")
@@ -92,8 +97,11 @@ func GetNormOrders(log *slog.Logger, result ResultGetNorm) http.HandlerFunc {
 			slog.String("order_type_filter", orderType),
 		).Info("Запрос на получение заказов")
 
+		ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
+		defer cancel()
+
 		// Передаём фильтр (может быть пустым)
-		items, err := result.GetNormOrders(orderNum, orderType)
+		items, err := result.GetNormOrders(ctx, orderNum, orderType)
 		if err != nil {
 			log.With(slog.String("op", op), slog.String("error", err.Error())).Error("Ошибка при получении заказов")
 			http.Error(w, "Внутренняя ошибка сервера", http.StatusInternalServerError)
@@ -107,22 +115,49 @@ func GetNormOrders(log *slog.Logger, result ResultGetNorm) http.HandlerFunc {
 	}
 }
 
-func FinalReportNormOrder(log *slog.Logger, result ResultGetNorm) http.HandlerFunc {
+func DoubleReportOrder(log *slog.Logger, result ResultGetNorm) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const op = "handlers.order-norm.get.FinalReportNormOrder"
+		const op = "handlers.get.DoubleReportOrder"
 
-		orderNum := chi.URLParam(r, "order_num")
+		// Извлекаем id из URL
+		idStr := chi.URLParam(r, "id")
+		id, err := strconv.ParseInt(idStr, 10, 64)
+		if err != nil {
+			http.Error(w, "Invalid ID", http.StatusBadRequest)
+			return
+		}
 
-		log.Info("Получение нормировки", slog.String("orderNum", orderNum))
+		ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
+		defer cancel()
 
-		report, err := result.GetSimpleOrderReport(orderNum)
+		sub, err := result.GetNormOrderIdSub(ctx, id)
 		if err != nil {
 			log.With(slog.String("op", op), slog.String("error", err.Error())).Error("Ошибка при получении заказов по номеру заказа")
 			http.Error(w, "Внутренняя ошибка сервера", http.StatusInternalServerError)
 			return
 		}
 
-		log.Info("ASASASSASTTTTTTT", report)
+		render.JSON(w, r, sub)
+	}
+}
+
+func FinalReportNormOrder(log *slog.Logger, result ResultGetNorm) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		const op = "handlers.get.FinalReportNormOrder"
+
+		orderNum := chi.URLParam(r, "order_num")
+
+		log.Info("Получение нормировки", slog.String("orderNum", orderNum))
+
+		ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
+		defer cancel()
+
+		report, err := result.GetSimpleOrderReport(ctx, orderNum)
+		if err != nil {
+			log.With(slog.String("op", op), slog.String("error", err.Error())).Error("Ошибка при получении заказов по номеру заказа")
+			http.Error(w, "Внутренняя ошибка сервера", http.StatusInternalServerError)
+			return
+		}
 
 		render.JSON(w, r, report)
 	}
@@ -151,7 +186,7 @@ func FinalReportNormOrders(log *slog.Logger, result ResultGetNorm) http.HandlerF
 		// По умолчанию: начало и конец текущего месяца
 		now := time.Now()
 		startOfMonth := time.Date(now.Year(), now.Month(), 1, 0, 0, 0, 0, now.Location())
-		endOfMonth := startOfMonth.AddDate(0, 1, 0).Add(-time.Second) // последний момент предыдущего месяца
+		endOfMonth := startOfMonth.AddDate(0, 1, 0).Add(-time.Second)
 
 		from, err := parseDate(fromStr, startOfMonth)
 		if err != nil {
@@ -175,8 +210,11 @@ func FinalReportNormOrders(log *slog.Logger, result ResultGetNorm) http.HandlerF
 			Type:     typeIzd,
 		}
 
+		ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
+		defer cancel()
+
 		// Запрашиваем данные
-		products, employees, err := result.GetPEOProductsByCategory(filter)
+		products, employees, err := result.GetPEOProductsByCategory(ctx, filter)
 		if err != nil {
 			log.With(slog.String("op", op), slog.Any("error", err)).Error("Ошибка при получении изделий")
 			http.Error(w, "Внутренняя ошибка сервера", http.StatusInternalServerError)
@@ -189,31 +227,6 @@ func FinalReportNormOrders(log *slog.Logger, result ResultGetNorm) http.HandlerF
 			"products":  products,
 		}
 
-		log.Info("REEEESSPPPP", response)
-
 		render.JSON(w, r, response)
-	}
-}
-
-func DoubleReportOrder(log *slog.Logger, result ResultGetNorm) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		const op = "handlers.order-norm.get.DoubleReportOrder"
-
-		// Извлекаем id из URL
-		idStr := chi.URLParam(r, "id")
-		id, err := strconv.ParseInt(idStr, 10, 64)
-		if err != nil {
-			http.Error(w, "Invalid ID", http.StatusBadRequest)
-			return
-		}
-
-		sub, err := result.GetNormOrderIdSub(id)
-		if err != nil {
-			log.With(slog.String("op", op), slog.String("error", err.Error())).Error("Ошибка при получении заказов по номеру заказа")
-			http.Error(w, "Внутренняя ошибка сервера", http.StatusInternalServerError)
-			return
-		}
-
-		render.JSON(w, r, sub)
 	}
 }

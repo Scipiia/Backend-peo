@@ -1,42 +1,44 @@
 package mysql
 
 import (
+	"context"
+	"database/sql"
 	"fmt"
 	"math/rand"
 	"vue-golang/internal/storage"
 )
 
-func (s *Storage) UpdateNormOrder(ID int64, update storage.UpdateOrderDetails) error {
-	const op = "storage.mysql.sql.UpdateNormOrder"
+func (s *Storage) UpdateNormOrder(ctx context.Context, ID int64, update storage.UpdateOrderDetails) error {
+	const op = "storage.mysql.UpdateNormOrder"
 
-	stmt := `UPDATE product_instances SET total_time = ?, type = ? WHERE id = ?`
-	stmt1 := `DELETE FROM operation_values WHERE product_id = ?`
-	stmt3 := `INSERT INTO operation_values (product_id, operation_name, operation_label, count, value, minutes) VALUES (?, ?, ?, ?, ?, ?)`
+	stmtUpdate := `UPDATE dem_product_instances_al SET total_time = ?, type = ?, status = ? WHERE id = ?`
+	stmtDelete := `DELETE FROM dem_operation_values_al WHERE product_id = ?`
+	stmtInsert := `INSERT INTO dem_operation_values_al (product_id, operation_name, operation_label, count, value, minutes) VALUES (?, ?, ?, ?, ?, ?)`
 
-	tx, err := s.db.Begin()
+	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
-		return fmt.Errorf("%s: begin transaction: %w", op, err)
+		return fmt.Errorf("%s: старт транзакции: %w", op, err)
 	}
 	defer tx.Rollback()
 
-	// 1. Обновляем основное изделие
-	_, err = tx.Exec(stmt, update.TotalTime, update.Type, ID)
+	//Обновляем основное изделие
+	_, err = tx.ExecContext(ctx, stmtUpdate, update.TotalTime, update.Type, update.Status, ID)
 	if err != nil {
-		return fmt.Errorf("%s: update product: %w", op, err)
+		return fmt.Errorf("%s: ошибка обновление основной информации об изделии: %w", op, err)
 	}
 
-	// 2. Удаляем старые операции
-	_, err = tx.Exec(stmt1, ID)
+	// Удаляем старые операции
+	_, err = tx.ExecContext(ctx, stmtDelete, ID)
 	if err != nil {
-		return fmt.Errorf("%s: delete old operations: %w", op, err)
+		return fmt.Errorf("%s: ошибка удаления старых операции: %w", op, err)
 	}
 
-	// 3. Вставляем новые операции
-	stmt4, err := tx.Prepare(stmt3)
+	// Вставляем новые операции
+	prepareInsert, err := tx.PrepareContext(ctx, stmtInsert)
 	if err != nil {
-		return fmt.Errorf("%s: prepare statement: %w", op, err)
+		return fmt.Errorf("%s: ошибка при подготовке вставки новых операции: %w", op, err)
 	}
-	defer stmt4.Close()
+	defer prepareInsert.Close()
 
 	for _, operation := range update.Operations {
 		opName := operation.Name
@@ -44,29 +46,61 @@ func (s *Storage) UpdateNormOrder(ID int64, update storage.UpdateOrderDetails) e
 			opName = fmt.Sprintf("extra_%d", rand.Intn(10000))
 		}
 
-		_, err := stmt4.Exec(ID, opName, operation.Label, operation.Count, operation.Value, operation.Minutes)
+		_, err := prepareInsert.ExecContext(ctx, ID, opName, operation.Label, operation.Count, operation.Value, operation.Minutes)
 		if err != nil {
-			return fmt.Errorf("%s: insert operation %s: %w", op, opName, err)
+			return fmt.Errorf("%s: ошибка вставки новых операции %s: %w", op, opName, err)
 		}
 	}
 
-	// 4. Коммит
+	// Коммит
 	if err = tx.Commit(); err != nil {
-		return fmt.Errorf("%s: commit: %w", op, err)
+		return fmt.Errorf("%s: ошибка завершения транзакции: %w", op, err)
 	}
 
 	return nil
 }
 
-func (s *Storage) UpdateFinalOrder(ID int64, update storage.UpdateFinalOrderDetails) error {
-	const op = "storage.mysql.sql.UpdateFinalOrder"
+func (s *Storage) UpdateFinalOrder(ctx context.Context, ID int64, update storage.UpdateFinalOrderDetails) error {
+	const op = "storage.mysql.UpdateFinalOrder"
 
-	stmt := `UPDATE product_instances SET customer_type = ?, norm_money = ?, profile = ?, sqr = ?, systema = ?, 
+	stmt := `UPDATE dem_product_instances_al SET customer_type = ?, norm_money = ?, profile = ?, sqr = ?, systema = ?, 
             parent_assembly = ?, brigade = ?, type_izd = ?, status = 'final' WHERE id = ?`
 
-	_, err := s.db.Exec(stmt, update.CustomerType, update.NormMoney, update.Profile, update.Sqr, update.Systema, update.ParentAssembly, update.Brigade, update.TypeIzd, ID)
+	_, err := s.db.ExecContext(ctx, stmt, update.CustomerType, update.NormMoney, update.Profile, update.Sqr, update.Systema, update.ParentAssembly, update.Brigade, update.TypeIzd, ID)
 	if err != nil {
-		return fmt.Errorf("%s: %w", op, err)
+		return fmt.Errorf("%s: ошибка обновления  %w", op, err)
+	}
+
+	return nil
+}
+
+func (s *Storage) UpdateStatus(ctx context.Context, rootProductID int64, status string) error {
+	const op = "storage.mysql.UpdateStatus"
+
+	stmtUpdateStatus := `UPDATE dem_product_instances_al SET status = ? WHERE id = ? OR parent_product_id = ?`
+	stmtDeleteExecutors := `DELETE FROM dem_operation_executors_al WHERE product_id IN (SELECT id FROM dem_product_instances_al WHERE id = ? OR parent_product_id = ?)`
+
+	_, err := s.db.ExecContext(ctx, stmtUpdateStatus, status, rootProductID, rootProductID)
+	if err != nil {
+		return fmt.Errorf("%s: ошибка обновления статуса root ID %d: %w", op, rootProductID, err)
+	}
+
+	_, err = s.db.ExecContext(ctx, stmtDeleteExecutors, rootProductID, rootProductID)
+	if err != nil {
+		return fmt.Errorf("%s: ошибка удаления назначенных сотрудников заказа с ID %d: %w", op, rootProductID, err)
+	}
+
+	return nil
+}
+
+func (s *Storage) UpdateStatusTx(ctx context.Context, tx *sql.Tx, rootProductID int64, status string) error {
+	const op = "storage.mysql.UpdateStatusTx"
+
+	stmtUpdateStatus := `UPDATE dem_product_instances_al SET status = ? WHERE id = ? OR parent_product_id = ?`
+
+	_, err := tx.ExecContext(ctx, stmtUpdateStatus, status, rootProductID, rootProductID)
+	if err != nil {
+		return fmt.Errorf("%s: failed to update status in tx for root ID %d: %w", op, rootProductID, err)
 	}
 
 	return nil

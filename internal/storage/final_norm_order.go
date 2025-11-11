@@ -18,6 +18,7 @@ type OperationsNorm struct {
 	OperationName  string    `json:"operation_name"`
 	OperationLabel string    `json:"operation_label"`
 	NormMinutes    float64   `json:"norm_minutes"`
+	NormValue      float64   `json:"norm_value"`
 	Executors      []Workers `json:"executors"`
 }
 
@@ -33,9 +34,6 @@ type ReportFinalOrders struct {
 	FirstCreated time.Time `json:"first_created"`
 }
 
-// TODO new logic
-
-// PEOProduct — изделие с агрегированными данными по сотрудникам
 type PEOProduct struct {
 	ID              int64     `json:"id"`
 	OrderNum        string    `json:"order_num"`
@@ -57,15 +55,11 @@ type PEOProduct struct {
 	NormMoney       float64   `json:"norm_money"`
 	Position        float64   `json:"position"`
 
-	// Дополнительные поля, которые ты добавишь позже
-	// Material       *string `json:"material"`
-	// ProfileType    *string `json:"profile_type"`
-
 	// Мапа: employee_id → суммарные минуты
 	EmployeeMinutes map[int64]float64 `json:"employee_minutes"`
+	EmployeeValue   map[int64]float64 `json:"employee_value"`
 }
 
-// PEOEmployee — сотрудник для заголовков таблицы
 type PEOEmployee struct {
 	ID   int64  `json:"id"`
 	Name string `json:"name"`

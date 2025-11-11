@@ -1,6 +1,7 @@
 package mysql
 
 import (
+	"context"
 	"database/sql"
 	"encoding/json"
 	"errors"
@@ -8,22 +9,20 @@ import (
 	"vue-golang/internal/storage"
 )
 
-// storage/mysql/sql/templates.go
-
-func (s *Storage) GetFormByCode(code string) (*storage.Form, error) {
+func (s *Storage) GetTemplateByCode(ctx context.Context, code string) (*storage.Template, error) {
 	const op = "storage.mysql.sql.GetFormByCode"
 
 	query := `
 		SELECT id, code, name, category, operations, systema, izd, profile 
-		FROM templates 
+		FROM dem_templates_al 
 		WHERE code = ? AND is_active = TRUE
 	`
 
-	template := &storage.Form{}
+	template := &storage.Template{}
 
 	// Сканируем JSON как строку
 	var operationsJSON string
-	err := s.db.QueryRow(query, code).Scan(
+	err := s.db.QueryRowContext(ctx, query, code).Scan(
 		&template.ID,
 		&template.Code,
 		&template.Name,
@@ -48,31 +47,26 @@ func (s *Storage) GetFormByCode(code string) (*storage.Form, error) {
 	return template, nil
 }
 
-func (s *Storage) GetAllForms() ([]*storage.Form, error) {
+func (s *Storage) GetAllTemplates(ctx context.Context) ([]*storage.Template, error) {
 	const op = "storage.mysql.sql.GetAllForms"
 
-	stmt := "SELECT id, code, name, category, systema, izd, profile FROM templates WHERE is_active = TRUE"
+	stmt := "SELECT id, code, name, category, systema, izd, profile FROM dem_templates_al WHERE is_active = TRUE"
 
-	rows, err := s.db.Query(stmt)
+	rows, err := s.db.QueryContext(ctx, stmt)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 	defer rows.Close()
 
-	var templates []*storage.Form
-	//var operationsJSON string
+	var templates []*storage.Template
 
 	for rows.Next() {
-		template := &storage.Form{}
+		template := &storage.Template{}
 
 		err := rows.Scan(&template.ID, &template.Code, &template.Name, &template.Category, &template.Systema, &template.TypeIzd, &template.Profile)
 		if err != nil {
 			return nil, fmt.Errorf("%s: ошибка сканирования строки: %w", op, err)
 		}
-
-		//if err := json.Unmarshal([]byte(operationsJSON), &template.Operations); err != nil {
-		//	return nil, fmt.Errorf("%s: ошибка парсинга JSON операций: %w", op, err)
-		//}
 
 		templates = append(templates, template)
 	}

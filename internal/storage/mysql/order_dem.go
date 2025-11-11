@@ -1,6 +1,7 @@
 package mysql
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 	"fmt"
@@ -8,7 +9,7 @@ import (
 	"vue-golang/internal/storage"
 )
 
-func (s *Storage) GetOrdersMonth(year int, month int, search string) ([]*storage.Order, error) {
+func (s *Storage) GetOrdersMonth(ctx context.Context, year int, month int, search string) ([]*storage.Order, error) {
 	const op = "storage.order-dem-details.GetOrdersMonth.sql"
 
 	var stmt string
@@ -38,10 +39,10 @@ func (s *Storage) GetOrdersMonth(year int, month int, search string) ([]*storage
 		args = []interface{}{startUnix, endUnix}
 	}
 
-	// Дополнительно можно всегда искать только "готовые" заказы (если нужно)
-	stmt += " AND order_num LIKE '%Q6%'" // например
+	// Дополнительно вытягивать только АЛ заказы
+	stmt += " AND order_num LIKE '%Q6%'"
 
-	rows, err := s.db.Query(stmt, args...)
+	rows, err := s.db.QueryContext(ctx, stmt, args...)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
@@ -73,65 +74,66 @@ func (s *Storage) GetOrdersMonth(year int, month int, search string) ([]*storage
 	return orders, nil
 }
 
-func (s *Storage) GetOrderDetails(id int) (*storage.ResultOrderDetails, error) {
+func (s *Storage) GetOrderDetails(ctx context.Context, id int) (*storage.ResultOrderDetails, error) {
 	const op = "storage.order-dem-details.GetOrderDetails.sql"
 
-	tx, err := s.db.Begin()
-	if err != nil {
-		return nil, fmt.Errorf("%s: failed to begin transaction: %w", op, err)
-	}
-	defer tx.Rollback()
-
-	//TODO основная структура
 	details := &storage.ResultOrderDetails{}
 
-	stmtDemOrders := "SELECT id, order_num, creator, customer, dop_info, ms_note FROM dem_ready WHERE id = ?"
+	// Первый запрос: основной заказ
+	stmtDemOrders := `
+		SELECT id, order_num, creator, customer, dop_info, ms_note 
+		FROM dem_ready 
+		WHERE id = ?`
 
-	var msNote sql.NullString // Используем NullString для обработки NULL
+	var msNote sql.NullString
 	details.Order = &storage.Order{}
-	err = tx.QueryRow(stmtDemOrders, id).Scan(&details.Order.ID, &details.Order.OrderNum, &details.Order.Creator, &details.Order.Customer, &details.Order.DopInfo, &msNote)
+	err := s.db.QueryRowContext(ctx, stmtDemOrders, id).Scan(
+		&details.Order.ID,
+		&details.Order.OrderNum,
+		&details.Order.Creator,
+		&details.Order.Customer,
+		&details.Order.DopInfo,
+		&msNote,
+	)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, fmt.Errorf("%s: no rows found for query dem orders: %w", op, err)
+			return nil, fmt.Errorf("%s: no rows found for order id=%d: %w", op, id, err)
 		}
 		return nil, fmt.Errorf("%s: query failed: %w", op, err)
 	}
 
-	// Если значение NULL, заменяем его на пустую строку
 	if msNote.Valid {
 		details.Order.MsNote = msNote.String
 	} else {
 		details.Order.MsNote = ""
 	}
 
+	// Второй запрос: позиции заказа
 	stmtDemPrice := `
-    	SELECT 
-        	CAST(p.position AS UNSIGNED),
-        	p.creator,
-        	p.name_position,
-        	p.kol_vo,
-       	 	i.im_image,
-       	 	pl.color,
-        	COALESCE(SUM(pl.sqr), 0) AS sqr
-    	FROM dem_price p
-    	LEFT JOIN dem_images i ON i.im_ordername = p.numorders AND i.im_orderpos = p.position
-    	LEFT JOIN dem_plan pl ON pl.idorder = ? AND CAST(pl.x AS UNSIGNED) = p.position
-    	WHERE p.numorders LIKE ?
-    	GROUP BY p.position, p.creator, p.name_position, p.kol_vo, i.im_image, pl.color
-    	ORDER BY 1`
+		SELECT 
+			CAST(p.position AS UNSIGNED),
+			p.creator,
+			p.name_position,
+			p.kol_vo,
+			i.im_image,
+			pl.color,
+			COALESCE(SUM(pl.sqr), 0) AS sqr
+		FROM dem_price p
+		LEFT JOIN dem_images i ON i.im_ordername = p.numorders AND i.im_orderpos = p.position
+		LEFT JOIN dem_plan pl ON pl.idorder = ? AND CAST(pl.x AS UNSIGNED) = p.position
+		WHERE p.numorders LIKE ?
+		GROUP BY p.position, p.creator, p.name_position, p.kol_vo, i.im_image, pl.color
+		ORDER BY 1`
 
-	//TODO тут будет массив данных
-	details.OrderDemPrice = []*storage.OrderDemPrice{}
-
-	rows, err := tx.Query(stmtDemPrice, id, details.Order.OrderNum)
+	rows, err := s.db.QueryContext(ctx, stmtDemPrice, id, details.Order.OrderNum)
 	if err != nil {
-		return nil, fmt.Errorf("%s:query failed no rows in dem price %w", op, err)
+		return nil, fmt.Errorf("%s: failed to query dem_price: %w", op, err)
 	}
 	defer rows.Close()
 
+	details.OrderDemPrice = []*storage.OrderDemPrice{}
 	for rows.Next() {
 		price := &storage.OrderDemPrice{}
-
 		err := rows.Scan(
 			&price.Position,
 			&price.Creator,
@@ -142,14 +144,12 @@ func (s *Storage) GetOrderDetails(id int) (*storage.ResultOrderDetails, error) {
 			&price.Sqr,
 		)
 		if err != nil {
-			return nil, fmt.Errorf("%s: failed to scan row dem price: %w", op, err)
+			return nil, fmt.Errorf("%s: failed to scan dem_price row: %w", op, err)
 		}
-
 		details.OrderDemPrice = append(details.OrderDemPrice, price)
 	}
-
-	if err := tx.Commit(); err != nil {
-		return nil, fmt.Errorf("%s: failed to commit transaction: %w", op, err)
+	if err = rows.Err(); err != nil {
+		return nil, fmt.Errorf("%s: rows iteration error: %w", op, err)
 	}
 
 	return details, nil

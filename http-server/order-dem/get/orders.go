@@ -1,11 +1,13 @@
 package get
 
 import (
+	"context"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/render"
 	"log/slog"
 	"net/http"
 	"strconv"
+	"time"
 	"vue-golang/internal/storage"
 )
 
@@ -16,7 +18,7 @@ type ResponseOrders struct {
 }
 
 type GetOrders interface {
-	GetOrdersMonth(year int, month int, search string) ([]*storage.Order, error)
+	GetOrdersMonth(ctx context.Context, year int, month int, search string) ([]*storage.Order, error)
 }
 
 func GetOrdersFilter(log *slog.Logger, getOrders GetOrders) http.HandlerFunc {
@@ -59,8 +61,11 @@ func GetOrdersFilter(log *slog.Logger, getOrders GetOrders) http.HandlerFunc {
 			}
 		}
 
+		ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
+		defer cancel()
+
 		// Передаём в storage
-		orders, err := getOrders.GetOrdersMonth(year, month, search)
+		orders, err := getOrders.GetOrdersMonth(ctx, year, month, search)
 		if err != nil {
 			log.With(slog.String("op", op), slog.String("error", err.Error())).Error("Ошибка при получении заказов из дема")
 			render.JSON(w, r, ResponseOrders{Error: "В базе не найдено заказов"})
