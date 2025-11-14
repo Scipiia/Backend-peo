@@ -194,6 +194,7 @@ func (s *Storage) GetNormOrderIdSub(ctx context.Context, id int64) ([]*storage.G
 	`
 
 	stmtOps := `SELECT operation_name, operation_label, count, value, minutes FROM dem_operation_values_al WHERE product_id = ?`
+	stmtExecOper := ` SELECT employee_id, actual_minutes, actual_value FROM dem_operation_executors_al WHERE product_id = ? AND operation_name = ?`
 
 	rows, err := s.db.QueryContext(ctx, stmt, id, id)
 	if err != nil {
@@ -239,15 +240,45 @@ func (s *Storage) GetNormOrderIdSub(ctx context.Context, id int64) ([]*storage.G
 		}
 
 		for opsRows.Next() {
-			var op storage.NormOperation
-			err := opsRows.Scan(&op.Name, &op.Label, &op.Count, &op.Value, &op.Minutes)
+			var oper storage.NormOperation
+			err := opsRows.Scan(&oper.Name, &oper.Label, &oper.Count, &oper.Value, &oper.Minutes)
 			if err != nil {
 				opsRows.Close()
 				return nil, fmt.Errorf("%s: ошибка сканирования операции: %w", op, err)
 			}
-			detail.Operations = append(detail.Operations, op)
+
+			// Загрузка исполнителей
+			execRows, err := s.db.QueryContext(ctx, stmtExecOper, detail.ID, oper.Name)
+			if err != nil {
+				opsRows.Close()
+				return nil, fmt.Errorf("%s: ошибка загрузки исполнителей для операции %s: %w", op, oper.Name, err)
+			}
+			defer execRows.Close() // ← безопасное закрытие
+
+			var workers []storage.AssignedWorker // или AssignedWorkers, если оставляете имя
+			for execRows.Next() {
+				var ex storage.AssignedWorker
+				err := execRows.Scan(&ex.EmployeeID, &ex.ActualMinutes, &ex.ActualValue)
+				if err != nil {
+					opsRows.Close()
+					return nil, fmt.Errorf("%s: ошибка сканирования исполнителя: %w", op, err)
+				}
+				workers = append(workers, ex)
+			}
+			if err = execRows.Err(); err != nil {
+				opsRows.Close()
+				return nil, fmt.Errorf("%s: ошибка при чтении исполнителей: %w", op, err)
+			}
+
+			oper.AssignedWorkers = workers
+			detail.Operations = append(detail.Operations, oper)
 		}
 		opsRows.Close()
+
+		if err != nil {
+			opsRows.Close()
+			return nil, fmt.Errorf("%s: ошибка загрузки исполнителей для операции %s: %w", op, err)
+		}
 
 		results = append(results, &detail)
 	}

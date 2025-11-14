@@ -23,11 +23,18 @@ type OrderNormDetails struct {
 }
 
 type NormOperation struct {
-	Name    string  `json:"operation_name"`
-	Label   string  `json:"operation_label"`
-	Count   float64 `json:"count"`
-	Value   float64 `json:"value"`
-	Minutes float64 `json:"minutes"`
+	Name            string           `json:"operation_name"`
+	Label           string           `json:"operation_label"`
+	Count           float64          `json:"count"`
+	Value           float64          `json:"value"`
+	Minutes         float64          `json:"minutes"`
+	AssignedWorkers []AssignedWorker `json:"assign_workers,omitempty"`
+}
+
+type AssignedWorker struct {
+	EmployeeID    int64   `json:"employee_id"`
+	ActualMinutes float64 `json:"actual_minutes"`
+	ActualValue   float64 `json:"actual_value"`
 }
 
 type GetOrderDetails struct {
@@ -47,4 +54,5 @@ type GetOrderDetails struct {
 	TemplateCode    string          `json:"template_code"`
 	HeadName        string          `json:"head_name"`
 	TypeIzd         string          `json:"type_izd"`
+	//AssignWorkers   []AssignedWorkers `json:"assign_workers"`
 }
