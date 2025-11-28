@@ -35,18 +35,22 @@ func (s *Storage) SaveNormOperation(ctx context.Context, OrderID int64, operatio
 
 	defer tx.Rollback()
 
-	stmt, _ := tx.PrepareContext(ctx, `
+	stmt, err := tx.PrepareContext(ctx, `
 		INSERT INTO dem_operation_values_al 
-			(product_id, operation_name, operation_label, count, value, minutes)
-		VALUES (?, ?, ?, ?, ?, ?)
+			(product_id, operation_name, operation_label, count, value, minutes, sort_operation)
+		VALUES (?, ?, ?, ?, ?, ?, ?)
 		ON DUPLICATE KEY UPDATE
 		    operation_name = VALUES(operation_name),
 			count = VALUES(count),
-			value = VALUES(value)
+			value = VALUES(value),
+			sort_operation = VALUES(sort_operation)
 	`)
+	if err != nil {
+		return fmt.Errorf("%s: prepare statement: %w", op, err)
+	}
 
-	for _, opr := range operations {
-		_, err := stmt.ExecContext(ctx, OrderID, opr.Name, opr.Label, opr.Count, opr.Value, opr.Minutes)
+	for i, opr := range operations {
+		_, err := stmt.ExecContext(ctx, OrderID, opr.Name, opr.Label, opr.Count, opr.Value, opr.Minutes, i)
 		if err != nil {
 			return fmt.Errorf("%s: Ошибка сохранения нормированных операции в базу='%s'", op, err)
 		}

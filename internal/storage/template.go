@@ -19,4 +19,5 @@ type Operation struct {
 	Value    float64 `json:"value"`
 	Minutes  float64 `json:"minutes"`
 	Required bool    `json:"required"`
+	Group    string  `json:"group"`
 }

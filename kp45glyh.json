@@ -4,7 +4,7 @@
     "type": "number",
     "count": 1,
     "label": "Настройка станка для напиловки",
-    "value":  0.050,
+    "value": 0.05,
     "minutes": 3,
     "required": true
   },
@@ -13,7 +13,7 @@
     "type": "number",
     "count": 1,
     "label": "Напиловка (в т.ч. Крышки и направляющие)",
-    "value":  0.215,
+    "value": 0.215,
     "minutes": 13,
     "required": true
   },
@@ -22,7 +22,7 @@
     "type": "number",
     "count": 1,
     "label": "Обработка",
-    "value":  0.566,
+    "value": 0.566,
     "minutes": 34,
     "required": true
   },
@@ -31,7 +31,7 @@
     "type": "number",
     "count": 1,
     "label": "Установка закладных под ролики",
-    "value":  0.133,
+    "value": 0.133,
     "minutes": 8,
     "required": true
   },
@@ -40,7 +40,7 @@
     "type": "number",
     "count": 1,
     "label": "Сборка под опресовку",
-    "value":  0.133,
+    "value": 0.133,
     "minutes": 16,
     "required": true
   },
@@ -49,7 +49,7 @@
     "type": "number",
     "count": 1,
     "label": "Опрессовка (настройка)",
-    "value":  0.067,
+    "value": 0.067,
     "minutes": 4,
     "required": true
   },
@@ -58,7 +58,7 @@
     "type": "number",
     "count": 1,
     "label": "Опрессовка",
-    "value":  0.047,
+    "value": 0.047,
     "minutes": 3,
     "required": true
   },
@@ -67,7 +67,7 @@
     "type": "number",
     "count": 1,
     "label": "Обрезинивание",
-    "value":  0.166,
+    "value": 0.166,
     "minutes": 10,
     "required": true
   },
@@ -76,7 +76,7 @@
     "type": "number",
     "count": 1,
     "label": "Установка замка; роликов; ответки; фетра в крышку",
-    "value":  0.500,
+    "value": 0.5,
     "minutes": 30,
     "required": true
   },
@@ -85,7 +85,7 @@
     "type": "number",
     "count": 1,
     "label": "Зашивка",
-    "value":  0.200,
+    "value": 0.2,
     "minutes": 20,
     "required": true
   },
@@ -94,35 +94,39 @@
     "type": "number",
     "count": 0,
     "label": "Доп. импост (напиловка)",
-    "value":  0.025,
+    "value": 0.025,
     "minutes": 1.5,
-    "required": true
+    "required": true,
+    "group": "imp"
   },
   {
     "name": "dop_impost_frezer",
     "type": "number",
     "count": 0,
     "label": "Доп. импост (Фрезеровка)",
-    "value":  0.033,
+    "value": 0.033,
     "minutes": 2,
-    "required": true
+    "required": true,
+    "group": "imp"
   },
   {
     "name": "dop_impost_sverl",
     "type": "number",
     "count": 0,
     "label": "Доп. импост (Сверловка)",
-    "value":  0.017,
+    "value": 0.017,
     "minutes": 1,
-    "required": true
+    "required": true,
+    "group": "imp"
   },
   {
     "name": "dop_impost_yst",
     "type": "number",
     "count": 0,
     "label": "Доп. импост (установка)",
-    "value":  0.033,
+    "value": 0.033,
     "minutes": 2,
-    "required": true
+    "required": true,
+    "group": "imp"
   }
 ]

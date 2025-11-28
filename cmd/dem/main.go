@@ -56,7 +56,7 @@ func (h *dualHandler) Enabled(ctx context.Context, lvl slog.Level) bool {
 func (h *dualHandler) Handle(ctx context.Context, r slog.Record) error {
 	var err error
 
-	// 1. Всегда пишем в основной вывод (stdout)
+	// Всегда пишем в основной вывод (stdout)
 	if h.coreHandler.Enabled(ctx, r.Level) {
 		err = h.coreHandler.Handle(ctx, r)
 		if err != nil {
@@ -64,7 +64,7 @@ func (h *dualHandler) Handle(ctx context.Context, r slog.Record) error {
 		}
 	}
 
-	// 2. Если это ошибка — пишем в файл
+	// Если это ошибка — пишем в файл
 	if r.Level >= slog.LevelError && h.errorHandler.Enabled(ctx, r.Level) {
 		cloned := r.Clone()
 		fileErr := h.errorHandler.Handle(ctx, cloned)

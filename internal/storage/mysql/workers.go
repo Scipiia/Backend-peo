@@ -88,15 +88,6 @@ func (s *Storage) SaveOperationWorkers(ctx context.Context, req storage.SaveWork
 	//Если указано — обновляем статус всей сборки
 	if req.UpdateStatus != "" && req.RootProductID != 0 {
 		// Обновляем main + все его sub
-		//_, err := tx.ExecContext(ctx, `
-		//    UPDATE dem_product_instances_al
-		//    SET status = ?
-		//    WHERE id = ? OR parent_product_id = ?
-		//`, req.UpdateStatus, req.RootProductID, req.RootProductID)
-		//
-		//if err != nil {
-		//	return fmt.Errorf("%s: ошибка обновления статуса для родительского заказа id= %d: %w", op, req.RootProductID, err)
-		//}
 		if err := s.UpdateStatusTx(ctx, tx, req.RootProductID, req.UpdateStatus); err != nil {
 			return fmt.Errorf("%s: ошибка обновления статуса для родительского заказа id= %d: %w", op, req.RootProductID, err)
 		}

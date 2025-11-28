@@ -13,7 +13,7 @@ func (s *Storage) UpdateNormOrder(ctx context.Context, ID int64, update storage.
 
 	stmtUpdate := `UPDATE dem_product_instances_al SET total_time = ?, type = ?, status = ? WHERE id = ?`
 	stmtDelete := `DELETE FROM dem_operation_values_al WHERE product_id = ?`
-	stmtInsert := `INSERT INTO dem_operation_values_al (product_id, operation_name, operation_label, count, value, minutes) VALUES (?, ?, ?, ?, ?, ?)`
+	stmtInsert := `INSERT INTO dem_operation_values_al (product_id, operation_name, operation_label, count, value, minutes, sort_operation) VALUES (?, ?, ?, ?, ?, ?, ?)`
 
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
@@ -40,13 +40,13 @@ func (s *Storage) UpdateNormOrder(ctx context.Context, ID int64, update storage.
 	}
 	defer prepareInsert.Close()
 
-	for _, operation := range update.Operations {
+	for i, operation := range update.Operations {
 		opName := operation.Name
 		if opName == "" {
 			opName = fmt.Sprintf("extra_%d", rand.Intn(10000))
 		}
 
-		_, err := prepareInsert.ExecContext(ctx, ID, opName, operation.Label, operation.Count, operation.Value, operation.Minutes)
+		_, err := prepareInsert.ExecContext(ctx, ID, opName, operation.Label, operation.Count, operation.Value, operation.Minutes, i)
 		if err != nil {
 			return fmt.Errorf("%s: ошибка вставки новых операции %s: %w", op, opName, err)
 		}

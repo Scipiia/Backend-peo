@@ -13,7 +13,7 @@ func (s *Storage) GetNormOrder(ctx context.Context, id int64) (*storage.GetOrder
 
 	stmtOrder := "SELECT order_num, name, count, total_time, created_at, updated_at, type FROM dem_product_instances_al WHERE id = ?"
 
-	stmtOperation := "SELECT operation_name, operation_label, count, value, minutes FROM dem_operation_values_al WHERE product_id = ?"
+	stmtOperation := "SELECT operation_name, operation_label, count, value, minutes FROM dem_operation_values_al WHERE product_id = ? ORDER BY sort_operation ASC"
 
 	var res storage.GetOrderDetails
 
@@ -193,7 +193,7 @@ func (s *Storage) GetNormOrderIdSub(ctx context.Context, id int64) ([]*storage.G
 			pi.id
 	`
 
-	stmtOps := `SELECT operation_name, operation_label, count, value, minutes FROM dem_operation_values_al WHERE product_id = ?`
+	stmtOps := `SELECT operation_name, operation_label, count, value, minutes FROM dem_operation_values_al WHERE product_id = ? ORDER BY sort_operation ASC`
 	stmtExecOper := ` SELECT employee_id, actual_minutes, actual_value FROM dem_operation_executors_al WHERE product_id = ? AND operation_name = ?`
 
 	rows, err := s.db.QueryContext(ctx, stmt, id, id)

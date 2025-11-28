@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"sort"
 	"strings"
 	"time"
 	"vue-golang/internal/storage"
@@ -220,7 +219,7 @@ func (s *Storage) GetPEOProductsByCategory(ctx context.Context, filter ProductFi
 		FROM dem_product_instances_al p
 		LEFT JOIN dem_customer_al c ON p.customer = c.name
 		` + whereClause + `
-		ORDER BY p.order_num, p.created_at
+		ORDER BY p.created_at DESC, p.order_num
 	`
 
 	rowsProducts, err := s.db.QueryContext(ctx, queryProducts, args...)
@@ -355,12 +354,12 @@ func (s *Storage) GetPEOProductsByCategory(ctx context.Context, filter ProductFi
 	// Простой способ: собрать ID в порядке выборки, затем восстановить порядок.
 	// Но если объём небольшой — можно отсортировать в Go:
 
-	sort.Slice(productList, func(i, j int) bool {
-		if productList[i].OrderNum != productList[j].OrderNum {
-			return productList[i].OrderNum < productList[j].OrderNum
-		}
-		return productList[i].CreatedAt.Before(productList[j].CreatedAt)
-	})
+	//sort.Slice(productList, func(i, j int) bool {
+	//	if productList[i].OrderNum != productList[j].OrderNum {
+	//		return productList[i].OrderNum < productList[j].OrderNum
+	//	}
+	//	return productList[i].CreatedAt.Before(productList[j].CreatedAt)
+	//})
 
 	return productList, employees, nil
 }
