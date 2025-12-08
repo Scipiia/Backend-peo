@@ -2,6 +2,7 @@ package mysql
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"vue-golang/internal/storage"
 )
@@ -94,8 +95,30 @@ func (s *Storage) SaveOperationWorkers(ctx context.Context, req storage.SaveWork
 
 	}
 
+	fmt.Println("DDDDDDDDDDDDDDD", req.ReadyDate)
+
+	if req.ReadyDate != "" {
+		if err := s.SaveReadyDate(ctx, tx, req.RootProductID, req.ReadyDate); err != nil {
+			return fmt.Errorf("%s: ошибка обновления даты готовности для родительского заказа id= %d: %w", op, req.RootProductID, err)
+		}
+	}
+
 	if err := tx.Commit(); err != nil {
 		return fmt.Errorf("%s: commit transaction: %w", op, err)
+	}
+
+	return nil
+}
+
+func (s *Storage) SaveReadyDate(ctx context.Context, tx *sql.Tx, rootProductID int64, readyDate string) error {
+	const op = "storage.mysql.SaveReadyDate"
+
+	stmtInsertReadyDate := `UPDATE dem_product_instances_al SET ready_date = ? WHERE id = ? OR parent_product_id = ?`
+	//stmtInsertReadyDate := `INSERT INTO dem_product_instances_al (ready_date) VALUES (?) WHERE id = ? OR parent_product_id = ?`
+
+	_, err := tx.ExecContext(ctx, stmtInsertReadyDate, readyDate, rootProductID, rootProductID)
+	if err != nil {
+		return fmt.Errorf("%s: ошибка обновления даты готовности для родительского заказа id=%d: %w", op, rootProductID, err)
 	}
 
 	return nil

@@ -35,25 +35,26 @@ type ReportFinalOrders struct {
 }
 
 type PEOProduct struct {
-	ID              int64     `json:"id"`
-	OrderNum        string    `json:"order_num"`
-	Customer        string    `json:"customer"`
-	TotalTime       float64   `json:"total_time"` // "площадь"
-	CreatedAt       time.Time `json:"created_at"`
-	Status          string    `json:"status"`
-	PartType        string    `json:"part_type"`
-	Type            string    `json:"type"`
-	ParentProductID *int64    `json:"parent_product_id"`
-	ParentAssembly  string    `json:"parent_assembly"`
-	CustomerType    string    `json:"customer_type"`
-	Systema         string    `json:"systema"`
-	TypeIzd         string    `json:"type_izd"`
-	Profile         string    `json:"profile"`
-	Count           int       `json:"count"`
-	Sqr             float64   `json:"sqr"`
-	Brigade         string    `json:"brigade"`
-	NormMoney       float64   `json:"norm_money"`
-	Position        float64   `json:"position"`
+	ID              int64      `json:"id"`
+	OrderNum        string     `json:"order_num"`
+	Customer        string     `json:"customer"`
+	TotalTime       float64    `json:"total_time"` // "площадь"
+	CreatedAt       time.Time  `json:"created_at"`
+	Status          string     `json:"status"`
+	PartType        string     `json:"part_type"`
+	Type            string     `json:"type"`
+	ParentProductID *int64     `json:"parent_product_id"`
+	ParentAssembly  string     `json:"parent_assembly"`
+	CustomerType    string     `json:"customer_type"`
+	Systema         string     `json:"systema"`
+	TypeIzd         string     `json:"type_izd"`
+	Profile         string     `json:"profile"`
+	Count           int        `json:"count"`
+	Sqr             float64    `json:"sqr"`
+	Brigade         string     `json:"brigade"`
+	NormMoney       float64    `json:"norm_money"`
+	Position        float64    `json:"position"`
+	ReadyDate       *time.Time `json:"ready_date"`
 
 	// Мапа: employee_id → суммарные минуты
 	EmployeeMinutes map[int64]float64 `json:"employee_minutes"`

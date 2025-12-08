@@ -54,5 +54,6 @@ type GetOrderDetails struct {
 	TemplateCode    string          `json:"template_code"`
 	HeadName        string          `json:"head_name"`
 	TypeIzd         string          `json:"type_izd"`
+	ReadyDate       *string         `json:"ready_date"`
 	//AssignWorkers   []AssignedWorkers `json:"assign_workers"`
 }

@@ -173,14 +173,14 @@ func (s *Storage) GetPEOProductsByCategory(ctx context.Context, filter ProductFi
 	args = append(args, StatusAssigned, StatusFinal)
 
 	if !filter.From.IsZero() {
-		conditions = append(conditions, "p.created_at >= ?")
-		args = append(args, filter.From)
+		conditions = append(conditions, "p.ready_date >= ?")
+		args = append(args, filter.From.Format("2006-01-02"))
 	}
 
 	if !filter.To.IsZero() {
 		nextDay := filter.To.AddDate(0, 0, 1)
-		conditions = append(conditions, "p.created_at < ?")
-		args = append(args, nextDay)
+		conditions = append(conditions, "p.ready_date < ?")
+		args = append(args, nextDay.Format("2006-01-02"))
 	}
 
 	// Номер заказа
@@ -215,11 +215,11 @@ func (s *Storage) GetPEOProductsByCategory(ctx context.Context, filter ProductFi
 			p.id, p.order_num, p.customer, p.total_time, p.created_at, p.status,
 			p.part_type, p.type, p.parent_product_id, p.parent_assembly,
 			COALESCE(c.short_name_customer, p.customer_type) AS customer_type,
-			p.systema, p.type_izd, p.profile, p.count, p.sqr, p.brigade, p.norm_money, p.position
+			p.systema, p.type_izd, p.profile, p.count, p.sqr, p.brigade, p.norm_money, p.position, p.ready_date
 		FROM dem_product_instances_al p
 		LEFT JOIN dem_customer_al c ON p.customer = c.name
 		` + whereClause + `
-		ORDER BY p.created_at DESC, p.order_num
+		ORDER BY p.ready_date DESC, p.order_num
 	`
 
 	rowsProducts, err := s.db.QueryContext(ctx, queryProducts, args...)
@@ -252,10 +252,11 @@ func (s *Storage) GetPEOProductsByCategory(ctx context.Context, filter ProductFi
 			brigade         string
 			normMoney       float64
 			position        float64
+			readyDate       sql.NullTime
 		)
 
 		err := rowsProducts.Scan(&id, &orderNum, &customer, &totalTime, &createdAt, &status, &partType, &Type, &parentProductID, &parentAssembly,
-			&customerType, &systema, &typeIzd, &profile, &count, &sqr, &brigade, &normMoney, &position)
+			&customerType, &systema, &typeIzd, &profile, &count, &sqr, &brigade, &normMoney, &position, &readyDate)
 		if err != nil {
 			return nil, nil, fmt.Errorf("%s: scan product: %w", op, err)
 		}
@@ -267,6 +268,12 @@ func (s *Storage) GetPEOProductsByCategory(ctx context.Context, filter ProductFi
 		var parentID *int64
 		if parentProductID.Valid {
 			parentID = &parentProductID.Int64
+		}
+
+		var readyDatePtr *time.Time
+		if readyDate.Valid {
+			t := readyDate.Time
+			readyDatePtr = &t
 		}
 
 		p := &storage.PEOProduct{
@@ -289,6 +296,7 @@ func (s *Storage) GetPEOProductsByCategory(ctx context.Context, filter ProductFi
 			Brigade:         brigade,
 			NormMoney:       normMoney,
 			Position:        position,
+			ReadyDate:       readyDatePtr,
 			EmployeeMinutes: make(map[int64]float64),
 			EmployeeValue:   make(map[int64]float64),
 		}

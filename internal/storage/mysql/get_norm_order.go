@@ -184,7 +184,7 @@ func (s *Storage) GetNormOrderIdSub(ctx context.Context, id int64) ([]*storage.G
 	stmt := `
 		SELECT 
 			pi.id, pi.name, pi.count, pi.total_time, pi.created_at, pi.updated_at, pi.type, pi.part_type, pi.parent_assembly, 
-			pi.parent_product_id, pi.order_num, pi.template_code, t.head_name, pi.type_izd
+			pi.parent_product_id, pi.order_num, pi.template_code, t.head_name, pi.type_izd, pi.status, pi.ready_date
 		FROM dem_product_instances_al pi
 		LEFT JOIN dem_templates_al t ON pi.template_code = t.code
 		WHERE pi.id = ? OR pi.parent_product_id = ?
@@ -223,6 +223,8 @@ func (s *Storage) GetNormOrderIdSub(ctx context.Context, id int64) ([]*storage.G
 			&detail.TemplateCode,
 			&detail.HeadName,
 			&detail.TypeIzd,
+			&detail.Status,
+			&detail.ReadyDate,
 		)
 		if err != nil {
 			return nil, fmt.Errorf("%s: ошибка сканирования: %w", op, err)
@@ -255,7 +257,7 @@ func (s *Storage) GetNormOrderIdSub(ctx context.Context, id int64) ([]*storage.G
 			}
 			defer execRows.Close() // ← безопасное закрытие
 
-			var workers []storage.AssignedWorker // или AssignedWorkers, если оставляете имя
+			var workers []storage.AssignedWorker
 			for execRows.Next() {
 				var ex storage.AssignedWorker
 				err := execRows.Scan(&ex.EmployeeID, &ex.ActualMinutes, &ex.ActualValue)

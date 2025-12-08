@@ -3,6 +3,7 @@ package storage
 type SaveWorkers struct {
 	Assignments   []OperationWorkers `json:"assignments"`
 	UpdateStatus  string             `json:"update_status"`
+	ReadyDate     string             `json:"ready_date"`
 	RootProductID int64              `json:"root_product_id"`
 }
 
