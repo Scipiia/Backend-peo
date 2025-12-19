@@ -1,160 +1,98 @@
-[
-  {
-    "name": "napil_podgot",
-    "type": "number",
-    "count": 1,
-    "label": "Напиловка  (В т.ч. 5 мин. На подготовку)",
-    "value": 1.0,
-    "minutes": 60,
-    "required": true
-  },
-  {
-    "name": "obr_stoik_rigel",
-    "type": "number",
-    "count": 1,
-    "label": "Обработка стойки, ригеля",
-    "value": 0.88,
-    "minutes": 53,
-    "required": true
-  },
-  {
-    "name": "podgt_sbork",
-    "type": "number",
-    "count": 1,
-    "label": "Подготовка к сборке",
-    "value": 2.87,
-    "minutes": 172,
-    "required": true
-  },
-  {
-    "name": "sbor_stv",
-    "type": "number",
-    "count": 1,
-    "label": "Сборка створок",
-    "value": 2.0,
-    "minutes": 120,
-    "required": true
-  },
-  {
-    "name": "yst_ypl",
-    "type": "number",
-    "count": 1,
-    "label": "Установка уплотнителей",
-    "value": 0.67,
-    "minutes": 40,
-    "required": true
-  },
-  {
-    "name": "yst_fetr_rezr31",
-    "type": "number",
-    "count": 1,
-    "label": "Установка фетра и резины R-031",
-    "value": 0.33,
-    "minutes": 20,
-    "required": true
-  },
-  {
-    "name": "podg_ypak_korob",
-    "type": "number",
-    "count": 1,
-    "label": "Подготовка и упаковка коробов",
-    "value": 0.50,
-    "minutes": 30,
-    "required": true
-  },
-  {
-    "name": "gl",
-    "type": "number",
-    "count": 0,
-    "label": "Глухое окно",
-    "value": 0,
-    "minutes": 0,
-    "required": true
-  },
-  {
-    "name": "impost",
-    "type": "number",
-    "count": 0,
-    "label": "Импост",
-    "value": 0,
-    "minutes": 0,
-    "required": true
-  },
-  {
-    "name": "fortochka",
-    "type": "number",
-    "count": 0,
-    "label": "Форточка",
-    "value": 0,
-    "minutes": 0,
-    "required": true
-  }
-]
-,
-
+//[
+//  {
+//    "operation": "dop_impost_napil",
+//    "condition": { "HasImpost": true },
+//    "mode": "multiplied",
+//    "value_per_unit": 0.025,
+//    "minutes_per_unit": 1.5
+//  },
+//  {
+//    "operation": "dop_impost_frezer",
+//    "condition": { "HasImpost": true },
+//    "mode": "multiplied",
+//    "value_per_unit": 0.033,
+//    "minutes_per_unit": 2
+//  },
+//  {
+//    "operation": "dop_impost_sverl",
+//    "condition": { "HasImpost": true },
+//    "mode": "multiplied",
+//    "value_per_unit": 0.017,
+//    "minutes_per_unit": 1
+//  },
+//  {
+//    "operation": "dop_impost_yst",
+//    "condition": { "HasImpost": true },
+//    "mode": "multiplied",
+//    "value_per_unit": 0.033,
+//    "minutes_per_unit": 2
+//  },
+//  {
+//    "operation": "yst_zapoln",
+//    "condition": { "HasImpost": true },
+//    "mode": "additive",
+//    "value_per_unit": 0.15,
+//    "minutes_per_unit": 9
+//  },
+//  {
+//    "operation": "yst_porog_ypl_derj_shetk_shtift",
+//    "condition": { "HasImpost": true },
+//    "mode": "additive",
+//    "value_per_unit": 0.017,
+//    "minutes_per_unit": 1
+//  }
+//],
 
 [
   {
-    "name": "nastr_napil",
-    "type": "number",
-    "label": "Настройка оборудования для напиловки",
-    "value": 0.05,
-    "minutes": 3,
-    "required": true
+    "operation": "impost_napil",
+    "condition": { "HasImpost": true },
+    "mode": "multiplied",
+    "value_per_unit": 0.017,
+    "minutes_per_unit": 1
   },
   {
-    "name": "napil_kontyr",
-    "type": "number",
-    "count": 1,
-    "label": "Напиловка контура",
-    "value": 0.067,
-    "minutes": 4,
-    "required": true
+    "operation": "imp_frezer",
+    "condition": { "HasImpost": true },
+    "mode": "multiplied",
+    "value_per_unit": 0.033,
+    "minutes_per_unit": 2
   },
   {
-    "name": "promej_sborka",
-    "type": "number",
-    "count": 1,
-    "label": "Промежуточная сборка",
-    "value": 0.1,
-    "minutes": 6,
-    "required": true
+    "operation": "impost_sverlo",
+    "condition": { "HasImpost": true },
+    "mode": "multiplied",
+    "value_per_unit": 0.017,
+    "minutes_per_unit": 1
   },
   {
-    "name": "opressovka_nastr",
-    "type": "number",
-    "count": 1,
-    "label": "Опресовка(настройка)",
-    "value": 0.075,
-    "minutes": 4.5,
-    "required": true
-  },
-  {
-    "name": "opressovka",
-    "type": "number",
-    "count": 1,
-    "label": "Опресовка",
-    "value": 0.047,
-    "minutes": 2.8,
-    "required": true
-  },
-  {
-    "name": "ystanovka_yplotn",
-    "type": "number",
-    "count": 2,
-    "label": "Установка уплотнителей, штифтовка",
-    "value": 0.183,
-    "minutes": 11,
-    "required": true
-  },
-  {
-    "name": "zashivka",
-    "type": "number",
-    "count": 2,
-    "label": "Зашивка",
-    "value": 0.3,
-    "minutes": 18,
-    "required": true
+    "operation": "imp_sbor",
+    "condition": { "HasImpost": true },
+    "mode": "multiplied",
+    "value_per_unit": 0.033,
+    "minutes_per_unit": 2
   }
 ]
 
+[
+  {
+    "set": {
+      "value": 0.067,
+      "minutes": 4
+    },
+    "condition": {
+      "has_impost": true
+    },
+    "operation": "yst_ypl_shtift"
+  },
+  {
+    "set": {
+      "value": 0.666,
+      "minutes": 666
+    },
+    "condition": {
+      "has_impost": false
+    },
+    "operation": "yst_ypl_shtift"
+  }
+]

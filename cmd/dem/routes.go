@@ -8,17 +8,20 @@ import (
 	"net/http"
 	"strings"
 	gettemplate "vue-golang/http-server/get-template"
+	getmaterials "vue-golang/http-server/materials/get"
 	getorder "vue-golang/http-server/order-dem/get"
 	"vue-golang/http-server/order-norm/get"
 	"vue-golang/http-server/order-norm/save"
 	"vue-golang/http-server/order-norm/update"
+	recalculate_norm "vue-golang/http-server/recalculate-norm"
 	getWorkers "vue-golang/http-server/workers/get"
 	saveWorkers "vue-golang/http-server/workers/save"
 	"vue-golang/internal/config"
+	"vue-golang/internal/service"
 	"vue-golang/internal/storage/mysql"
 )
 
-func routes(cfg config.Config, log *slog.Logger, storage *mysql.Storage) *chi.Mux {
+func routes(cfg config.Config, log *slog.Logger, storage *mysql.Storage, service *service.NormService) *chi.Mux {
 	router := chi.NewRouter()
 
 	corsHandler := cors.New(cors.Options{
@@ -90,6 +93,10 @@ func routes(cfg config.Config, log *slog.Logger, storage *mysql.Storage) *chi.Mu
 
 	//TODO финальное обновление
 	router.Put("/api/final/update/{id}", update.UpdateFinalOrder(log, storage))
+
+	//Материалы к заказу
+	router.Get("/api/materials", getmaterials.GetMaterials(log, storage))
+	router.Get("/api/materials/ubub", recalculate_norm.CalculateNormOperations(log, service))
 
 	return router
 }

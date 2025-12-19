@@ -9,6 +9,7 @@ type Template struct {
 	TypeIzd    *string     `json:"type_izd"`
 	Profile    *string     `json:"profile"`
 	Operations []Operation `json:"operations"`
+	Rules      []Rule      `json:"rules"`
 }
 
 type Operation struct {
@@ -20,4 +21,15 @@ type Operation struct {
 	Minutes  float64 `json:"minutes"`
 	Required bool    `json:"required"`
 	Group    string  `json:"group"`
+}
+
+type Rule struct {
+	Operation      string                 `json:"operation"`
+	Condition      map[string]interface{} `json:"condition"`
+	Mode           string                 `json:"mode"`    // "set", "multiplied", "additive"
+	SetValue       float64                `json:"value"`   // fallback
+	SetMinutes     float64                `json:"minutes"` // fallback
+	ValuePerUnit   float64                `json:"value_per_unit"`
+	MinutesPerUnit float64                `json:"minutes_per_unit"`
+	// Set — можно удалить, если не используется
 }

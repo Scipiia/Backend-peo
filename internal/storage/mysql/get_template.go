@@ -13,7 +13,7 @@ func (s *Storage) GetTemplateByCode(ctx context.Context, code string) (*storage.
 	const op = "storage.mysql.sql.GetFormByCode"
 
 	query := `
-		SELECT id, code, name, category, operations, systema, izd, profile 
+		SELECT id, code, name, category, operations, systema, izd, profile, rules
 		FROM dem_templates_al 
 		WHERE code = ? AND is_active = TRUE
 	`
@@ -22,6 +22,7 @@ func (s *Storage) GetTemplateByCode(ctx context.Context, code string) (*storage.
 
 	// Сканируем JSON как строку
 	var operationsJSON string
+	var rulesJSON string
 	err := s.db.QueryRowContext(ctx, query, code).Scan(
 		&template.ID,
 		&template.Code,
@@ -31,6 +32,7 @@ func (s *Storage) GetTemplateByCode(ctx context.Context, code string) (*storage.
 		&template.Systema,
 		&template.TypeIzd,
 		&template.Profile,
+		&rulesJSON,
 	)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -42,6 +44,11 @@ func (s *Storage) GetTemplateByCode(ctx context.Context, code string) (*storage.
 	// Парсим JSON операций
 	if err := json.Unmarshal([]byte(operationsJSON), &template.Operations); err != nil {
 		return nil, fmt.Errorf("%s: ошибка парсинга JSON операций: %w", op, err)
+	}
+
+	// парсим json правила
+	if err := json.Unmarshal([]byte(rulesJSON), &template.Rules); err != nil {
+		return nil, fmt.Errorf("%s: ошибка парсинга JSON правил: %w", op, err)
 	}
 
 	return template, nil

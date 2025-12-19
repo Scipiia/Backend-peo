@@ -16,7 +16,7 @@ func NewNormService(storage *mysql.Storage) *NormService {
 	return &NormService{storage: storage}
 }
 
-func (s *NormService) CalculateNorm(ctx context.Context, orderID, pos int, typeIzd string) ([]storage.Operation, error) {
+func (s *NormService) CalculateNorm(ctx context.Context, orderID, pos int, typeIzd string, templateCode string) ([]storage.Operation, error) {
 	// 1. Получаем материалы
 	materials, err := s.storage.GetOrderMaterials(ctx, orderID, pos)
 	if err != nil {
@@ -30,7 +30,7 @@ func (s *NormService) CalculateNorm(ctx context.Context, orderID, pos int, typeI
 	ctxData := BuildContext(materials, typeIzd)
 
 	// 3. Определяем код шаблона (пример: жёстко задан или по логике)
-	templateCode := "55" // ← позже сделаем умнее
+	//templateCode := "55" // ← позже сделаем умнее
 
 	// 4. Получаем шаблон (операции + правила)
 	template, err := s.storage.GetTemplateByCode(ctx, templateCode)
@@ -56,18 +56,21 @@ func BuildContextGlyhar(materials []*storage.KlaesMaterials) Context {
 	ctx := Context{Type: "glyhar"}
 
 	for _, m := range materials {
-		name := strings.ToLower(m.NameMat)
+		name := strings.TrimSpace(strings.ToLower(m.NameMat))
 		//art := strings.ToLower(m.ArticulMat)
 
-		//log.Printf("Все материалы по списку %s", name)
+		//if strings.Contains(name, "импост") {
+		//	ctx.HasImpost = true
+		//	ctx.ImpostCount++
+		//}
 
-		if strings.Contains(name, "рама") {
+		if name == "импост" || name == "impost" || name == "доп. импост" {
 			ctx.HasImpost = true
 			ctx.ImpostCount++
 		}
-
-		log.Printf("Смортим глухарь %v: %d", ctx.HasImpost, ctx.ImpostCount)
 	}
+
+	log.Printf("Смотрим материалы: HasImpost=%v, ImpostCount=%d", ctx.HasImpost, ctx.ImpostCount)
 
 	return ctx
 }
@@ -79,27 +82,36 @@ func BuildContextWindow(materials []*storage.KlaesMaterials) Context {
 		name := strings.ToLower(m.NameMat)
 		//art := strings.ToLower(m.ArticulMat)
 
-		if strings.Contains(name, "импост") {
+		if strings.Contains(name, "рама") {
 			ctx.HasImpost = true
 			ctx.ImpostCount++
 		}
 	}
+
+	log.Printf("Смотрим материалы: HasImpost=%v, ImpostCount=%d", ctx.HasImpost, ctx.ImpostCount)
 
 	return ctx
 }
 
 func BuildContextDoor(materials []*storage.KlaesMaterials) Context {
-	ctx := Context{Type: "window"}
+	ctx := Context{Type: "door"}
 
 	for _, m := range materials {
-		name := strings.ToLower(m.NameMat)
+		name := strings.TrimSpace(strings.ToLower(m.NameMat))
 		//art := strings.ToLower(m.ArticulMat)
 
-		if strings.Contains(name, "импост") {
+		//if strings.Contains(name, "импост") {
+		//	ctx.HasImpost = true
+		//	ctx.ImpostCount++
+		//}
+
+		if name == "импост" || name == "impost" || name == "доп. импост" {
 			ctx.HasImpost = true
 			ctx.ImpostCount++
 		}
 	}
+
+	log.Printf("Смотрим материалы: HasImpost=%v, ImpostCount=%d", ctx.HasImpost, ctx.ImpostCount)
 
 	return ctx
 }
@@ -144,6 +156,7 @@ func ApplyRules(operations []storage.Operation, rules []storage.Rule, ctx Contex
 			case "multiplied":
 				result[i].Value = rule.ValuePerUnit * float64(ctx.ImpostCount)
 				result[i].Minutes = rule.MinutesPerUnit * float64(ctx.ImpostCount)
+				result[i].Count = float64(ctx.ImpostCount)
 			case "additive":
 				result[i].Value += rule.ValuePerUnit * float64(ctx.ImpostCount)
 				result[i].Minutes += rule.MinutesPerUnit * float64(ctx.ImpostCount)

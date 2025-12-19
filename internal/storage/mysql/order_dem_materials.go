@@ -9,7 +9,8 @@ import (
 func (s *Storage) GetOrderMaterials(ctx context.Context, id, pos int) ([]*storage.KlaesMaterials, error) {
 	const op = "storage.order-dem-details.GetOrderMaterials.sql"
 
-	stmt := `SELECT idorders, articul_mat, name_mat, width, height FROM dem_klaes_materials WHERE idorders= ? AND position=?`
+	stmt := `SELECT idorders, articul_mat, name_mat, width, height FROM dem_klaes_materials 
+            	WHERE idorders= ? AND position=? AND LOWER(TRIM(name_mat)) IN ('импост', 'доп. импост')`
 
 	rows, err := s.db.QueryContext(ctx, stmt, id, pos)
 	if err != nil {

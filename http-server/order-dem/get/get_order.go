@@ -52,6 +52,8 @@ func GetOrderDetails(log *slog.Logger, order OrderDetails) http.HandlerFunc {
 			return
 		}
 
+		log.Info("IDDDDDDD", id)
+
 		ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
 		defer cancel()
 

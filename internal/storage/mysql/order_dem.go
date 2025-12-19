@@ -44,7 +44,7 @@ func (s *Storage) GetOrdersMonth(ctx context.Context, year int, month int, searc
 
 	rows, err := s.db.QueryContext(ctx, stmt, args...)
 	if err != nil {
-		return nil, fmt.Errorf("%s: %w", op, err)
+		return nil, fmt.Errorf("%s: ошибка получения заказов из дема по месяцам %w", op, err)
 	}
 	defer rows.Close()
 
@@ -68,7 +68,7 @@ func (s *Storage) GetOrdersMonth(ctx context.Context, year int, month int, searc
 	}
 
 	if err = rows.Err(); err != nil {
-		return nil, fmt.Errorf("%s: %w", op, err)
+		return nil, fmt.Errorf("%s: ошибка сканирования строк %w", op, err)
 	}
 
 	return orders, nil
@@ -79,7 +79,7 @@ func (s *Storage) GetOrderDetails(ctx context.Context, id int) (*storage.ResultO
 
 	details := &storage.ResultOrderDetails{}
 
-	// Первый запрос: основной заказ
+	// основной заказ
 	stmtDemOrders := `
 		SELECT id, order_num, creator, customer, dop_info, ms_note 
 		FROM dem_ready 
@@ -108,7 +108,7 @@ func (s *Storage) GetOrderDetails(ctx context.Context, id int) (*storage.ResultO
 		details.Order.MsNote = ""
 	}
 
-	// Второй запрос: позиции заказа
+	// позиции заказа
 	stmtDemPrice := `
 		SELECT 
 			CAST(p.position AS UNSIGNED),

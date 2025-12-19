@@ -11,7 +11,7 @@ import (
 )
 
 type NormProvider interface {
-	CalculateNorm(ctx context.Context, orderID, pos int, typeIzd string) ([]storage.Operation, error)
+	CalculateNorm(ctx context.Context, orderID, pos int, typeIzd string, templateCode string) ([]storage.Operation, error)
 }
 
 func CalculateNormOperations(log *slog.Logger, calc NormProvider) http.HandlerFunc {
@@ -33,6 +33,7 @@ func CalculateNormOperations(log *slog.Logger, calc NormProvider) http.HandlerFu
 		}
 
 		typeIzd := r.URL.Query().Get("type")
+		templateCode := r.URL.Query().Get("template")
 		//if err != nil {
 		//	log.Error("Invalid pos", slog.String("error", err.Error()))
 		//	http.Error(w, "Invalid pos", http.StatusBadRequest)
@@ -42,7 +43,7 @@ func CalculateNormOperations(log *slog.Logger, calc NormProvider) http.HandlerFu
 		ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
 		defer cancel()
 
-		norm, err := calc.CalculateNorm(ctx, orderID, pos, typeIzd)
+		norm, err := calc.CalculateNorm(ctx, orderID, pos, typeIzd, templateCode)
 		if err != nil {
 			log.Error("Failed to calculate norm", slog.String("error", err.Error()))
 			http.Error(w, "Internal error", http.StatusInternalServerError)

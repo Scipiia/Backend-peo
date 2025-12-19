@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"vue-golang/internal/config"
+	"vue-golang/internal/service"
 	"vue-golang/internal/storage/mysql"
 )
 
@@ -26,11 +27,13 @@ func main() {
 		os.Exit(1)
 	}
 
+	normService := service.NewNormService(storage)
+
 	log.Info("server started", slog.String("address", cfg.Address))
 
 	srv := &http.Server{
 		Addr:         cfg.Address,
-		Handler:      routes(*cfg, log, storage),
+		Handler:      routes(*cfg, log, storage, normService),
 		ReadTimeout:  cfg.HTTPServer.Timeout,
 		WriteTimeout: cfg.HTTPServer.Timeout,
 		IdleTimeout:  cfg.HTTPServer.IdleTimeout,
