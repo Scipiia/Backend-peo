@@ -48,8 +48,8 @@
     "operation": "impost_napil",
     "condition": { "HasImpost": true },
     "mode": "multiplied",
-    "value_per_unit": 0.017,
-    "minutes_per_unit": 1
+    "value_per_unit": 0.025,
+    "minutes_per_unit": 1.5
   },
   {
     "operation": "imp_frezer",
@@ -62,15 +62,15 @@
     "operation": "impost_sverlo",
     "condition": { "HasImpost": true },
     "mode": "multiplied",
-    "value_per_unit": 0.017,
-    "minutes_per_unit": 1
-  },
-  {
-    "operation": "imp_sbor",
-    "condition": { "HasImpost": true },
-    "mode": "multiplied",
     "value_per_unit": 0.033,
     "minutes_per_unit": 2
+  },
+  {
+    "operation": "impost_yst",
+    "condition": { "HasImpost": true },
+    "mode": "multiplied",
+    "value_per_unit": 0.050,
+    "minutes_per_unit": 3
   }
 ]
 

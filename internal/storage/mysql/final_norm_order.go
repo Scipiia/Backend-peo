@@ -27,7 +27,7 @@ func (s *Storage) GetSimpleOrderReport(ctx context.Context, orderNum string) (*s
 			oe.actual_minutes,
 			oe.actual_value
 		FROM dem_product_instances_al pi
-		JOIN templates t ON pi.template_code = t.code
+		JOIN dem_templates_al t ON pi.template_code = t.code
 		JOIN dem_operation_values_al ov ON pi.id = ov.product_id
 		LEFT JOIN dem_operation_executors_al oe ON ov.product_id = oe.product_id AND ov.operation_name = oe.operation_name
 		LEFT JOIN dem_employees_al e ON oe.employee_id = e.id
@@ -276,6 +276,11 @@ func (s *Storage) GetPEOProductsByCategory(ctx context.Context, filter ProductFi
 			readyDatePtr = &t
 		}
 
+		var coef *float64
+		if !coef.Valid {
+			// запрос к бд, который вытащит последнии коэффициент
+		}
+
 		p := &storage.PEOProduct{
 			ID:              id,
 			OrderNum:        orderNum,
@@ -355,19 +360,6 @@ func (s *Storage) GetPEOProductsByCategory(ctx context.Context, filter ProductFi
 	for _, p := range products {
 		productList = append(productList, *p)
 	}
-
-	// Сортируем, как в оригинале (по order_num и created_at)
-	// Поскольку порядок в SELECT уже задан, но map итерируется хаотично —
-	// восстанавливаем порядок по исходному запросу.
-	// Простой способ: собрать ID в порядке выборки, затем восстановить порядок.
-	// Но если объём небольшой — можно отсортировать в Go:
-
-	//sort.Slice(productList, func(i, j int) bool {
-	//	if productList[i].OrderNum != productList[j].OrderNum {
-	//		return productList[i].OrderNum < productList[j].OrderNum
-	//	}
-	//	return productList[i].CreatedAt.Before(productList[j].CreatedAt)
-	//})
 
 	return productList, employees, nil
 }

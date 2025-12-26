@@ -2,17 +2,23 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"strings"
 	"vue-golang/internal/storage"
-	"vue-golang/internal/storage/mysql"
 )
 
-type NormService struct {
-	storage *mysql.Storage
+type NormStorage interface {
+	GetOrderMaterials(ctx context.Context, id, pos int) ([]*storage.KlaesMaterials, error)
+	GetTemplateByCode(ctx context.Context, code string) (*storage.Template, error)
 }
 
-func NewNormService(storage *mysql.Storage) *NormService {
+type NormService struct {
+	//storage *mysql.Storage
+	storage NormStorage
+}
+
+func NewNormService(storage NormStorage) *NormService {
 	return &NormService{storage: storage}
 }
 
@@ -27,7 +33,10 @@ func (s *NormService) CalculateNorm(ctx context.Context, orderID, pos int, typeI
 	//typeIzd := "glyhar"
 
 	// 2. Строим контекст — ВОТ ОНО МЕСТО!
-	ctxData := BuildContext(materials, typeIzd)
+	ctxData, err := BuildContext(materials, typeIzd)
+	if err != nil {
+		return nil, err // → вернётся ошибка клиенту
+	}
 
 	// 3. Определяем код шаблона (пример: жёстко задан или по логике)
 	//templateCode := "55" // ← позже сделаем умнее
@@ -48,7 +57,7 @@ type Context struct {
 	Type string
 
 	HasImpost   bool
-	ImpostCount int
+	ImpostCount float64
 	// Добавишь больше признаков позже: тип профиля, площадь, кол-во камер и т.д.
 }
 
@@ -56,21 +65,15 @@ func BuildContextGlyhar(materials []*storage.KlaesMaterials) Context {
 	ctx := Context{Type: "glyhar"}
 
 	for _, m := range materials {
+
 		name := strings.TrimSpace(strings.ToLower(m.NameMat))
-		//art := strings.ToLower(m.ArticulMat)
-
-		//if strings.Contains(name, "импост") {
-		//	ctx.HasImpost = true
-		//	ctx.ImpostCount++
-		//}
-
 		if name == "импост" || name == "impost" || name == "доп. импост" {
 			ctx.HasImpost = true
 			ctx.ImpostCount++
 		}
 	}
 
-	log.Printf("Смотрим материалы: HasImpost=%v, ImpostCount=%d", ctx.HasImpost, ctx.ImpostCount)
+	log.Printf("Смотрим материалы: HasImpost=%v, ImpostCount=%f", ctx.HasImpost, ctx.ImpostCount)
 
 	return ctx
 }
@@ -82,13 +85,13 @@ func BuildContextWindow(materials []*storage.KlaesMaterials) Context {
 		name := strings.ToLower(m.NameMat)
 		//art := strings.ToLower(m.ArticulMat)
 
-		if strings.Contains(name, "рама") {
+		if name == "импост" || name == "impost" || name == "доп. импост" {
 			ctx.HasImpost = true
 			ctx.ImpostCount++
 		}
 	}
 
-	log.Printf("Смотрим материалы: HasImpost=%v, ImpostCount=%d", ctx.HasImpost, ctx.ImpostCount)
+	log.Printf("Смотрим материалы: HasImpost=%v, ImpostCount=%f", ctx.HasImpost, ctx.ImpostCount)
 
 	return ctx
 }
@@ -97,35 +100,29 @@ func BuildContextDoor(materials []*storage.KlaesMaterials) Context {
 	ctx := Context{Type: "door"}
 
 	for _, m := range materials {
+
 		name := strings.TrimSpace(strings.ToLower(m.NameMat))
-		//art := strings.ToLower(m.ArticulMat)
-
-		//if strings.Contains(name, "импост") {
-		//	ctx.HasImpost = true
-		//	ctx.ImpostCount++
-		//}
-
 		if name == "импост" || name == "impost" || name == "доп. импост" {
 			ctx.HasImpost = true
 			ctx.ImpostCount++
 		}
 	}
 
-	log.Printf("Смотрим материалы: HasImpost=%v, ImpostCount=%d", ctx.HasImpost, ctx.ImpostCount)
+	log.Printf("Смотрим материалы: HasImpost=%v, ImpostCount=%f", ctx.HasImpost, ctx.ImpostCount)
 
 	return ctx
 }
 
-func BuildContext(materials []*storage.KlaesMaterials, typeIzd string) Context {
+func BuildContext(materials []*storage.KlaesMaterials, typeIzd string) (Context, error) {
 	switch typeIzd {
 	case "glyhar":
-		return BuildContextGlyhar(materials)
+		return BuildContextGlyhar(materials), nil
 	case "window":
-		return BuildContextWindow(materials)
+		return BuildContextWindow(materials), nil
 	case "door":
-		return BuildContextDoor(materials)
+		return BuildContextDoor(materials), nil
 	default:
-		return Context{Type: "неизвестный тип изделия"}
+		return Context{}, fmt.Errorf("неизвестный тип изделия: %s", typeIzd)
 	}
 
 }
@@ -154,16 +151,16 @@ func ApplyRules(operations []storage.Operation, rules []storage.Rule, ctx Contex
 				result[i].Value = rule.SetValue
 				result[i].Minutes = rule.SetMinutes
 			case "multiplied":
-				result[i].Value = rule.ValuePerUnit * float64(ctx.ImpostCount)
-				result[i].Minutes = rule.MinutesPerUnit * float64(ctx.ImpostCount)
-				result[i].Count = float64(ctx.ImpostCount)
+				result[i].Value = rule.ValuePerUnit * ctx.ImpostCount
+				result[i].Minutes = rule.MinutesPerUnit * ctx.ImpostCount
+				result[i].Count = ctx.ImpostCount
 			case "additive":
-				result[i].Value += rule.ValuePerUnit * float64(ctx.ImpostCount)
-				result[i].Minutes += rule.MinutesPerUnit * float64(ctx.ImpostCount)
+				result[i].Value += rule.ValuePerUnit * ctx.ImpostCount
+				result[i].Minutes += rule.MinutesPerUnit * ctx.ImpostCount
 			default:
 				// По умолчанию — просто замена
-				result[i].Value = rule.SetValue
-				result[i].Minutes = rule.SetMinutes
+				//result[i].Value = rule.SetValue
+				//result[i].Minutes = rule.SetMinutes
 			}
 			break // применили первое подходящее правило
 		}
@@ -187,30 +184,30 @@ func fieldMatches(key string, expected interface{}, ctx Context) bool {
 		if val, ok := expected.(bool); ok {
 			return ctx.HasImpost == val
 		}
-	case "ImpostCount":
-		// Поддержка: {"min": 2} или просто 2
-		return compareIntField(ctx.ImpostCount, expected)
+	//case "ImpostCount":
+	// Поддержка: {"min": 2} или просто 2
+	//return compareIntField(ctx.ImpostCount, expected)
 	default:
 		return false
 	}
 	return false
 }
 
-func compareIntField(actual int, expected interface{}) bool {
+func compareIntField(actual float64, expected interface{}) bool {
 	// Вариант 1: просто число → точное совпадение
 	if val, ok := expected.(float64); ok { // JSON числа — float64
-		return actual == int(val)
+		return actual == val
 	}
 
 	// Вариант 2: объект { "min": 2 }
 	if obj, ok := expected.(map[string]interface{}); ok {
 		if minVal, hasMin := obj["min"].(float64); hasMin {
-			if actual < int(minVal) {
+			if actual < minVal {
 				return false
 			}
 		}
 		if maxVal, hasMax := obj["max"].(float64); hasMax {
-			if actual > int(maxVal) {
+			if actual > maxVal {
 				return false
 			}
 		}

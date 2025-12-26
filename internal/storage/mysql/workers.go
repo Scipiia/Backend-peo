@@ -95,8 +95,6 @@ func (s *Storage) SaveOperationWorkers(ctx context.Context, req storage.SaveWork
 
 	}
 
-	fmt.Println("DDDDDDDDDDDDDDD", req.ReadyDate)
-
 	if req.ReadyDate != "" {
 		if err := s.SaveReadyDate(ctx, tx, req.RootProductID, req.ReadyDate); err != nil {
 			return fmt.Errorf("%s: ошибка обновления даты готовности для родительского заказа id= %d: %w", op, req.RootProductID, err)
